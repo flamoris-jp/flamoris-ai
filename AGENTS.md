@@ -35,15 +35,15 @@ Do not move provider runtime ownership, media-generation job ownership, or produ
 
 ### `flamoris-intelligence-mcp`
 
-Owns the planned MCP-native, provider-neutral intelligence boundary for language, reasoning, coding, and multi-agent workloads.
+Owns the planned MCP-native, provider-neutral intelligence boundary for language, reasoning, coding, and bounded multi-agent workloads.
 
-Its intended responsibilities include exposing intelligence capabilities through MCP, model/provider routing, task coordination, scheduling, multi-agent workflows, and explicit access to shared memory or knowledge services. Keep model/runtime-specific behavior behind adapters.
+Its intended responsibilities include exposing intelligence capabilities through MCP, model/provider routing, bounded task coordination, scheduling, multi-agent execution, and explicit access to shared memory or knowledge services. These are intelligence-execution concerns, not ownership of persistent Agent identity, conversations, or memory. Keep model/runtime-specific behavior behind adapters.
 
 The Intelligence MCP may route to local or remote providers, but it must not silently become the owner of conversations, Agent memory, product documents, or generated-media workflows.
 
 ### `flamoris-generation-mcp`
 
-Owns provider-neutral generative-media execution exposed through MCP, including generation jobs, workflows, and generated assets.
+Owns provider-neutral generative-media and closely related media-analysis execution exposed through MCP, including workflows, jobs, and generated/materialized assets.
 
 ComfyUI is the first provider, not the identity of the project.
 
