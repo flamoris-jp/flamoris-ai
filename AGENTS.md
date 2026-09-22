@@ -35,11 +35,11 @@ Do not move provider runtime ownership, media-generation job ownership, or produ
 
 ### `flamoris-intelligence-hub`
 
-Owns provider-neutral intelligence execution and routing for language, reasoning, and coding workloads.
+Owns the planned provider-neutral orchestration boundary for language, reasoning, coding, and multi-agent workloads.
 
-Keep model/runtime-specific behavior behind adapters.
+Its intended responsibilities include model/provider routing, task coordination, scheduling, multi-agent workflows, and explicit access to shared memory or knowledge services. Keep model/runtime-specific behavior behind adapters.
 
-The Hub may route to local or remote providers, but it must not silently become the owner of conversations, product documents, or generated-media workflows.
+The Hub may route to local or remote providers, but it must not silently become the owner of conversations, Agent memory, product documents, or generated-media workflows.
 
 ### `flamoris-generation-mcp`
 
