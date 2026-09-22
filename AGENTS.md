@@ -33,13 +33,13 @@ Owns persistent agent behavior and agent-facing state, including:
 
 Do not move provider runtime ownership, media-generation job ownership, or product document authority into the Agent.
 
-### `flamoris-intelligence-hub`
+### `flamoris-intelligence-mcp`
 
-Owns the planned provider-neutral orchestration boundary for language, reasoning, coding, and multi-agent workloads.
+Owns the planned MCP-native, provider-neutral intelligence boundary for language, reasoning, coding, and multi-agent workloads.
 
-Its intended responsibilities include model/provider routing, task coordination, scheduling, multi-agent workflows, and explicit access to shared memory or knowledge services. Keep model/runtime-specific behavior behind adapters.
+Its intended responsibilities include exposing intelligence capabilities through MCP, model/provider routing, task coordination, scheduling, multi-agent workflows, and explicit access to shared memory or knowledge services. Keep model/runtime-specific behavior behind adapters.
 
-The Hub may route to local or remote providers, but it must not silently become the owner of conversations, Agent memory, product documents, or generated-media workflows.
+The Intelligence MCP may route to local or remote providers, but it must not silently become the owner of conversations, Agent memory, product documents, or generated-media workflows.
 
 ### `flamoris-generation-mcp`
 
