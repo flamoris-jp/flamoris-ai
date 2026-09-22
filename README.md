@@ -12,8 +12,8 @@ flamoris-ai
 ├── flamoris-ai-agent
 │   └── persistent agent runtime:
 │       conversations / memory / knowledge / prompts / tools
-├── flamoris-intelligence-hub
-│   └── provider-neutral intelligence orchestration:
+├── flamoris-intelligence-mcp
+│   └── provider-neutral MCP intelligence gateway:
 │       local & remote LLMs / coding agents / routing / execution
 └── flamoris-generation-mcp
     └── provider-neutral generative-media gateway:
@@ -28,15 +28,15 @@ Planned persistent AI agent runtime for FLAMORIS, with conversations, memory, kn
 
 Its intended responsibility is agent-facing state and behavior. It may call intelligence or generation services, but those services should not silently become a second owner of conversations, memory, or agent state.
 
-### [FLAMORIS Intelligence Hub](https://github.com/flamoris-jp/flamoris-intelligence-hub)
+### [FLAMORIS Intelligence MCP](https://github.com/flamoris-jp/flamoris-intelligence-mcp)
 
 **Status: repository created; runtime implementation is not initialized yet.**
 
-Planned provider-neutral orchestration boundary for language, reasoning, coding, and multi-agent intelligence.
+Planned MCP-native, provider-neutral gateway for language, reasoning, coding, and multi-agent intelligence.
 
-Its intended responsibilities include model/provider routing, task coordination, scheduling, multi-agent workflows, and explicit access to shared memory or knowledge services without becoming the owner of Agent memory itself. Model/runtime-specific behavior belongs behind provider adapters rather than leaking into applications or agents.
+Its intended responsibilities include exposing intelligence capabilities through MCP, model/provider routing, task coordination, scheduling, multi-agent workflows, and explicit access to shared memory or knowledge services without becoming the owner of Agent memory itself. Model/runtime-specific behavior belongs behind provider adapters rather than leaking into applications or agents.
 
-The Intelligence Hub is for reasoning and coding intelligence. It is deliberately separate from generative-media execution.
+The Intelligence MCP is the MCP-facing boundary for reasoning and coding intelligence. It is deliberately separate from generative-media execution.
 
 ### [FLAMORIS Generation MCP](https://github.com/flamoris-jp/flamoris-generation-mcp)
 
@@ -61,13 +61,13 @@ FLAMORIS application / Studio
       │         └──────────────► flamoris-generation-mcp
       │                           image / video / music / voice
       ▼
-flamoris-intelligence-hub
+flamoris-intelligence-mcp
  local LLM / remote LLM / coding intelligence
 ```
 
 These are boundaries, not mandatory layers.
 
-- Applications may call the Intelligence Hub directly when no persistent Agent is needed.
+- Applications may call the Intelligence MCP directly when no persistent Agent is needed.
 - Applications may call Generation MCP directly for media generation.
 - The Agent may coordinate both, but should not duplicate their provider/runtime responsibilities.
 - Shared non-AI infrastructure such as logging and MCP foundations belongs in [FLAMORIS Commons](https://github.com/flamoris-jp/flamoris-commons), not here.
@@ -83,7 +83,7 @@ AI-specific boundaries and safety rules in this repository supplement that share
 
 1. **One authority per domain**
    - Conversations, memory, and agent state belong to the Agent.
-   - Intelligence execution/routing belongs to the Intelligence Hub.
+   - Intelligence execution/routing belongs to the Intelligence MCP.
    - Media-generation jobs and assets belong to Generation MCP.
    - Product document state remains owned by the FLAMORIS application.
 
@@ -133,7 +133,7 @@ AI models, model weights, datasets, generated media, third-party prompts, provid
 
 FLAMORIS AIは、FLAMORISのAI関連プロジェクトをまとめる入口です。
 
-ここ自体を巨大なAIランタイムにするのではなく、AI Agent、推論・Coding系のIntelligence Hub、画像・動画・音楽・音声生成のGeneration MCPについて、役割と境界、共通方針を整理します。
+ここ自体を巨大なAIランタイムにするのではなく、AI Agent、推論・Coding系のIntelligence MCP、画像・動画・音楽・音声生成のGeneration MCPについて、役割と境界、共通方針を整理します。
 
 ### リポジトリ構成
 
@@ -141,9 +141,9 @@ FLAMORIS AIは、FLAMORISのAI関連プロジェクトをまとめる入口で�
   **現在: repository作成済み、runtime実装は未初期化。**  
   会話、Memory、Knowledge、Prompt、Toolを持つ永続的なAI Agent runtimeとして設計します。
 
-- **[flamoris-intelligence-hub](https://github.com/flamoris-jp/flamoris-intelligence-hub)**  
+- **[flamoris-intelligence-mcp](https://github.com/flamoris-jp/flamoris-intelligence-mcp)**  
   **現在: repository作成済み、runtime実装は未初期化。**  
-  LLM、推論、Coding Agentなどのprovider-neutralなorchestration境界。model/provider routing、task coordination、scheduling、multi-agent workflowを扱い、必要なMemory/Knowledgeへ明示的なinterfaceでアクセスします。ただしAgent Memoryそのもののauthorityにはなりません。
+  LLM、推論、Coding AgentなどをMCPから扱うprovider-neutralなintelligence gateway。model/provider routing、task coordination、scheduling、multi-agent workflowを扱い、必要なMemory/Knowledgeへ明示的なinterfaceでアクセスします。ただしAgent Memoryそのもののauthorityにはなりません。
 
 - **[flamoris-generation-mcp](https://github.com/flamoris-jp/flamoris-generation-mcp)**  
   **現在: 実装進行中。最初のproviderはComfyUI。**  
@@ -154,7 +154,7 @@ Generation Hubの基盤は現在 `flamoris-generation-mcp` の内部に置きま
 ### 境界の考え方
 
 - Agentの会話やMemoryはAgentが持つ。
-- LLMやCoding Agentのprovider選択・実行はIntelligence Hubが持つ。
+- LLMやCoding Agentのprovider選択・実行はIntelligence MCPが持つ。
 - 生成ジョブ、workflow、assetはGeneration MCPが持つ。
 - 2D、Cutwork、Kachincoなどの制作データは各アプリ自身がauthorityを持つ。
 - LoggingやMCP共通基盤など、AI専用ではないものはFLAMORIS Commons側に置く。
