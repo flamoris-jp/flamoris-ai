@@ -22,19 +22,25 @@ flamoris-ai
 
 ### [FLAMORIS AI Agent](https://github.com/flamoris-jp/flamoris-ai-agent)
 
-Persistent AI agent runtime for FLAMORIS, with conversations, memory, knowledge, prompts, tools, and pluggable local or remote models.
+**Status: repository created; runtime implementation is not initialized yet.**
 
-The Agent owns agent-facing state and behavior. It may call intelligence or generation services, but those services should not silently become a second owner of conversations, memory, or agent state.
+Planned persistent AI agent runtime for FLAMORIS, with conversations, memory, knowledge, prompts, tools, and pluggable local or remote intelligence access.
+
+Its intended responsibility is agent-facing state and behavior. It may call intelligence or generation services, but those services should not silently become a second owner of conversations, memory, or agent state.
 
 ### [FLAMORIS Intelligence Hub](https://github.com/flamoris-jp/flamoris-intelligence-hub)
 
-Provider-neutral execution and orchestration boundary for language, reasoning, and coding intelligence.
+**Status: repository created; runtime implementation is not initialized yet.**
 
-The Hub is responsible for routing requests to suitable local or remote intelligence providers and presenting a stable FLAMORIS-side boundary. Model/runtime-specific behavior belongs behind provider adapters rather than leaking into applications or agents.
+Planned provider-neutral orchestration boundary for language, reasoning, coding, and multi-agent intelligence.
+
+Its intended responsibilities include model/provider routing, task coordination, scheduling, multi-agent workflows, and explicit access to shared memory or knowledge services without becoming the owner of Agent memory itself. Model/runtime-specific behavior belongs behind provider adapters rather than leaking into applications or agents.
 
 The Intelligence Hub is for reasoning and coding intelligence. It is deliberately separate from generative-media execution.
 
 ### [FLAMORIS Generation MCP](https://github.com/flamoris-jp/flamoris-generation-mcp)
+
+**Status: active implementation. ComfyUI is the first provider.**
 
 MCP-native gateway for generative media such as images, video, music, and voice.
 
@@ -66,6 +72,12 @@ These are boundaries, not mandatory layers.
 - The Agent may coordinate both, but should not duplicate their provider/runtime responsibilities.
 - Shared non-AI infrastructure such as logging and MCP foundations belongs in [FLAMORIS Commons](https://github.com/flamoris-jp/flamoris-commons), not here.
 - Product-specific state and editing authority stay in the product repository that owns them.
+
+## Repository policy
+
+This repository follows the shared [FLAMORIS Repository Policy](https://github.com/flamoris-jp/flamoris-commons/blob/main/docs/repository-policy.md).
+
+AI-specific boundaries and safety rules in this repository supplement that shared policy rather than replacing it.
 
 ## Design principles
 
@@ -126,12 +138,15 @@ FLAMORIS AIは、FLAMORISのAI関連プロジェクトをまとめる入口で�
 ### リポジトリ構成
 
 - **[flamoris-ai-agent](https://github.com/flamoris-jp/flamoris-ai-agent)**  
-  会話、Memory、Knowledge、Prompt、Toolを持つ永続的なAI Agent runtime。local / remote modelを差し替え可能な形で扱います。
+  **現在: repository作成済み、runtime実装は未初期化。**  
+  会話、Memory、Knowledge、Prompt、Toolを持つ永続的なAI Agent runtimeとして設計します。
 
 - **[flamoris-intelligence-hub](https://github.com/flamoris-jp/flamoris-intelligence-hub)**  
-  LLM、推論、Coding Agentなどのprovider-neutralな実行・routing境界。ローカルモデルとリモートAIをFLAMORIS側から同じ考え方で扱えるようにします。
+  **現在: repository作成済み、runtime実装は未初期化。**  
+  LLM、推論、Coding Agentなどのprovider-neutralなorchestration境界。model/provider routing、task coordination、scheduling、multi-agent workflowを扱い、必要なMemory/Knowledgeへ明示的なinterfaceでアクセスします。ただしAgent Memoryそのもののauthorityにはなりません。
 
 - **[flamoris-generation-mcp](https://github.com/flamoris-jp/flamoris-generation-mcp)**  
+  **現在: 実装進行中。最初のproviderはComfyUI。**  
   画像・動画・音楽・音声などの生成AIをMCPから扱う実行ゲートウェイ。ComfyUIは最初のproviderであり、プロジェクトそのものではありません。
 
 Generation Hubの基盤は現在 `flamoris-generation-mcp` の内部に置きます。境界が明確になるまでは、Generation Hubという別リポジトリを増やしません。
