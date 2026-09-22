@@ -13,7 +13,7 @@ For larger architecture changes, new repositories, changes to repository ownersh
 Before proposing a new abstraction or repository, check whether the work belongs in:
 
 - `flamoris-ai-agent`;
-- `flamoris-intelligence-hub`;
+- `flamoris-intelligence-mcp`;
 - `flamoris-generation-mcp`;
 - a product repository such as FLAMORIS 2D, Cutwork, Kachinco, or Studio;
 - FLAMORIS Commons or one of its shared infrastructure repositories.
@@ -66,7 +66,7 @@ FLAMORIS AIは、AI関連プロジェクトの実装を全部集める場所で�
 新しい実装や共通化を始める前に、次のどこへ置くべきか確認してください。
 
 - `flamoris-ai-agent`
-- `flamoris-intelligence-hub`
+- `flamoris-intelligence-mcp`
 - `flamoris-generation-mcp`
 - FLAMORIS 2D / Cutwork / Kachinco / Studioなどの製品リポジトリ
 - FLAMORIS Commonsまたは共通基盤リポジトリ
