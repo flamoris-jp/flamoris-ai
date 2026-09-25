@@ -6,7 +6,7 @@ FLAMORIS AI is the integration and architecture home for FLAMORIS AI projects. P
 
 ## Before contributing
 
-For small documentation fixes, feel free to open a pull request directly.
+Issues are welcome from everyone. Pull requests are accepted only from repository collaborators. Please open an Issue to propose documentation fixes or implementation changes.
 
 For larger architecture changes, new repositories, changes to repository ownership, or changes that affect multiple FLAMORIS AI projects, please open an Issue first.
 
@@ -59,7 +59,7 @@ FLAMORIS AIは、AI関連プロジェクトの実装を全部集める場所で�
 
 ## 変更を始める前に
 
-小さな文書修正は、そのままPull Requestを送っていただいて構いません。
+Issueはどなたでも歓迎します。Pull Requestはリポジトリのcollaboratorのみ受け付けています。修正、機能、ドキュメント変更などの提案はIssueからお願いします。
 
 大きな設計変更、新しいリポジトリ、責務の移動、複数のAI系リポジトリへ影響する変更は、先にIssueで意図と境界を整理してください。
 
