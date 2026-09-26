@@ -182,7 +182,7 @@ FLAMORIS AIは、FLAMORISのAI関連プロジェクトをまとめる**管制塔
   `generation.*` / `intelligence.*` / `agent.*` / `lime.*` をまとめる入口。workflow authorityにはしません。
 
 - **[flamoris-gpu-node-manager](https://github.com/flamoris-jp/flamoris-gpu-node-manager)**  
-  LIMEのruntime/GPU authority。systemdやGPU切替ロジックを他サービスへ複製しません。
+  ローカルGPU runtimeのauthority。LIMEはdeploymentのひとつで、systemdやGPU切替ロジックを他サービスへ複製しません。
 
 中心となる依存方向は:
 
