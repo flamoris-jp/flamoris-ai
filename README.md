@@ -1,77 +1,104 @@
 # FLAMORIS AI
 
-Home for FLAMORIS AI projects, agents, orchestration, model runtimes, memory, knowledge, and generative AI integrations.
+Home and coordination point for the AI-facing parts of FLAMORIS.
 
-FLAMORIS AI is the integration and architecture home for the AI-facing parts of the FLAMORIS ecosystem.
-This repository intentionally starts as a small meta repository: it documents boundaries, shared direction, and the relationship between dedicated AI repositories without becoming a second runtime or source of truth.
+This repository is intentionally small. It documents architecture boundaries, cross-repository dependency direction, and the integrated roadmap without becoming a second runtime or implementation authority.
+
+See [the integrated roadmap](docs/ROADMAP.md) and [the top-level roadmap tracker](https://github.com/flamoris-jp/flamoris-ai/issues/4).
 
 ## Repository map
 
 ```text
 flamoris-ai
 ├── flamoris-ai-agent
-│   └── persistent agent runtime:
-│       conversations / memory / knowledge / prompts / tools
+│   └── persistent Agent runtime + Agent MCP surface:
+│       identity / conversations / memory / knowledge / personality / tools
 ├── flamoris-intelligence-mcp
-│   └── provider-neutral MCP intelligence gateway:
-│       local & remote LLMs / coding agents / routing / execution
+│   └── provider-neutral raw intelligence gateway:
+│       language / reasoning / coding / local & remote providers
 └── flamoris-generation-mcp
     └── provider-neutral generative-media gateway:
         image / video / music / voice + related media analysis
 ```
 
-### [FLAMORIS AI Agent](https://github.com/flamoris-jp/flamoris-ai-agent)
+Supporting ecosystem boundaries coordinated by the roadmap include:
 
-**Status: repository created; runtime implementation is not initialized yet.**
+- [flamoris-mcp-hub](https://github.com/flamoris-jp/flamoris-mcp-hub) — MCP aggregation/routing boundary
+- [flamoris-lime-manager](https://github.com/flamoris-net/flamoris-lime-manager) — LIME runtime/GPU authority
+- [flamoris-studio](https://github.com/flamoris-jp/flamoris-studio) — human-facing AI workspace and application boundary
 
-Planned persistent AI agent runtime for FLAMORIS, with conversations, memory, knowledge, prompts, tools, and pluggable local or remote intelligence access.
+Current implementation status belongs in each repository's own README, Issues, and PRs rather than being duplicated here.
 
-Its intended responsibility is agent-facing state and behavior. It may call intelligence or generation services, but those services should not silently become a second owner of conversations, memory, or agent state.
+## Core boundary
 
-### [FLAMORIS Intelligence MCP](https://github.com/flamoris-jp/flamoris-intelligence-mcp)
+The central dependency direction is:
 
-**Status: repository created; runtime implementation is not initialized yet.**
+```text
+Agent → Intelligence MCP → model/provider
+```
 
-Planned MCP-native, provider-neutral gateway for language, reasoning, coding, and multi-agent intelligence.
+The Agent owns persistent FLAMORIS-aware state. Intelligence MCP owns raw language/reasoning/coding execution. Generation MCP owns media workflows/jobs/assets. LIME Manager owns runtime/GPU transitions.
 
-Its intended responsibilities include exposing intelligence capabilities through MCP, model/provider routing, task coordination, scheduling, multi-agent workflows, and explicit access to shared memory or knowledge services without becoming the owner of Agent memory itself. Model/runtime-specific behavior belongs behind provider adapters rather than leaking into applications or agents.
+A caller should eventually be able to choose intentionally between:
 
-The Intelligence MCP is the MCP-facing boundary for language, reasoning, coding, and related intelligence. Any multi-agent or task coordination here is bounded intelligence execution, not ownership of persistent Agent identity or memory. It is deliberately separate from generative-media and media-domain execution.
+```text
+intelligence.*  raw LLM / reasoning / coding
+agent.*         persistent FLAMORIS-aware Agent
+generation.*    image / video / music / voice / media analysis
+lime.*          explicit runtime/GPU operations
+```
 
-### [FLAMORIS Generation MCP](https://github.com/flamoris-jp/flamoris-generation-mcp)
+### FLAMORIS AI Agent
 
-**Status: active implementation. ComfyUI is the first provider.**
+[flamoris-ai-agent](https://github.com/flamoris-jp/flamoris-ai-agent) owns persistent Agent behavior and Agent-facing state:
 
-MCP-native gateway for generative media such as images, video, music, and voice, plus closely related media-domain analysis that shares the same workflow/job/asset lifecycle.
+- identity and personality;
+- conversations/messages;
+- memory;
+- knowledge context;
+- prompts and Agent policy;
+- later tools and durable orchestration state.
 
-ComfyUI is the first provider, not the identity of the project. Provider-specific execution remains behind adapters while jobs, workflows, assets, and MCP-facing behavior stay provider-neutral where practical.
+It may call Intelligence MCP and Generation MCP, but those services must not become second owners of Agent state.
 
-The Generation Hub foundation currently lives inside `flamoris-generation-mcp`. It is not a separate repository unless a future boundary becomes clear enough to justify one.
+The Agent's MCP surface should initially live inside `flamoris-ai-agent`. Do not create a separate Agent MCP repository unless a real deployment or ownership boundary appears.
+
+### FLAMORIS Intelligence MCP
+
+[flamoris-intelligence-mcp](https://github.com/flamoris-jp/flamoris-intelligence-mcp) is the provider-neutral boundary for raw language, reasoning, coding, and related bounded intelligence execution.
+
+It may route to local or remote providers, but it does not own persistent conversations, Agent memory, personality, generated-media workflows, product documents, or LIME runtime switching.
+
+### FLAMORIS Generation MCP
+
+[flamoris-generation-mcp](https://github.com/flamoris-jp/flamoris-generation-mcp) owns generative-media and closely related media-analysis workflows, jobs, providers, and assets.
+
+ComfyUI is a provider, not the identity of the project. The Generation Hub foundation remains inside `flamoris-generation-mcp` unless a future Issue establishes a genuinely independent boundary.
 
 ## How the pieces fit together
 
-A typical future path is:
-
 ```text
-FLAMORIS application / Studio
-          │
-          ▼
-   flamoris-ai-agent
-      │         │
-      │         └──────────────► flamoris-generation-mcp
-      │                           image / video / music / voice
-      ▼
-flamoris-intelligence-mcp
- local LLM / remote LLM / coding intelligence
+ChatGPT / Studio / FLAMORIS clients
+                │
+                ▼
+             MCP Hub
+       ┌────────┼────────┬────────┐
+       │        │        │        │
+       ▼        ▼        ▼        ▼
+ generation.* intelligence.* agent.* lime.*
+       │        │        │        │
+       ▼        │        ▼        ▼
+Generation MCP  │   Agent runtime  LIME Manager
+                │        │
+                └───┬────┘
+                    ▼
+             Intelligence MCP
+                    │
+                    ▼
+           local / remote providers
 ```
 
-These are boundaries, not mandatory layers.
-
-- Applications may call the Intelligence MCP directly when no persistent Agent is needed.
-- Applications may call Generation MCP directly for media generation.
-- The Agent may coordinate both, but should not duplicate their provider/runtime responsibilities.
-- Shared non-AI infrastructure such as logging and MCP foundations belongs in [FLAMORIS Commons](https://github.com/flamoris-jp/flamoris-commons), not here.
-- Product-specific state and editing authority stay in the product repository that owns them.
+These are boundaries, not mandatory layers. Applications may call Generation or Intelligence directly when no persistent Agent is needed.
 
 ## Repository policy
 
@@ -82,25 +109,26 @@ AI-specific boundaries and safety rules in this repository supplement that share
 ## Design principles
 
 1. **One authority per domain**
-   - Conversations, memory, and agent state belong to the Agent.
-   - Language/reasoning/coding intelligence execution and provider routing belong to the Intelligence MCP.
-   - Generative-media and related media-analysis workflows, jobs, and assets belong to Generation MCP.
+   - Conversations, memory, knowledge context, personality, and Agent policy belong to the Agent.
+   - Language/reasoning/coding provider execution belongs to Intelligence MCP.
+   - Generative-media workflows/jobs/assets belong to Generation MCP.
+   - Runtime/GPU transitions belong to LIME Manager.
    - Product document state remains owned by the FLAMORIS application.
 
 2. **Provider-neutral FLAMORIS boundaries**
    - Local and remote providers are implementation choices behind adapters.
-   - A provider name should not become the public architecture of FLAMORIS.
+   - Provider names should not become the public architecture unless the behavior is intentionally provider-specific.
 
 3. **Local-first without local-only assumptions**
    - FLAMORIS may use local models on machines such as LIME as well as remote services.
-   - Repositories must not contain machine-specific credentials, private network details, or model weights.
+   - Repositories must not contain machine-specific credentials, private deployment topology, or model weights.
 
 4. **No speculative mega-framework**
-   - Split repositories when a boundary is real and useful.
+   - Split repositories only when a real boundary exists.
    - Do not centralize code merely because it is AI-related.
 
 5. **Explicit model and asset licensing**
-   - Repository code licenses do not automatically apply to models, weights, datasets, generated media, prompts sourced from third parties, or provider-hosted assets.
+   - Repository code licenses do not automatically apply to model weights, datasets, generated media, third-party prompts, or provider-hosted assets.
 
 ## Philosophy
 
@@ -131,34 +159,51 @@ AI models, model weights, datasets, generated media, third-party prompts, provid
 
 ## 日本語
 
-FLAMORIS AIは、FLAMORISのAI関連プロジェクトをまとめる入口です。
+FLAMORIS AIは、FLAMORISのAI関連プロジェクトをまとめる**管制塔**です。
 
-ここ自体を巨大なAIランタイムにするのではなく、AI Agent、推論・Coding系のIntelligence MCP、画像・動画・音楽・音声生成のGeneration MCPについて、役割と境界、共通方針を整理します。
+ここ自体を巨大なAIランタイムにはせず、各リポジトリの責任範囲、依存方向、3並行の開発ロードマップを管理します。
 
-### リポジトリ構成
+現在の実装状況そのものは各リポジトリのREADME / Issue / PRを正とし、このREADMEには変化の速いステータスを重複して書きません。
+
+詳しくは [統合ロードマップ](docs/ROADMAP.md) を参照してください。
+
+### 主要な役割
 
 - **[flamoris-ai-agent](https://github.com/flamoris-jp/flamoris-ai-agent)**  
-  **現在: repository作成済み、runtime実装は未初期化。**  
-  会話、Memory、Knowledge、Prompt、Toolを持つ永続的なAI Agent runtimeとして設計します。
+  永続的なAgent。Identity、Conversation、Memory、Knowledge、Personality、Prompt/Policy、将来のToolを持ちます。Agent用MCP surfaceも当面このリポジトリ内に置きます。
 
 - **[flamoris-intelligence-mcp](https://github.com/flamoris-jp/flamoris-intelligence-mcp)**  
-  **現在: repository作成済み、runtime実装は未初期化。**  
-  LLM、推論、Coding AgentなどをMCPから扱うprovider-neutralなintelligence gateway。model/provider routing、task coordination、scheduling、multi-agent workflowを扱い、必要なMemory/Knowledgeへ明示的なinterfaceでアクセスします。ただしAgent Memoryそのもののauthorityにはなりません。
+  素のLLM、推論、Codingなどを扱うprovider-neutralなIntelligence gateway。AgentのMemoryやConversationのauthorityにはなりません。
 
 - **[flamoris-generation-mcp](https://github.com/flamoris-jp/flamoris-generation-mcp)**  
-  **現在: 実装進行中。最初のproviderはComfyUI。**  
-  画像・動画・音楽・音声などの生成AIと、同じworkflow/job/asset lifecycleに乗る密接なmedia-domain analysisをMCPから扱う実行ゲートウェイ。ComfyUIは最初のproviderであり、プロジェクトそのものではありません。
+  画像・動画・音楽・音声などのgenerationと、同じworkflow/job/asset lifecycleに属するmedia analysisを扱います。
 
-Generation Hubの基盤は現在 `flamoris-generation-mcp` の内部に置きます。境界が明確になるまでは、Generation Hubという別リポジトリを増やしません。
+- **[flamoris-mcp-hub](https://github.com/flamoris-jp/flamoris-mcp-hub)**  
+  `generation.*` / `intelligence.*` / `agent.*` / `lime.*` をまとめる入口。workflow authorityにはしません。
 
-### 境界の考え方
+- **[flamoris-lime-manager](https://github.com/flamoris-net/flamoris-lime-manager)**  
+  LIMEのruntime/GPU authority。systemdやGPU切替ロジックを他サービスへ複製しません。
 
-- Agentの会話やMemoryはAgentが持つ。
-- 言語・推論・Coding系のprovider選択とintelligence実行はIntelligence MCPが持つ。multi-agent/task coordinationを行う場合も、永続Agent Memoryのauthorityにはならない。
-- 生成mediaと密接なmedia-domain analysisのjob、workflow、assetはGeneration MCPが持つ。
-- 2D、Cutwork、Kachincoなどの制作データは各アプリ自身がauthorityを持つ。
-- LoggingやMCP共通基盤など、AI専用ではないものはFLAMORIS Commons側に置く。
-- 「AIっぽいから全部ここへ」は禁止。AIにも物置部屋は作らない。🐈
+中心となる依存方向は:
+
+```text
+Agent → Intelligence MCP → model/provider
+```
+
+です。
+
+つまり、
+
+```text
+intelligence.* = 外部AIとして呼ぶ素の知能
+agent.*        = FLAMORISを知る永続Agent
+generation.*   = 生成工房
+lime.*         = GPU/runtime機関室
+```
+
+という役割分担を守ります。
+
+「AIっぽいから全部ここへ」は禁止です。AIにも物置部屋は作りません。🐈
 
 ### 方針
 
@@ -168,19 +213,8 @@ FLAMORISは、クリエイティブ制作とAIネイティブな制作環境の�
 改造しても、組み込んでも、面白いものや変なものを作ってもOKです。
 
 商用作品や製品で使う場合も、許可は不要です。  
-もしよければ「こんなのに使ったよ」と教えてもらえるとうれしいです。  
-もちろん強制ではありません。
-
-FLAMORISのソフトウェアは現状のまま提供されます。  
-個別サポートや動作保証はありません。
-
-困ったときは、README、ドキュメント、Issue、ソースコードをあなたのAIに読ませて、自己サポートしてもらってください。
+もしよければ「こんなのに使ったよ」と教えてもらえるとうれしいです。もちろん強制ではありません。
 
 このリポジトリのコードとドキュメントは、明記がない限りApache License 2.0です。
 
-AIモデル、model weights、データセット、生成物、第三者由来のprompt、provider側のassetなどには、別のライセンスや利用条件が適用される場合があります。それぞれの条件を確認し、必要な場所に明記してください。
-
-もし、あなたのお役に立てたり、面白いと思っていただけたなら、  
-開発費用をご支援いただけるとうれしいです。  
-FLAMORISは元気になって育ちます。🌱  
-<sub>主にGPU代とか。</sub>
+AIモデル、model weights、データセット、生成物、第三者由来のprompt、provider側assetなどには別の条件が適用される場合があります。それぞれ確認してください。

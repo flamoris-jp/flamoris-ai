@@ -1,87 +1,154 @@
 # AGENTS.md
 
-This repository is the integration and architecture home for the FLAMORIS AI ecosystem.
+This repository is the integration, architecture, and roadmap home for the FLAMORIS AI ecosystem.
 
 AI agents and human contributors should treat it as a coordination repository, not as a dumping ground for every AI-related implementation.
 
 ## Core role
 
-`flamoris-ai` documents:
+`flamoris-ai` documents and coordinates:
 
-- the boundaries between FLAMORIS AI repositories;
+- boundaries between FLAMORIS AI repositories;
 - shared AI architecture principles;
 - repository ownership and dependency direction;
-- cross-repository plans and decisions that do not belong to one runtime alone.
+- the integrated cross-repository roadmap;
+- major cross-repository gates and convergence decisions.
 
 It should remain small.
 
 Runtime implementations belong in their dedicated repositories unless an Issue explicitly establishes a new shared boundary.
 
+The canonical roadmap is `docs/ROADMAP.md`. Fast-changing implementation status belongs in the owning repository's Issues and PRs.
+
+## Core dependency direction
+
+The intended dependency direction is:
+
+```text
+Agent → Intelligence MCP → model/provider
+```
+
+Do not invert this by treating the persistent Agent as just another model provider inside Intelligence MCP.
+
 ## Repository boundaries
 
 ### `flamoris-ai-agent`
 
-Owns persistent agent behavior and agent-facing state, including:
+Owns persistent Agent behavior and Agent-facing state, including:
 
-- conversations;
+- identity / personality;
+- conversations/messages;
 - memory;
-- knowledge;
-- prompts;
-- tools;
-- agent orchestration;
-- pluggable local or remote intelligence access.
+- knowledge context;
+- prompts / Agent policy;
+- later tools and durable Agent orchestration state;
+- the bounded Agent MCP surface.
 
-Do not move provider runtime ownership, media-generation job ownership, or product document authority into the Agent.
+For now, the Agent MCP surface belongs inside `flamoris-ai-agent`.
+
+Do not create a separate `flamoris-agent-mcp` repository unless an Issue demonstrates a real deployment, lifecycle, or ownership boundary that requires the split.
+
+The Agent may call Intelligence MCP and Generation MCP, but those services must not become second owners of Agent state.
 
 ### `flamoris-intelligence-mcp`
 
-Owns the planned MCP-native, provider-neutral intelligence boundary for language, reasoning, coding, and bounded multi-agent workloads.
+Owns provider-neutral raw intelligence execution for language, reasoning, coding, and related bounded workloads.
 
-Its intended responsibilities include exposing intelligence capabilities through MCP, model/provider routing, bounded task coordination, scheduling, multi-agent execution, and explicit access to shared memory or knowledge services. These are intelligence-execution concerns, not ownership of persistent Agent identity, conversations, or memory. Keep model/runtime-specific behavior behind adapters.
+It may route to local or remote providers.
 
-The Intelligence MCP may route to local or remote providers, but it must not silently become the owner of conversations, Agent memory, product documents, or generated-media workflows.
+It must not silently own:
+
+- persistent Agent conversations;
+- Agent memory/knowledge;
+- personality or Agent policy;
+- generated-media workflows/assets;
+- product documents;
+- LIME runtime switching.
 
 ### `flamoris-generation-mcp`
 
-Owns provider-neutral generative-media and closely related media-analysis execution exposed through MCP, including workflows, jobs, and generated/materialized assets.
+Owns provider-neutral generative-media and closely related media-analysis execution exposed through MCP, including capabilities, workflows, jobs, providers, and generated/materialized assets.
 
-ComfyUI is the first provider, not the identity of the project.
+ComfyUI is a provider, not the identity of the project.
 
-The Generation Hub foundation currently belongs inside `flamoris-generation-mcp`. Do not create a separate Generation Hub repository unless a future Issue demonstrates a clear independent boundary.
+The Generation Hub foundation belongs inside `flamoris-generation-mcp` unless a future Issue demonstrates an independent boundary.
+
+### `flamoris-mcp-hub`
+
+MCP Hub is the routing/aggregation boundary.
+
+The intended public namespace family is:
+
+```text
+generation.*
+intelligence.*
+agent.*
+lime.*
+```
+
+Hub should preserve lazy upstream composition and must not become a duplicate Agent, Generation, Intelligence, or runtime state machine.
+
+### `flamoris-net/flamoris-lime-manager`
+
+LIME Manager is the runtime/GPU authority for LIME.
+
+Other AI services may query or request bounded runtime transitions through its public interfaces but must not reproduce systemd/GPU switching logic.
 
 ### Product repositories
 
-FLAMORIS 2D, Cutwork, Kachinco, Studio, and other applications remain authoritative for their own project/document state and editing behavior.
+FLAMORIS Studio and other applications remain authoritative for their own product/document state and editing behavior.
 
 AI services may assist those applications but must not silently create a second source of truth.
 
 ### FLAMORIS Commons
 
-Logging, MCP foundations, diagnostics, security primitives, and other infrastructure that is not specifically AI-domain logic belongs in FLAMORIS Commons or its dedicated shared repositories.
+Logging, generic MCP foundations, diagnostics, security primitives, and other infrastructure that is not specifically AI-domain logic belongs in FLAMORIS Commons or its dedicated shared repositories.
+
+## Roadmap discipline
+
+The roadmap is organized into three parallel tracks:
+
+1. **Track A — ecosystem stabilization / existing Issue burn-down**
+2. **Track B — Intelligence MCP / raw LLM access**
+3. **Track C — Agent runtime / Agent MCP**
+
+Use `flamoris-ai` trackers to coordinate sequencing and dependencies.
+
+Use the owning repository's Issue as the implementation authority.
+
+Do not copy full implementation specifications into both places.
+
+Update the roadmap when:
+
+- repository ownership changes;
+- dependency direction changes;
+- major phases or tracks change;
+- a cross-repository gate is introduced/resolved;
+- a new stable public boundary is introduced.
+
+Do not update it for every minor commit.
 
 ## Architecture principles
 
 1. **One authority per domain**
    - Keep state ownership explicit.
-   - Do not duplicate conversations, jobs, documents, or provider state across services without an explicit synchronization contract.
+   - Do not duplicate conversations, jobs, documents, runtime state, or provider state without an explicit synchronization contract.
 
 2. **Provider-neutral FLAMORIS boundaries**
    - Local and remote providers are replaceable implementation choices.
-   - Avoid exposing provider-specific assumptions through public FLAMORIS contracts unless they are intentionally provider-specific.
+   - Avoid leaking provider-specific assumptions through public contracts unless intentionally provider-specific.
 
 3. **Local-first, not local-only**
-   - Support local runtimes without hard-coding machine names, usernames, absolute developer paths, private network topology, tunnel IDs, or credentials.
-   - Remote providers may be supported through the same explicit provider boundary when appropriate.
+   - Support local runtimes without hard-coding machine names, usernames, private topology, tunnel IDs, credentials, or developer-local absolute paths.
+   - Remote providers may use the same explicit provider boundary where appropriate.
 
 4. **No speculative mega-framework**
    - Prefer small adapters and explicit contracts.
-   - Do not centralize code merely because it is AI-related.
    - Add abstractions only when real implementations demonstrate a reusable boundary.
 
 5. **Bounded and inspectable behavior**
-   - Generation, inference, tool execution, filesystem access, and network access should have explicit limits.
+   - Generation, inference, tool execution, filesystem access, network access, and resource use should have explicit limits.
    - Avoid hidden retries of non-idempotent operations.
-   - Keep errors actionable without exposing secrets or private provider details.
 
 6. **AI-native, human-authoritative**
    - AI-assisted development is welcome.
@@ -91,57 +158,59 @@ Logging, MCP foundations, diagnostics, security primitives, and other infrastruc
 
 For a substantial or cross-repository change:
 
-- read this file and README.md;
-- inspect the relevant child repositories and their AGENTS.md files;
-- read the current Issues/design documents that define the requested scope;
-- identify the current authority for each piece of state;
+- read this file, README.md, and `docs/ROADMAP.md`;
+- inspect the relevant child repositories and their `AGENTS.md` files;
+- read the current Issues/design documents that define the scope;
+- identify the authority for each piece of state;
 - identify dependency direction;
 - confirm whether the change belongs here, in one child repository, or in FLAMORIS Commons;
-- avoid creating a new repository unless the boundary is clear enough to stand on its own.
+- avoid creating a new repository unless the boundary is clear enough to stand alone.
 
 Prefer an Issue that records:
 
 - the problem;
-- the current repository ownership;
-- the proposed boundary;
+- current ownership;
+- proposed boundary;
 - dependency direction;
 - migration impact;
 - compatibility and security risks.
 
+## Work handoff guidance
+
+When handing implementation to ChatGPT Work, include where possible:
+
+- target repository / Issue / branch;
+- in-scope and out-of-scope work;
+- design documents to read first;
+- existing architecture to reuse;
+- recommended model / reasoning;
+- commit strategy;
+- required tests;
+- whether PR creation/review is in scope.
+
+Use **Medium** reasoning for narrow/local implementation and focused tests.
+
+Use **High** reasoning for public contract design, provider architecture, runtime/state-machine changes, cross-repository boundaries, difficult debugging, and final architecture review.
+
+Keep meaningful changes in small, single-purpose commits.
+
+Do not auto-merge unless explicitly requested.
+
 ## Documentation discipline
 
-Keep README.md's repository map accurate when repositories are added, renamed, split, or retired.
+Do not duplicate fast-changing child-repository implementation status in README.
 
-Do not document planned behavior as already implemented. Clearly distinguish current implementation, active work, and future direction.
+Keep README focused on stable responsibility boundaries and links.
 
-Environment-specific examples must remain generic.
+Do not document planned behavior as already implemented.
 
-Never commit or document:
-
-- API keys or tokens;
-- passwords or private keys;
-- private hostnames or network topology;
-- tunnel identifiers or personal deployment details;
-- model weights;
-- generated private media;
-- private datasets;
-- local credentials or developer-specific absolute paths.
+Never commit or document secrets, private hostnames/topology, tunnel identifiers, model weights, generated private media, private datasets, or local credentials.
 
 ## Models, datasets, prompts, and generated media
 
 Repository code licenses do not automatically cover AI models, model weights, datasets, generated media, third-party prompts, provider-hosted assets, or other non-code material.
 
-Before adding any such material:
-
-- verify redistribution rights;
-- verify commercial-use restrictions;
-- record attribution requirements;
-- record the exact applicable license or terms;
-- keep incompatible or uncertain assets out of the repository.
-
-Do not assume that a model being downloadable means it is redistributable.
-
-Do not assume that generated output inherits this repository's Apache License.
+Verify redistribution rights, commercial-use restrictions, attribution, and applicable terms before adding such material.
 
 ## Testing
 
