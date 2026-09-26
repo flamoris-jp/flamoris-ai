@@ -129,7 +129,7 @@ Keep one useful unit of work moving in each track whenever dependencies allow.
 | B | provider-neutral Intelligence MCP / raw LLM access | [#6](https://github.com/flamoris-jp/flamoris-ai/issues/6) |
 | C | persistent Agent runtime / Agent MCP | [#7](https://github.com/flamoris-jp/flamoris-ai/issues/7) |
 
-This lets Agent modernization proceed before Intelligence MCP is complete, while still converging on Intelligence MCP later.
+This keeps the three tracks independently reviewable while still converging on the shared Intelligence MCP and Generation MCP boundaries.
 
 ---
 
@@ -217,25 +217,25 @@ Primary implementation authority remains:
 
 - [intelligence-mcp #3 Phase 1 llama.cpp / GPT-OSS provider](https://github.com/flamoris-jp/flamoris-intelligence-mcp/issues/3)
 
-The first stable contract should cover health, capability/model discovery, bounded provider-neutral inference, request/output limits, timeout/cancellation, and normalized provider errors/metadata.
+The implemented Phase 1 contract covers health, capability/model discovery, bounded provider-neutral inference, request/output limits, timeout/cancellation, and normalized provider errors/metadata.
 
 Do not add Agent memory/conversation authority here.
 
 ## B2 — MCP Hub integration
 
-After the live provider acceptance expectations and public contract are confirmed, create an owning-repository Issue in `flamoris-mcp-hub` to expose Intelligence MCP lazily under:
+The public contract is sufficient to design/register the Hub catalog. Create an owning-repository Issue in `flamoris-mcp-hub` to expose Intelligence MCP lazily under:
 
 ```text
 intelligence.*
 ```
 
-Hub must not become an inference state machine.
+Hub must not become an inference state machine. Because Hub discovery is static and upstream connection is lazy, schema/catalog integration does not require the live llama.cpp provider to be available; live provider acceptance remains the gate for runtime-readiness claims, not for registering the reviewed MCP contract.
 
 ## B3 — Studio Intelligence
 
 - [studio #2 Intelligence editor](https://github.com/flamoris-jp/flamoris-studio/issues/2)
 
-Begin only after the Intelligence MCP public contract exists. Studio must not call llama.cpp directly.
+The Intelligence MCP public contract exists, so Studio #2 may proceed against it. Studio must not call llama.cpp directly; unavailable deployment/provider state should remain an explicit Studio availability state.
 
 ## B4 — future provider layer
 
