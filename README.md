@@ -24,7 +24,7 @@ flamoris-ai
 Supporting ecosystem boundaries coordinated by the roadmap include:
 
 - [flamoris-mcp-hub](https://github.com/flamoris-jp/flamoris-mcp-hub) — MCP aggregation/routing boundary
-- [flamoris-lime-manager](https://github.com/flamoris-net/flamoris-lime-manager) — LIME runtime/GPU authority
+- [flamoris-gpu-node-manager](https://github.com/flamoris-jp/flamoris-gpu-node-manager) — provider-neutral local GPU runtime authority; LIME is one deployment
 - [flamoris-studio](https://github.com/flamoris-jp/flamoris-studio) — human-facing AI workspace and application boundary
 
 Current implementation status belongs in each repository's own README, Issues, and PRs rather than being duplicated here.
@@ -37,7 +37,7 @@ The central dependency direction is:
 Agent → Intelligence MCP → model/provider
 ```
 
-The Agent owns persistent FLAMORIS-aware state. Intelligence MCP owns raw language/reasoning/coding execution. Generation MCP owns media workflows/jobs/assets. LIME Manager owns runtime/GPU transitions.
+The Agent owns persistent FLAMORIS-aware state. Intelligence MCP owns raw language/reasoning/coding execution. Generation MCP owns media workflows/jobs/assets. GPU Node Manager owns local GPU runtime transitions without making a particular node name part of the architecture.
 
 A caller should eventually be able to choose intentionally between:
 
@@ -88,7 +88,7 @@ ChatGPT / Studio / FLAMORIS clients
  generation.* intelligence.* agent.* lime.*
        │        │        │        │
        ▼        │        ▼        ▼
-Generation MCP  │   Agent runtime  LIME Manager
+Generation MCP  │   Agent runtime  GPU Node Manager
                 │        │
                 └───┬────┘
                     ▼
@@ -112,7 +112,7 @@ AI-specific boundaries and safety rules in this repository supplement that share
    - Conversations, memory, knowledge context, personality, and Agent policy belong to the Agent.
    - Language/reasoning/coding provider execution belongs to Intelligence MCP.
    - Generative-media workflows/jobs/assets belong to Generation MCP.
-   - Runtime/GPU transitions belong to LIME Manager.
+   - Local GPU runtime transitions belong to GPU Node Manager.
    - Product document state remains owned by the FLAMORIS application.
 
 2. **Provider-neutral FLAMORIS boundaries**
@@ -181,8 +181,8 @@ FLAMORIS AIは、FLAMORISのAI関連プロジェクトをまとめる**管制塔
 - **[flamoris-mcp-hub](https://github.com/flamoris-jp/flamoris-mcp-hub)**  
   `generation.*` / `intelligence.*` / `agent.*` / `lime.*` をまとめる入口。workflow authorityにはしません。
 
-- **[flamoris-lime-manager](https://github.com/flamoris-net/flamoris-lime-manager)**  
-  LIMEのruntime/GPU authority。systemdやGPU切替ロジックを他サービスへ複製しません。
+- **[flamoris-gpu-node-manager](https://github.com/flamoris-jp/flamoris-gpu-node-manager)**  
+  ローカルGPU runtimeのauthority。LIMEはdeploymentのひとつで、systemdやGPU切替ロジックを他サービスへ複製しません。
 
 中心となる依存方向は:
 
