@@ -4,7 +4,7 @@ Home and coordination point for the AI-facing parts of FLAMORIS.
 
 This repository is intentionally small. It documents architecture boundaries, cross-repository dependency direction, and the integrated roadmap without becoming a second runtime or implementation authority.
 
-See [the integrated roadmap](docs/ROADMAP.md) and [the top-level roadmap tracker](https://github.com/flamoris-jp/flamoris-ai/issues/4).
+See the [AI ecosystem map](docs/ai-ecosystem.md), [integrated roadmap](docs/ROADMAP.md), and [top-level roadmap tracker](https://github.com/flamoris-jp/flamoris-ai/issues/4).
 
 ## Repository map
 
