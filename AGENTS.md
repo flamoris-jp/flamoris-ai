@@ -88,9 +88,9 @@ lime.*
 
 Hub should preserve lazy upstream composition and must not become a duplicate Agent, Generation, Intelligence, or runtime state machine.
 
-### `flamoris-net/flamoris-lime-manager`
+### `flamoris-jp/flamoris-gpu-node-manager`
 
-LIME Manager is the runtime/GPU authority for LIME.
+GPU Node Manager is the provider-neutral local runtime/GPU authority. LIME is one deployment of that service, not part of the public repository identity.
 
 Other AI services may query or request bounded runtime transitions through its public interfaces but must not reproduce systemd/GPU switching logic.
 
