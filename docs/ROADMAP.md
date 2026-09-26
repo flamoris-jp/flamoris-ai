@@ -23,7 +23,7 @@ Included:
 - `flamoris-intelligence-mcp`
 - `flamoris-ai-agent`
 - `flamoris-mcp-hub`
-- `flamoris-net/flamoris-lime-manager`
+- `flamoris-jp/flamoris-gpu-node-manager`
 - AI-facing `flamoris-studio` integration
 - future local / remote intelligence provider boundaries
 
@@ -46,7 +46,7 @@ ChatGPT / Studio / FLAMORIS clients
  generation.* intelligence.* agent.* lime.*
        │        │        │        │
        ▼        │        ▼        ▼
-Generation MCP  │   Agent MCP   LIME Manager
+Generation MCP  │   Agent MCP   GPU Node Manager
                 │        │
                 └───┬────┘
                     ▼
@@ -96,9 +96,9 @@ Provider
 Assets
 ```
 
-### LIME Manager
+### GPU Node Manager
 
-LIME Manager remains the sole runtime/GPU transition authority for LIME.
+`flamoris-gpu-node-manager` is the provider-neutral local runtime/GPU transition authority. LIME is one configured deployment rather than the identity of the service.
 
 Other services may request activation/status through its bounded interfaces, but must not reproduce its systemd/GPU state machine.
 
@@ -135,16 +135,17 @@ This lets Agent modernization proceed before Intelligence MCP is complete, while
 
 # Track A — ecosystem stabilization and generation expansion
 
-## A0 — small deployment / contract debt
+## A0 — cross-repository asset and input contracts
 
-Generation MCP:
+Current contract work spans the owning repositories rather than living in one service:
 
-- [#24 single-instance reservation contract](https://github.com/flamoris-jp/flamoris-generation-mcp/issues/24)
+- [generation-mcp #30 managed input snapshots](https://github.com/flamoris-jp/flamoris-generation-mcp/issues/30)
+- [mcp-hub #13 bounded Generation asset transfer schemas](https://github.com/flamoris-jp/flamoris-mcp-hub/issues/13)
+- [mcp-hub #14 managed-input schemas](https://github.com/flamoris-jp/flamoris-mcp-hub/issues/14)
+- [studio #20 bounded transfer authorization](https://github.com/flamoris-jp/flamoris-studio/issues/20)
+- [studio #21 managed-input authorization](https://github.com/flamoris-jp/flamoris-studio/issues/21)
 
-MCP Hub:
-
-- [#2 align Generation catalog authentication contract](https://github.com/flamoris-jp/flamoris-mcp-hub/issues/2)
-- [#7 external exposure defaults and client authentication](https://github.com/flamoris-jp/flamoris-mcp-hub/issues/7)
+Keep authorization in Studio, transfer/materialization authority in Generation MCP, and schema routing in MCP Hub.
 
 ## A1 — finish the Generation workflow foundation
 
@@ -154,15 +155,16 @@ Primary gate:
 
 Do this before substantial AnimeGen / SeeThrough integration so workflow graphs do not continue to accumulate as Python construction logic.
 
-Then:
-
-- [generation-mcp #22 provider output retention / cleanup](https://github.com/flamoris-jp/flamoris-generation-mcp/issues/22)
 
 ## A2 — multi-provider Generation expansion
 
 Umbrella:
 
 - [generation-mcp #25 YuE2 / SheetSage2 / Irodori / AnimeGen / SeeThrough](https://github.com/flamoris-jp/flamoris-generation-mcp/issues/25)
+
+Current first provider-contract slice:
+
+- [generation-mcp #31 YuE2 + SheetSage2 provider contracts](https://github.com/flamoris-jp/flamoris-generation-mcp/issues/31)
 
 Recommended implementation order:
 
@@ -184,10 +186,11 @@ Do not solve this only by increasing base64 payload limits.
 
 ## A3 — runtime improvements when demanded by providers
 
-LIME Manager:
+GPU Node Manager:
 
-- [#13 managed persistent Irodori runtime](https://github.com/flamoris-net/flamoris-lime-manager/issues/13)
-- [#10 runtime sleep/wake lifecycle](https://github.com/flamoris-net/flamoris-lime-manager/issues/10)
+- [#1 provider-neutral runtime sleep/wake lifecycle](https://github.com/flamoris-jp/flamoris-gpu-node-manager/issues/1)
+
+Provider-specific runtime profiles should be added only when a real provider integration needs them.
 
 ## A4 — Studio capability unlocks
 
@@ -200,15 +203,17 @@ Studio Intelligence belongs primarily to Track B.
 
 # Track B — Intelligence MCP and raw LLM access
 
-## B0 — status hygiene
+## B0 — implemented Phase 1, live acceptance remains
 
-- [intelligence-mcp #2 implementation maturity/status](https://github.com/flamoris-jp/flamoris-intelligence-mcp/issues/2)
+The provider-neutral Python runtime and public Phase 1 contract are implemented and mock/CI validated.
 
-This should not block runtime implementation.
+Live deployment acceptance remains under the owning implementation issue:
 
-## B1 — first real Intelligence MCP
+- [intelligence-mcp #3 Phase 1 llama.cpp / GPT-OSS provider](https://github.com/flamoris-jp/flamoris-intelligence-mcp/issues/3)
 
-Primary implementation authority:
+## B1 — live provider acceptance and stabilization
+
+Primary implementation authority remains:
 
 - [intelligence-mcp #3 Phase 1 llama.cpp / GPT-OSS provider](https://github.com/flamoris-jp/flamoris-intelligence-mcp/issues/3)
 
@@ -218,7 +223,7 @@ Do not add Agent memory/conversation authority here.
 
 ## B2 — MCP Hub integration
 
-After Phase 1 is merged, create an owning-repository Issue in `flamoris-mcp-hub` to expose Intelligence MCP lazily under:
+After the live provider acceptance expectations and public contract are confirmed, create an owning-repository Issue in `flamoris-mcp-hub` to expose Intelligence MCP lazily under:
 
 ```text
 intelligence.*
@@ -242,40 +247,30 @@ Do not create it merely to rename the current llama.cpp adapter.
 
 # Track C — Agent runtime and Agent MCP
 
-## C0 — normalize the imported Agent baseline
+## C0 — Agent foundation implemented
 
-Recommended order:
+Repository layout/CI, previous-conversation trust hardening, packaged console entry points, and the bounded Agent MCP surface are present in current main.
 
-1. [ai-agent #6 repository layout / CI](https://github.com/flamoris-jp/flamoris-ai-agent/issues/6)
-2. [ai-agent #7 previous-conversation trust boundary](https://github.com/flamoris-jp/flamoris-ai-agent/issues/7)
-3. [ai-agent #2 run baseline on GPT-OSS via llama.cpp](https://github.com/flamoris-jp/flamoris-ai-agent/issues/2)
+The remaining Phase 0 deployment gate is:
 
-The direct llama.cpp path in #2 is intentionally temporary so Track C can progress independently of Track B.
+- [ai-agent #2 run imported Agent baseline on GPT-OSS via llama.cpp](https://github.com/flamoris-jp/flamoris-ai-agent/issues/2)
 
-## C1 — stabilize the Agent intelligence client boundary
+Mock/CI success is not a substitute for the live PostgreSQL/restart/provider acceptance recorded by that issue.
 
-After #2, create an owning-repository Issue to:
+## C1 — Agent intelligence client boundary
 
-- define a narrow intelligence client interface;
-- normalize request/response/error behavior;
-- remove accidental provider coupling;
-- add provider-failure tests;
-- preserve existing Agent-owned PostgreSQL state unless evidence requires migration.
+Keep the current narrow execution boundary provider-neutral and preserve Agent-owned PostgreSQL state. The direct llama.cpp path remains a Phase 0 compatibility path while Track B stabilizes.
 
-## C2 — expose Agent MCP
+## C2 — Agent MCP implemented
 
-Create an owning-repository Issue in `flamoris-ai-agent`.
-
-Start deliberately small.
-
-Initial candidate surface:
+The repository now exposes the deliberately small Agent MCP surface:
 
 ```text
 agent.health
 agent.ask
 ```
 
-Do not expose every internal Memory/Knowledge operation merely because MCP exists.
+Do not expand internal Memory/Knowledge operations merely because MCP exists.
 
 ## C3 — migrate Agent execution to Intelligence MCP
 
@@ -324,21 +319,21 @@ lime.*          = explicit runtime/GPU operations
 
 ---
 
-# First parallel Work wave
+# Current parallel Work wave
 
 | Track | Repository / Issue | Recommended model | Reasoning |
 |---|---|---|---|
-| A | `flamoris-generation-mcp#19` | GPT-5.6 Sol | High |
-| B | `flamoris-intelligence-mcp#3` | GPT-5.6 Sol | High |
-| C | `flamoris-ai-agent#6` then `#7` | GPT-5.6 Sol | Medium |
+| A | `flamoris-generation-mcp#31` | GPT-5.6 Sol | High |
+| B | `flamoris-intelligence-mcp#3` live acceptance | GPT-5.6 Sol | High |
+| C | `flamoris-ai-agent#2` live acceptance | GPT-5.6 Sol | Medium |
 
-Likely second wave:
+Likely next wave:
 
 | Track | Next direction |
 |---|---|
-| A | Generation #25 Phase B: YuE2 + SheetSage2 |
+| A | Generation #25 provider expansion after #31 |
 | B | Hub `intelligence.*` integration |
-| C | Agent #2 GPT-OSS baseline |
+| C | Agent execution migration onto Intelligence MCP |
 
 Use Medium for focused local changes and tests. Use High for public contracts, state-machine changes, provider architecture, cross-repository boundaries, and final review.
 
