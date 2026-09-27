@@ -74,6 +74,9 @@ FLAMORIS AI Runtime
    ├─→ controlled model/backend execution
    ├─→ registered capabilities
    └─→ Oblivionis
+
+Planned response path:
+Oblivionis → history-shaped firing signals → Runtime-owned modulation
 ```
 
 AI Runtime and Oblivionis are tracked here as cross-repository architecture boundaries, while their implementation plans remain authoritative in their own repositories.
@@ -86,9 +89,13 @@ It does not replace durable Agent state authority, Generation job/asset authorit
 
 ### Oblivionis
 
-`Oblivionis` is an experimental non-LLM dynamic state and memory model intended to be callable from AI Runtime. It owns its evolving model state, forgetting, association/recall, snapshots, and Profundumis semantics.
+`Oblivionis` is an experimental non-LLM dynamic state and memory model exploring experience-dependent AI behavior: evolving oscillatory state produces firing responses that Runtime may use as the basis for bounded fluctuation. Planned model ownership includes state, firing responses, forgetting, association/recall, snapshots, and Profundumis; Runtime owns application of modulation.
 
 Its repository intentionally keeps an independent model identity without the `flamoris-` prefix.
+
+Before claiming integrated behavioral modulation, review the model response boundary and the Runtime-owned mapping/control points, then demonstrate history-dependent influence through a test adapter and eventually the actual runtime. Keep this distinct from starting new work: existing execution may be modulated without a new Workflow trigger.
+
+[Oblivionis #3](https://github.com/flamoris-jp/Oblivionis/issues/3) tracks sensor/trigger integration and [#4](https://github.com/flamoris-jp/Oblivionis/issues/4) independently tracks Profundumis association/recall. Max-state search and percentage reactivation apply only after latent storage, not to ordinary firing. The [model concept](https://github.com/flamoris-jp/Oblivionis/blob/main/docs/MODEL.md) owns the detailed design; this coordination gate does not reorder the existing three work tracks or claim the integration is implemented.
 
 ### Intelligence
 
@@ -104,7 +111,7 @@ The Agent is a persistent FLAMORIS-aware entity. It owns Agent identity, convers
 
 The Agent exposes a bounded MCP surface separate from Intelligence MCP.
 
-For now, Agent MCP belongs inside `flamoris-ai-agent`. Do not create a separate `flamoris-agent-mcp` repository unless a future Issue demonstrates a real deployment or ownership boundary.
+For now, Agent MCP belongs inside `flamoris-ai-agent`. Do not create a separate Agent MCP repository unless a future Issue demonstrates a real deployment or ownership boundary.
 
 ### Generation
 
