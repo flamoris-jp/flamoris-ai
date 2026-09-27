@@ -22,13 +22,20 @@ The canonical roadmap is `docs/ROADMAP.md`. Fast-changing implementation status 
 
 ## Core dependency direction
 
-The intended dependency direction is:
+The provider-neutral service dependency direction remains:
 
 ```text
 Agent → Intelligence MCP → model/provider
 ```
 
-Do not invert this by treating the persistent Agent as just another model provider inside Intelligence MCP.
+FLAMORIS AI Runtime adds a separate model-adjacent execution path when direct control over active inference/workflow state is required:
+
+```text
+Agent / Application → AI Runtime → controlled model/backend execution
+                                   └─→ Oblivionis
+```
+
+Do not invert the service path by treating the persistent Agent as just another model provider inside Intelligence MCP. Do not turn AI Runtime into the owner of durable Agent identity or long-term Agent memory.
 
 ## Repository boundaries
 
@@ -49,6 +56,40 @@ For now, the Agent MCP surface belongs inside `flamoris-ai-agent`.
 Do not create a separate `flamoris-agent-mcp` repository unless an Issue demonstrates a real deployment, lifecycle, or ownership boundary that requires the split.
 
 The Agent may call Intelligence MCP and Generation MCP, but those services must not become second owners of Agent state.
+
+### `flamoris-ai-runtime`
+
+Owns the model-adjacent active execution boundary for the models/backends it directly controls.
+
+Planned scope includes:
+
+- active inference lifecycle and backend state where supported;
+- Workflow IR validation/compilation/execution;
+- scheduler-visible Jobs and Job-owned Continuations;
+- interrupts, pause/resume/cancellation where supported;
+- registered local/external capabilities;
+- resource accounting/scheduling;
+- structured runtime events and traces.
+
+It must not become the durable authority for Agent identity, conversation history, personality, goals, or long-term Agent memory.
+
+External services called through Runtime capabilities retain their own authority. GPU Node Manager remains the host-wide runtime/GPU lifecycle authority.
+
+### `Oblivionis`
+
+Owns an experimental non-LLM dynamic state and memory model intended to be callable from AI Runtime.
+
+Planned ownership includes:
+
+- the evolving Active Field;
+- oscillation/resonance/coupling/fatigue/fluctuation dynamics;
+- forgetting transitions and model-state snapshots;
+- associative/resonance recall;
+- Profundumis latent storage semantics.
+
+Oblivionis must not absorb Agent identity, workflow scheduling, media-generation domains, or external asset lifecycle.
+
+The repository name intentionally omits the `flamoris-` prefix. Preserve that independent model identity unless a reviewed architecture decision explicitly changes it.
 
 ### `flamoris-intelligence-mcp`
 
@@ -124,7 +165,8 @@ Update the roadmap when:
 - dependency direction changes;
 - major phases or tracks change;
 - a cross-repository gate is introduced/resolved;
-- a new stable public boundary is introduced.
+- a new stable public boundary is introduced;
+- the AI Runtime / Oblivionis integration boundary materially changes.
 
 Do not update it for every minor commit.
 

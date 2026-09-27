@@ -13,6 +13,12 @@ flamoris-ai
 ├── flamoris-ai-agent
 │   └── persistent Agent runtime + Agent MCP surface:
 │       identity / conversations / memory / knowledge / personality / tools
+├── flamoris-ai-runtime
+│   └── model-adjacent execution runtime:
+│       inference / workflow / jobs / interrupts / capabilities / traces
+├── Oblivionis
+│   └── experimental non-LLM dynamic state and memory model:
+│       Active Field / fluctuation / forgetting / association / recall / Profundumis
 ├── flamoris-intelligence-mcp
 │   └── provider-neutral raw intelligence gateway:
 │       language / reasoning / coding / local & remote providers
@@ -31,13 +37,22 @@ Current implementation status belongs in each repository's own README, Issues, a
 
 ## Core boundary
 
-The central dependency direction is:
+Two important execution paths now coexist:
 
 ```text
 Agent → Intelligence MCP → model/provider
 ```
 
-The Agent owns persistent FLAMORIS-aware state. Intelligence MCP owns raw language/reasoning/coding execution. Generation MCP owns media workflows/jobs/assets. GPU Node Manager owns local GPU runtime transitions without making a particular node name part of the architecture.
+for provider-neutral intelligence service access, and:
+
+```text
+Agent / Application → AI Runtime → controlled model execution / capabilities
+                                      └─→ Oblivionis
+```
+
+for model-adjacent execution that needs direct control over inference, workflow state, jobs, interrupts, and runtime events.
+
+The Agent owns persistent FLAMORIS-aware identity and durable state. AI Runtime owns bounded active execution for the models/backends it directly controls. Oblivionis owns its evolving model state and latent recall semantics, not Agent identity or workflow orchestration. Intelligence MCP owns provider-neutral language/reasoning/coding service execution. Generation MCP owns media workflows/jobs/assets. GPU Node Manager owns local GPU runtime transitions without making a particular node name part of the architecture.
 
 A caller should eventually be able to choose intentionally between:
 
@@ -62,6 +77,22 @@ lime.*          explicit runtime/GPU operations
 It may call Intelligence MCP and Generation MCP, but those services must not become second owners of Agent state.
 
 The Agent's MCP surface should initially live inside `flamoris-ai-agent`. Do not create a separate Agent MCP repository unless a real deployment or ownership boundary appears.
+
+### FLAMORIS AI Runtime
+
+[flamoris-ai-runtime](https://github.com/flamoris-jp/flamoris-ai-runtime) is the model-adjacent execution layer for inference and workflow control.
+
+Its design scope includes active inference lifecycle, Workflow IR execution, scheduler-visible Jobs, Continuations, interrupts, registered capabilities, resource accounting, and structured runtime events/traces. It may call external AI, APIs, MCP services, algorithms, Vision/Speech/Generation capabilities, or future models while preserving the authority of those external systems.
+
+AI Runtime does not own durable Agent identity, conversations, personality, or long-term Agent memory.
+
+### Oblivionis
+
+[Oblivionis](https://github.com/flamoris-jp/Oblivionis) is an experimental non-LLM dynamic state and memory model intended to be callable from FLAMORIS AI Runtime.
+
+It owns an evolving Active Field, oscillation/resonance/fluctuation dynamics, forgetting transitions, associative/resonance recall, snapshots, and the latent **Profundumis** store. It does not own Agent identity, workflow scheduling, media-generation domains, or external asset lifecycle.
+
+The repository intentionally keeps the name **Oblivionis** without the `flamoris-` prefix: it is developed within FLAMORIS while retaining an independent model identity.
 
 ### FLAMORIS Intelligence MCP
 
@@ -110,7 +141,9 @@ AI-specific boundaries and safety rules in this repository supplement that share
 
 1. **One authority per domain**
    - Conversations, memory, knowledge context, personality, and Agent policy belong to the Agent.
-   - Language/reasoning/coding provider execution belongs to Intelligence MCP.
+   - Model-adjacent active inference/workflow execution belongs to AI Runtime for the backends it directly controls.
+   - Oblivionis owns its own dynamic model state, forgetting, and recall semantics.
+   - Language/reasoning/coding provider service execution belongs to Intelligence MCP.
    - Generative-media workflows/jobs/assets belong to Generation MCP.
    - Local GPU runtime transitions belong to GPU Node Manager.
    - Product document state remains owned by the FLAMORIS application.
@@ -171,6 +204,12 @@ FLAMORIS AIは、FLAMORISのAI関連プロジェクトをまとめる**管制塔
 
 - **[flamoris-ai-agent](https://github.com/flamoris-jp/flamoris-ai-agent)**  
   永続的なAgent。Identity、Conversation、Memory、Knowledge、Personality、Prompt/Policy、将来のToolを持ちます。Agent用MCP surfaceも当面このリポジトリ内に置きます。
+
+- **[flamoris-ai-runtime](https://github.com/flamoris-jp/flamoris-ai-runtime)**  
+  モデルに隣接して、推論・Workflow・Job・Continuation・割り込み・Capability・Resource・Event/Traceを同じ実行層で制御するAI Runtime。永続Agent identityやConversationのauthorityにはなりません。
+
+- **[Oblivionis](https://github.com/flamoris-jp/Oblivionis)**  
+  振動・共鳴・揺らぎ・忘却・連想・想起によって時間変化する内部状態を扱う、実験的な非LLM動的状態・記憶モデル。AI Runtimeから呼び出すモデルとして位置づけつつ、AgentやWorkflow engineにはしません。`flamoris-`を付けず、独立したモデルidentityを意図的に残します。
 
 - **[flamoris-intelligence-mcp](https://github.com/flamoris-jp/flamoris-intelligence-mcp)**  
   素のLLM、推論、Codingなどを扱うprovider-neutralなIntelligence gateway。AgentのMemoryやConversationのauthorityにはなりません。
