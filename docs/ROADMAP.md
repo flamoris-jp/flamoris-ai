@@ -111,7 +111,7 @@ The Agent is a persistent FLAMORIS-aware entity. It owns Agent identity, convers
 
 The Agent exposes a bounded MCP surface separate from Intelligence MCP.
 
-For now, Agent MCP belongs inside `flamoris-ai-agent`. Do not create a separate Agent MCP repository unless a future Issue demonstrates a real deployment or ownership boundary.
+For now, Agent MCP belongs inside `flamoris-ai-agent`. Do not create a separate `flamoris-agent-mcp` repository unless a future Issue demonstrates a real deployment or ownership boundary.
 
 ### Generation
 
