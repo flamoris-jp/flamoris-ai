@@ -1,6 +1,6 @@
 # FLAMORIS AI Roadmap
 
-Updated: 2026-09-26
+Updated: 2026-09-27
 
 This is the cross-repository roadmap for the AI- and MCP-facing parts of FLAMORIS.
 
@@ -22,6 +22,8 @@ Included:
 - `flamoris-generation-mcp`
 - `flamoris-intelligence-mcp`
 - `flamoris-ai-agent`
+- `flamoris-ai-runtime`
+- `Oblivionis`
 - `flamoris-mcp-hub`
 - `flamoris-jp/flamoris-gpu-node-manager`
 - AI-facing `flamoris-studio` integration
@@ -56,11 +58,37 @@ Generation MCP  │   Agent MCP   GPU Node Manager
            local / remote providers
 ```
 
-Core dependency direction:
+The provider-neutral service dependency direction remains:
 
 ```text
 Agent → Intelligence MCP → model/provider
 ```
+
+For workloads that require model-adjacent execution control, the architecture also includes:
+
+```text
+Agent / Application
+        │
+        ▼
+FLAMORIS AI Runtime
+   ├─→ controlled model/backend execution
+   ├─→ registered capabilities
+   └─→ Oblivionis
+```
+
+AI Runtime and Oblivionis are tracked here as cross-repository architecture boundaries, while their implementation plans remain authoritative in their own repositories.
+
+### AI Runtime
+
+`flamoris-ai-runtime` is the model-adjacent execution layer for active inference/workflow control. Its design covers inference lifecycle, Workflow IR, Jobs, Continuations, interrupts, capabilities, resource accounting, and structured runtime events/traces.
+
+It does not replace durable Agent state authority, Generation job/asset authority, Intelligence MCP's provider-neutral service boundary, or GPU Node Manager's host-wide runtime/GPU lifecycle authority.
+
+### Oblivionis
+
+`Oblivionis` is an experimental non-LLM dynamic state and memory model intended to be callable from AI Runtime. It owns its evolving model state, forgetting, association/recall, snapshots, and Profundumis semantics.
+
+Its repository intentionally keeps an independent model identity without the `flamoris-` prefix.
 
 ### Intelligence
 
