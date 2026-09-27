@@ -45,7 +45,13 @@ FLAMORIS AI Runtime
    ├─→ controlled model/backend execution
    ├─→ registered local/external capabilities
    └─→ Oblivionis
+
+Planned response path:
+Oblivionis → history-shaped firing → runtime-defined modulation
+                                   → fluctuation in behavior
 ```
+
+The return path carries model responses; it does not invert execution ownership. Modulation may affect supported points of existing execution, independently of conditions that trigger new work. These remain design boundaries rather than claims of deployed integration.
 
 ## 🤖 Core AI repositories
 
@@ -87,21 +93,30 @@ Its design scope includes:
 
 AI Runtime does **not** own durable Agent identity, conversations, personality, or long-term Agent memory. External services called as capabilities retain their own domain authority.
 
+For the planned Oblivionis connection, Runtime owns the modulation mapping, supported execution points, application timing, and limits. A model response does not grant execution permission or directly mutate arbitrary runtime internals.
+
 ### 🌘 Oblivionis
 
 Repository: [flamoris-jp/Oblivionis](https://github.com/flamoris-jp/Oblivionis)
 
-Oblivionis is an experimental **non-LLM dynamic state and memory model** intended to be callable from FLAMORIS AI Runtime.
+Oblivionis is an experimental **non-LLM dynamic state and memory model** exploring **AI behavior that changes with experience**.
 
-It owns:
+The intended causal path is **experience → evolving oscillatory state → firing → runtime fluctuation → changed behavior**. It is more than a memory lookup, an independent noise source, or a detector that starts Workflows. Firing-derived modulation remains a design goal, not an already-integrated capability or a claim of biological brain simulation.
+
+Its planned model ownership includes:
 
 - the evolving Active Field;
 - oscillation, resonance, coupling, fatigue, and fluctuation dynamics;
+- model-level firing responses and state-derived modulation signals;
 - forgetting transitions and model-state snapshots;
 - association- and resonance-driven recall;
 - the latent **Profundumis** store.
 
-It does not own Agent identity, workflow scheduling, generation domains, or external asset lifecycle.
+It does not own Agent identity, workflow scheduling, the runtime's application of modulation, generation domains, or external asset lifecycle.
+
+Camera/microphone stimuli and state changes may provide [triggers](https://github.com/flamoris-jp/Oblivionis/issues/3), but a firing response need not start new work. [Profundumis association/recall](https://github.com/flamoris-jp/Oblivionis/issues/4) is independently scoped. Max may be recorded during experience; Max-state search and percentage reactivation apply **after latent storage**, not as ordinary firing/trigger thresholds or continuous restoration of the current field. Recalled state may later affect firing without forcing a trigger.
+
+Detailed model semantics belong in [Oblivionis's model concept](https://github.com/flamoris-jp/Oblivionis/blob/main/docs/MODEL.md), not in a second implementation specification here.
 
 The repository intentionally keeps the name **Oblivionis** without the `flamoris-` prefix. It is developed inside the FLAMORIS ecosystem while retaining an independent model identity.
 
@@ -227,7 +242,7 @@ Desktop products such as FLAMORIS 2D, Cutwork, and Kachinco remain authoritative
 Across the AI family:
 
 1. **One authority per domain.**  
-   Agent state belongs to the Agent. Model-adjacent active execution belongs to AI Runtime for the backends it directly controls. Oblivionis owns its dynamic model state and recall/forgetting semantics. Intelligence service execution belongs to Intelligence MCP. Generation workflows/jobs/assets belong to Generation MCP. Runtime transitions belong to GPU Node Manager. Product state belongs to the product.
+   Agent state belongs to the Agent. Model-adjacent active execution and application of modulation belong to AI Runtime for the backends it directly controls. Oblivionis owns its dynamic model state, firing responses, and recall/forgetting semantics. Intelligence service execution belongs to Intelligence MCP. Generation workflows/jobs/assets belong to Generation MCP. Runtime transitions belong to GPU Node Manager. Product state belongs to the product.
 
 2. **Provider-neutral public boundaries.**  
    Local and remote providers are implementation choices behind explicit adapters. A provider name should not become the architecture unless the public behavior is intentionally provider-specific.
@@ -348,7 +363,16 @@ Generation MCP  │   AI Agent   GPU Node Manager
 Agent → Intelligence MCP → model/provider
 ```
 
-です。
+です。モデルに隣接する実行では、別の呼び出しと応答の境界も設計します。
+
+```text
+Agent / Application → AI Runtime → Oblivionis
+                          ↑             │
+                          └─ 発火由来の信号
+                             → Runtime側で揺らぎとして適用
+```
+
+これは実行のauthorityを逆転させる図ではありません。既存の実行へ揺らぎを与えることと、新しい処理を始めるトリガは別です。いずれも連携の設計方針であって、実装済みを意味しません。
 
 ## 🤖 AIの中心Repository
 
@@ -390,21 +414,30 @@ AI Runtimeは、**推論とWorkflowを同じ実行層で制御するmodel-adjace
 
 永続Agent identity、Conversation、Personality、長期Memoryは所有しません。外部serviceをCapabilityとして呼ぶ場合も、そのdomain authorityは外部service側に残します。
 
+Oblivionisとの連携では、発火由来の信号をどう揺らぎへ変換し、どの実行点で、いつ、どの強さまで適用するかはRuntime側の責任です。モデルの出力だけで実行権限を得たり、任意の内部状態を書き換えたりはしません。
+
 ### 🌘 Oblivionis
 
 Repository: [flamoris-jp/Oblivionis](https://github.com/flamoris-jp/Oblivionis)
 
-Oblivionisは、FLAMORIS AI Runtimeから呼び出すことを想定した**実験的な非LLM動的状態・記憶モデル**です。
+Oblivionisは、**経験によって振る舞いが変わるAI**を目指す、実験的な非LLM動的状態・記憶モデルです。
 
-担当するもの:
+狙いは、**経験 → 振動状態の変化 → 発火 → Runtimeへの揺らぎ → 振る舞いの変化**。単なる記憶検索、独立した乱数の追加、Workflow開始の検知器だけにはしません。発火由来の作用は構想段階で、生物の脳の再現やRuntimeとの接続完了を主張するものではありません。
+
+モデル側が担当する設計範囲:
 
 - 時間変化するActive Field
 - oscillation / resonance / coupling / fatigue / fluctuation
+- モデルの発火応答と、Runtimeの揺らぎに使うstate由来の信号
 - forgetting transitionとmodel-state snapshot
 - association / resonanceによるrecall
 - latent deep storeである **Profundumis**
 
-Agent identity、Workflow scheduling、generation domain、外部asset lifecycleは担当しません。
+Agent identity、Workflow scheduling、Runtime側での揺らぎの適用、generation domain、外部asset lifecycleは担当しません。
+
+カメラ・マイクや状態変化による [トリガ #3](https://github.com/flamoris-jp/Oblivionis/issues/3) と、[Profundumisの連想・想起 #4](https://github.com/flamoris-jp/Oblivionis/issues/4) は別の機能です。Maxは経験中に記録しても、**Maxでの検索・割合復活に使うのは深淵へ格納した後の連想・想起**。通常の発火やトリガのしきい値、現在の場を常時Maxへ戻す仕組みには使いません。想起が現在の場を変えても、必ず発火や処理開始につながる必要はありません。
+
+詳しいモデル仕様は [Oblivionisのモデル概念](https://github.com/flamoris-jp/Oblivionis/blob/main/docs/MODEL.md) を正とし、この地図に第二の実装仕様を作りません。
 
 `flamoris-`を付けない名前は意図的です。FLAMORIS ecosystem内で開発しつつ、独立したmodel identityを保ちます。
 
@@ -532,7 +565,7 @@ FLAMORIS 2D、Cutwork、KachincoなどのDesktop productは、それぞれ自分
 AI familyでは次のルールを守ります。
 
 1. **1 domain = 1 authority。**  
-   Agent stateはAgent、直接制御するbackendのmodel-adjacent active executionはAI Runtime、Oblivionisの動的state・forgetting・recall semanticsはOblivionis、Intelligence service executionはIntelligence MCP、Generation workflow/job/assetはGeneration MCP、runtime transitionはGPU Node Manager、Product stateは各Productが持ちます。
+   Agent stateはAgent、直接制御するbackendのmodel-adjacent active executionと揺らぎの適用はAI Runtime、Oblivionisの動的state・発火応答・forgetting・recall semanticsはOblivionis、Intelligence service executionはIntelligence MCP、Generation workflow/job/assetはGeneration MCP、runtime transitionはGPU Node Manager、Product stateは各Productが持ちます。
 
 2. **公開境界はprovider-neutral。**  
    local / remote providerはadapterの内側の実装選択です。意図的なprovider-specific behaviorでない限り、provider名をarchitectureそのものにしません。
