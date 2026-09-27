@@ -35,6 +35,8 @@ Agent / Application → AI Runtime → controlled model/backend execution
                                    └─→ Oblivionis
 ```
 
+The planned response path is Oblivionis firing/state-derived signals → Runtime-owned bounded modulation. This is not an inversion of execution ownership, and it is distinct from a condition that starts new work.
+
 Do not invert the service path by treating the persistent Agent as just another model provider inside Intelligence MCP. Do not turn AI Runtime into the owner of durable Agent identity or long-term Agent memory.
 
 ## Repository boundaries
@@ -75,19 +77,26 @@ It must not become the durable authority for Agent identity, conversation histor
 
 External services called through Runtime capabilities retain their own authority. GPU Node Manager remains the host-wide runtime/GPU lifecycle authority.
 
+For Oblivionis-derived modulation, Runtime owns the mapping, supported execution points, timing, limits, and decision to apply a signal. Do not imply that a firing response grants execution permission or can directly rewrite arbitrary runtime internals.
+
 ### `Oblivionis`
 
-Owns an experimental non-LLM dynamic state and memory model intended to be callable from AI Runtime.
+Owns an experimental non-LLM dynamic state and memory model exploring experience-dependent AI behavior. The intended path is experience → changing oscillatory state → firing → runtime fluctuation → changed behavior.
 
 Planned ownership includes:
 
 - the evolving Active Field;
 - oscillation/resonance/coupling/fatigue/fluctuation dynamics;
+- model-level firing responses and state-derived modulation signals;
 - forgetting transitions and model-state snapshots;
 - associative/resonance recall;
 - Profundumis latent storage semantics.
 
-Oblivionis must not absorb Agent identity, workflow scheduling, media-generation domains, or external asset lifecycle.
+Oblivionis must not absorb Agent identity, workflow scheduling, application of modulation inside Runtime, media-generation domains, or external asset lifecycle.
+
+Do not reduce its role to a memory lookup, an independent noise generator, or only a Workflow-start trigger. Firing, modulation of existing execution, and triggering new work are distinct concepts; not every firing or recall starts work. These remain planned integration concepts, not biological-fidelity or shipped-capability claims.
+
+Max may be recorded during experience, but Max-state search and percentage reactivation apply after storage in Profundumis during association/recall. Never use retained Max as an ordinary firing/trigger threshold or continuous restoration rule. Keep [sensor/trigger work](https://github.com/flamoris-jp/Oblivionis/issues/3) and [latent recall](https://github.com/flamoris-jp/Oblivionis/issues/4) independently scoped; detailed model semantics remain in the owning repository.
 
 The repository name intentionally omits the `flamoris-` prefix. Preserve that independent model identity unless a reviewed architecture decision explicitly changes it.
 
