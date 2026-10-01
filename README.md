@@ -17,11 +17,11 @@ flamoris-ai
 │   └── model-adjacent execution runtime:
 │       inference / workflow / jobs / interrupts / capabilities / traces
 ├── Maidionis
-│   └── specialization-neutral trainable foundation:
-│       training / evaluation / artifacts / bounded inference contracts
-├── Arbitrium
-│   └── first Maidionis Decision specialization:
-│       bounded advisory judgments / abstention / research evidence
+│   ├── specialization-neutral trainable foundation:
+│   │   training / evaluation / artifacts / bounded inference contracts
+│   └── Arbitrium
+│       └── first Decision specialization:
+│           bounded advisory judgments / abstention / research evidence
 ├── Oblivionis
 │   └── experimental non-LLM model for experience-dependent behavior:
 │       Active Field / firing / runtime modulation / recall / Profundumis
