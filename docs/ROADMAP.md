@@ -1,6 +1,6 @@
 # FLAMORIS AI Roadmap
 
-Updated: 2026-09-27
+Updated: 2026-10-01
 
 This is the cross-repository roadmap for the AI- and MCP-facing parts of FLAMORIS.
 
@@ -23,6 +23,8 @@ Included:
 - `flamoris-intelligence-mcp`
 - `flamoris-ai-agent`
 - `flamoris-ai-runtime`
+- `Maidionis`
+- `Arbitrium`
 - `Oblivionis`
 - `flamoris-mcp-hub`
 - `flamoris-jp/flamoris-gpu-node-manager`
@@ -73,19 +75,41 @@ Agent / Application
 FLAMORIS AI Runtime
    ├─→ controlled model/backend execution
    ├─→ registered capabilities
+   ├─→ Maidionis specialization
+   │     └─→ Arbitrium (Decision)
    └─→ Oblivionis
 
 Planned response path:
 Oblivionis → history-shaped firing signals → Runtime-owned modulation
 ```
 
-AI Runtime and Oblivionis are tracked here as cross-repository architecture boundaries, while their implementation plans remain authoritative in their own repositories.
+AI Runtime, Maidionis, Arbitrium, and Oblivionis are tracked here as cross-repository architecture boundaries, while their implementation plans remain authoritative in their own repositories.
 
 ### AI Runtime
 
 `flamoris-ai-runtime` is the model-adjacent execution layer for active inference/workflow control. Its design covers inference lifecycle, Workflow IR, Jobs, Continuations, interrupts, capabilities, resource accounting, and structured runtime events/traces.
 
 It does not replace durable Agent state authority, Generation job/asset authority, Intelligence MCP's provider-neutral service boundary, or GPU Node Manager's host-wide runtime/GPU lifecycle authority.
+
+### Maidionis and Arbitrium
+
+`Maidionis` is the specialization-neutral foundation for training, evaluating, packaging, and exposing small bounded task-specific AI models to Runtime. `Arbitrium` is its first Decision specialization and owns Decision-specific TaskSpecs, curricula, experiment evidence, failure analysis, and specialization metadata.
+
+Their stable boundary is:
+
+```text
+Maidionis Core
+    ↓ education / specialization
+Arbitrium (Decision)
+    ↓ bounded inference
+FLAMORIS AI Runtime
+    ↓ workflow / jobs / shared execution state
+Applications
+```
+
+Maidionis owns reusable model/training/evaluation/artifact contracts. Arbitrium owns Decision semantics and research provenance. AI Runtime owns execution/orchestration. Neither repository should absorb Workflow authority, host lifecycle, authorization, product state, or GPU/runtime policy.
+
+Current work is bootstrap/design and research migration, tracked by [Maidionis #1](https://github.com/flamoris-jp/Maidionis/issues/1) and [Arbitrium #1](https://github.com/flamoris-jp/Arbitrium/issues/1). Do not claim production-ready model quality or Runtime integration until the owning repositories establish and verify those gates.
 
 ### Oblivionis
 
@@ -165,6 +189,8 @@ Keep one useful unit of work moving in each track whenever dependencies allow.
 | C | persistent Agent runtime / Agent MCP | [#7](https://github.com/flamoris-jp/flamoris-ai/issues/7) |
 
 This keeps the three tracks independently reviewable while still converging on the shared Intelligence MCP and Generation MCP boundaries.
+
+Maidionis/Arbitrium currently form a separate model-specialization lane rather than a fourth service track. Their bootstrap/design and research migration remain in their owning repositories until a concrete Runtime integration gate needs cross-track scheduling.
 
 ---
 

@@ -44,6 +44,8 @@ Agent / Application
 FLAMORIS AI Runtime
    ├─→ controlled model/backend execution
    ├─→ registered local/external capabilities
+   ├─→ Maidionis specialization
+   │     └─→ Arbitrium (Decision)
    └─→ Oblivionis
 
 Planned response path:
@@ -94,6 +96,32 @@ Its design scope includes:
 AI Runtime does **not** own durable Agent identity, conversations, personality, or long-term Agent memory. External services called as capabilities retain their own domain authority.
 
 For the planned Oblivionis connection, Runtime owns the modulation mapping, supported execution points, application timing, and limits. A model response does not grant execution permission or directly mutate arbitrary runtime internals.
+
+### 🧩 Maidionis
+
+Repository: [flamoris-jp/Maidionis](https://github.com/flamoris-jp/Maidionis)
+
+Maidionis is the specialization-neutral foundation for building small bounded task-specific AI models through education/training.
+
+It owns reusable model/training/inference mechanisms, dataset and manifest contracts, education orchestration, checkpointing and reproducibility, artifact serialization, evaluation/calibration, specialization identity/versioning, and the stable Runtime-facing model contract. It does not own Workflow execution, tools/actions, authorization, host/service lifecycle, retry/fallback orchestration, product state, or GPU/runtime lifecycle policy.
+
+The intended dependency boundary is:
+
+```text
+Maidionis specialization
+        ↓ bounded inference
+FLAMORIS AI Runtime
+        ↓ workflow / jobs / shared execution state
+Application / Studio / creative pipeline
+```
+
+### ⚖️ Arbitrium
+
+Repository: [flamoris-jp/Arbitrium](https://github.com/flamoris-jp/Arbitrium)
+
+Arbitrium is the first Maidionis specialization. It owns Decision-specific TaskSpecs, curricula, experiment reports, measured results, failure analysis, and specialization metadata for bounded advisory judgments over supplied evidence.
+
+Specialization-neutral implementation belongs in Maidionis. Workflow execution and orchestration belong in AI Runtime. The current public repository is a research-migration/bootstrap boundary and does not claim production-ready held-out generalization.
 
 ### 🌘 Oblivionis
 
@@ -242,7 +270,7 @@ Desktop products such as FLAMORIS 2D, Cutwork, and Kachinco remain authoritative
 Across the AI family:
 
 1. **One authority per domain.**  
-   Agent state belongs to the Agent. Model-adjacent active execution and application of modulation belong to AI Runtime for the backends it directly controls. Oblivionis owns its dynamic model state, firing responses, and recall/forgetting semantics. Intelligence service execution belongs to Intelligence MCP. Generation workflows/jobs/assets belong to Generation MCP. Runtime transitions belong to GPU Node Manager. Product state belongs to the product.
+   Agent state belongs to the Agent. Model-adjacent active execution and application of modulation belong to AI Runtime for the backends it directly controls. Maidionis owns specialization-neutral model/training/evaluation/artifact contracts, while Arbitrium owns Decision-specific semantics and research evidence. Oblivionis owns its dynamic model state, firing responses, and recall/forgetting semantics. Intelligence service execution belongs to Intelligence MCP. Generation workflows/jobs/assets belong to Generation MCP. Runtime transitions belong to GPU Node Manager. Product state belongs to the product.
 
 2. **Provider-neutral public boundaries.**  
    Local and remote providers are implementation choices behind explicit adapters. A provider name should not become the architecture unless the public behavior is intentionally provider-specific.
@@ -366,9 +394,11 @@ Agent → Intelligence MCP → model/provider
 です。モデルに隣接する実行では、別の呼び出しと応答の境界も設計します。
 
 ```text
-Agent / Application → AI Runtime → Oblivionis
-                          ↑             │
-                          └─ 発火由来の信号
+Agent / Application → AI Runtime ─┬→ Maidionis specialization
+                          │           └→ Arbitrium (Decision)
+                          └→ Oblivionis
+                               ↑     │
+                               └─ 発火由来の信号
                              → Runtime側で揺らぎとして適用
 ```
 
@@ -415,6 +445,32 @@ AI Runtimeは、**推論とWorkflowを同じ実行層で制御するmodel-adjace
 永続Agent identity、Conversation、Personality、長期Memoryは所有しません。外部serviceをCapabilityとして呼ぶ場合も、そのdomain authorityは外部service側に残します。
 
 Oblivionisとの連携では、発火由来の信号をどう揺らぎへ変換し、どの実行点で、いつ、どの強さまで適用するかはRuntime側の責任です。モデルの出力だけで実行権限を得たり、任意の内部状態を書き換えたりはしません。
+
+### 🧩 Maidionis
+
+Repository: [flamoris-jp/Maidionis](https://github.com/flamoris-jp/Maidionis)
+
+Maidionisは、教育・学習によって小さな専門AIを作るための**specialization-neutralな共通基盤**です。
+
+model / training / inferenceの共通機構、dataset / manifest contract、education orchestration、checkpoint / reproducibility、artifact serialization、evaluation / calibration、specialization identity / version、Runtime向けのbounded inference contractを担当します。Workflow実行、tool/action、authorization、host/service lifecycle、retry/fallback orchestration、Product state、GPU/runtime lifecycle policyは担当しません。
+
+想定する境界は:
+
+```text
+Maidionis specialization
+        ↓ bounded inference
+FLAMORIS AI Runtime
+        ↓ workflow / jobs / shared execution state
+Application / Studio / creative pipeline
+```
+
+### ⚖️ Arbitrium
+
+Repository: [flamoris-jp/Arbitrium](https://github.com/flamoris-jp/Arbitrium)
+
+ArbitriumはMaidionis最初のDecision specializationです。与えられたevidenceに対するboundedな助言判断を扱い、Decision固有のTaskSpec、curriculum、実験報告、測定結果、failure analysis、specialization metadataを所有します。
+
+specialization共通の実装はMaidionis、Workflow実行・orchestrationはAI Runtimeに残します。現在のpublic repositoryはresearch migration / bootstrap段階で、production品質のheld-out generalizationを主張しません。
 
 ### 🌘 Oblivionis
 
@@ -565,7 +621,7 @@ FLAMORIS 2D、Cutwork、KachincoなどのDesktop productは、それぞれ自分
 AI familyでは次のルールを守ります。
 
 1. **1 domain = 1 authority。**  
-   Agent stateはAgent、直接制御するbackendのmodel-adjacent active executionと揺らぎの適用はAI Runtime、Oblivionisの動的state・発火応答・forgetting・recall semanticsはOblivionis、Intelligence service executionはIntelligence MCP、Generation workflow/job/assetはGeneration MCP、runtime transitionはGPU Node Manager、Product stateは各Productが持ちます。
+   Agent stateはAgent、直接制御するbackendのmodel-adjacent active executionと揺らぎの適用はAI Runtime、Maidionisはspecialization-neutralなmodel/training/evaluation/artifact contract、ArbitriumはDecision固有のsemanticsと研究証跡、Oblivionisの動的state・発火応答・forgetting・recall semanticsはOblivionis、Intelligence service executionはIntelligence MCP、Generation workflow/job/assetはGeneration MCP、runtime transitionはGPU Node Manager、Product stateは各Productが持ちます。
 
 2. **公開境界はprovider-neutral。**  
    local / remote providerはadapterの内側の実装選択です。意図的なprovider-specific behaviorでない限り、provider名をarchitectureそのものにしません。
