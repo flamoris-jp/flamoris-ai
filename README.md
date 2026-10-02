@@ -6,6 +6,10 @@ This repository is intentionally small. It documents architecture boundaries, cr
 
 See the [AI ecosystem map](docs/ai-ecosystem.md), [integrated roadmap](docs/ROADMAP.md), and [top-level roadmap tracker](https://github.com/flamoris-jp/flamoris-ai/issues/4).
 
+## Proposed integration design
+
+[Multimodal Studio architecture](docs/MULTIMODAL_STUDIO_ARCHITECTURE.md) records the proposed media/Workflow/Agent integration coordinated by [FLAMORIS AI #15](https://github.com/flamoris-jp/flamoris-ai/issues/15). It is a design proposal, not a claim that new providers, composed execution or shared-user Agent assistance are implemented. Existing public contracts and readiness gates remain authoritative.
+
 ## Repository map
 
 ```text

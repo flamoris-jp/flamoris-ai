@@ -4,6 +4,8 @@ This document is the cross-repository map for the AI- and MCP-facing parts of FL
 
 It describes **stable responsibility, authority, dependency direction, and interoperability**. Fast-changing implementation status, open bugs, release gates, and near-term sequencing remain authoritative in each repository and in [the integrated roadmap](ROADMAP.md).
 
+The proposed [Multimodal Studio architecture](MULTIMODAL_STUDIO_ARCHITECTURE.md) specifies capability-based media operations, pinned nested media compositions and Agent-backed contextual assistance. It preserves these authority boundaries; implementation and live readiness remain separate owning-repository gates.
+
 ## At a glance
 
 ```text

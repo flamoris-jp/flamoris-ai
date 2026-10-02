@@ -1,6 +1,6 @@
 # FLAMORIS AI Roadmap
 
-Updated: 2026-10-01
+Updated: 2026-10-02
 
 This is the cross-repository roadmap for the AI- and MCP-facing parts of FLAMORIS.
 
@@ -358,6 +358,27 @@ Only after runtime and MCP boundaries are stable:
 - tools
 - Generation MCP use
 - bounded multi-agent/orchestration behavior
+
+---
+
+# Proposed Multimodal Studio convergence
+
+[Architecture proposal](MULTIMODAL_STUDIO_ARCHITECTURE.md) and [coordination #15](https://github.com/flamoris-jp/flamoris-ai/issues/15) add a reviewed-design gate for capability-driven media editors, pinned nested Workflows and Agent-backed contextual assistance. This is proposed work; it does not replace existing owning-Issue acceptance or describe new deployed behavior.
+
+| Owner | Follow-up gate |
+| --- | --- |
+| flamoris-generation-mcp | [#45](https://github.com/flamoris-jp/flamoris-generation-mcp/issues/45) |
+| flamoris-studio | [#39](https://github.com/flamoris-jp/flamoris-studio/issues/39) |
+| flamoris-ai-agent | [#24](https://github.com/flamoris-jp/flamoris-ai-agent/issues/24) |
+| flamoris-mcp-hub | [#28](https://github.com/flamoris-jp/flamoris-mcp-hub/issues/28) |
+| flamoris-intelligence-mcp | [#8](https://github.com/flamoris-jp/flamoris-intelligence-mcp/issues/8) |
+| flamoris-ai-runtime | [#19](https://github.com/flamoris-jp/flamoris-ai-runtime/issues/19) |
+
+Media sequence: shared profile/output/input foundation and one-provider static includes, then Music, Speech, Video and Decompose vertical slices. Keep Generation #25/#31 as provider acceptance authority. Cross-provider/Maidionis composition enters only after an explicit AI Runtime bridge; no new generic scheduler moves into Generation or Hub.
+
+Assistant sequence: AI Agent #18 principal/session isolation, Intelligence MCP execution adapter, Agent-owned bounded context/ask-availability contract, then Studio right-side and standalone Assistant. Local/API target-selection policy belongs in Agent; inference adapters/credentials stay in Intelligence MCP. Studio #2 remains the distinct raw synchronous Intelligence use case, without Agent conversation semantics or a fabricated upstream job.
+
+The current fixed-principal Agent and single-user Runtime are not shared multi-user integration. Exact Workflow automatic attestation, scoped input/output authorization and explicit revision-checked Apply remain acceptance gates. No manual Workflow approval, automatic API fallback, GPU activation or auto-merge is introduced.
 
 ---
 
