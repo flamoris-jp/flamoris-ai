@@ -21,7 +21,7 @@ These commits were inspected before proposing the design. They are design eviden
 | MCP Hub | `0186184463d27addfe4834f5bb34c0c22e62338a` | Explicit static tool catalogs and lazy upstream routing |
 | FLAMORIS AI | `68b7f164971cf2d654d11ec8015563b843d8a634` | Cross-repository architecture and three-track roadmap |
 
-AI Runtime's current README/AGENTS and Workflow IR were also inspected. Its C++20 Phase C baseline has its own compiler, jobs, scheduling and control; it is single-user and does not establish deployed multi-user media integration. Historical workstation operation notes show prior provider experiments, not current readiness. Private paths, hostnames and deployment commands from those notes are deliberately absent here. Provider endpoints, pinned upstream revisions and output contracts must be verified again in owning provider work.
+AI Runtime main `3e8b04137b7510023cb1799aaacfbe3e9cf73771` was checked during review, including README/AGENTS, Workflow IR and Phase C compiler/authorization evidence. Its C++20 Phase C baseline has its own compiler, jobs, scheduling and control; it is single-user and does not establish deployed multi-user media integration. Historical workstation operation notes show prior provider experiments, not current readiness. Private paths, hostnames and deployment commands from those notes are deliberately absent here. Provider endpoints, pinned upstream revisions and output contracts must be verified again in owning provider work.
 
 ## Authority
 
@@ -80,11 +80,11 @@ Keep static candidate validity, verified evidence and current availability disti
 
 `registered -> validated -> automatic real-runtime verification -> ready`
 
-Ready is a computed predicate over exact identity and current evidence, not a permanent Boolean. Include closure digests, profile/compiler/adapter revisions, verified parameter/model domain, concrete runtime fingerprints and evidence continuity all matter. Every executed node and intermediate/final output must be covered. A parent requires compatible verified children **and a real composed smoke**; child success alone cannot prove bindings or aggregate budgets.
+Ready is a computed predicate over exact identity and current evidence, not a permanent Boolean. Include closure digests, profile/compiler/adapter revisions, verified parameter/model domain, concrete runtime fingerprints and evidence continuity all matter. Every executed node and intermediate/final output must be covered. A parent requires compatible verified children **and a real composed smoke**; child success alone cannot prove bindings or aggregate budgets. Historical child versions remain usable after an active-alias update unless explicitly disabled/revoked. Structural plan qualification, the smoke invocation digest and production invocation digests are distinct: reviewed input-domain variation is allowed, executable topology/model changes are not. Concrete intermediate values still pass downstream schema/domain/authorization checks before dispatch.
 
 Capability availability is not workflow readiness, and readiness is not authorization. Discovery, build, admission and each execution handoff must recheck their respective predicates. Keep infrastructure readiness independent from per-Workflow attestation. No manual Approve step or user-authored receipt is introduced.
 
-The current Image smoke has a 300-second and one-small-image profile. Longer Music/Video qualification needs explicitly bounded reviewed profiles; do not lift global limits or label historical manual outputs as attestations. Registered components may have an internal verified contract without appearing as standalone production editors.
+The current Image smoke has a 300-second and one-small-image profile. Longer Music/Video qualification needs explicitly bounded reviewed profiles; do not lift global limits or label historical manual outputs as attestations. Registered components may have an internal verified contract without appearing as standalone production editors. Initial includes require concurrently current evidence; compositions needing mutually exclusive GPU runtimes remain unavailable until the Runtime bridge establishes bounded stage activation and epoch-change requalification. Studio never initiates that switching.
 
 ## Shared execution, assets and inputs
 
@@ -98,7 +98,7 @@ Managed inputs use immutable, authorized snapshots. Their media-neutral contract
 
 Each editor mounts the same assistant component on the right; narrow layouts may collapse it to a drawer. The standalone assistant uses the same Agent gateway. Studio sends explicit bounded context such as category, draft revision, public workflow metadata and selected authorized assets. Attachments are opt-in selections; the backend constructs and authorizes the envelope. Draft text and model output remain untrusted data, never policy or permissions.
 
-Agent chooses an allowed intelligence target under operator/user policy. Intelligence MCP implements the inference adapters. Studio does not select or store provider credentials, and Hub never selects a model. Agent identity and conversation state survive target changes; each answer records safe provenance. Sending private context to a remote API requires an explicit authorized data-flow policy, with no silent fallback caused by local failure.
+Agent chooses an allowed intelligence target under operator/user policy. Intelligence MCP implements the inference adapters. Studio does not select or store provider credentials, and Hub never selects a model. Agent identity and conversation state survive target changes; each answer records safe provenance. Sending private context to a remote API requires an explicit authorized data-flow policy covering the complete assembled request, including prior transcript, with no silent fallback caused by local failure. Intelligence public aliases/provider ids must be mapped to the Agent's validated per-request runtime/model identity; incomplete length-terminated outputs cannot silently become completed Agent answers.
 
 Panel availability follows the selected Agent's actual ask availability for the authenticated scope. A stopped local runtime disables an Agent dependent solely on that runtime; an Agent authorized to use an available API may remain usable. Process liveness, Hub static discovery and today's Agent health(dependencies=not_checked) do not establish usable ask. Preserve the question/draft/selection while disabled. Recheck on send; do not automatically replay after reconnect or activate a GPU.
 
@@ -126,8 +126,9 @@ Music may ship before cross-provider Runtime composition. Agent isolation work m
 - Old Image clients, recipes, readiness and reference-image authorization still work.
 - Multiple workflows/providers may implement a capability without arbitrary default selection.
 - Nested pinned composition rejects unavailable versions, digest mismatches, both include and binding cycles, type/cardinality conflicts and expansion bombs.
-- A child update cannot mutate a built parent; parameter/model/evidence changes invalidate readiness when outside its qualified domain.
+- A child update cannot mutate a built parent; parameter/model/evidence changes invalidate readiness when outside its qualified domain; a permitted seed/prompt change does not require matching the smoke invocation digest.
 - Media catalog synchronization is independent of preview/download success; unsupported formats remain downloadable under authorization.
+- An uncertain request retains its authorized submitted snapshot and request identity across draft/target changes; no reconstruction from current editor state or automatic replay.
 - Two Studio users cannot access each other's input, output, conversation, proposal, progress or uncertain request through guessed handles.
 - Provider changes are Agent policy decisions; local unavailability does not silently send private context to an API.
 - Cancel/timeout/transport loss never imply stopped provider work; reconciliation holds resource ownership until justified release.
