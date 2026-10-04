@@ -23,24 +23,24 @@ Studio Agent Support ----> AI Agent -> internal execution interface
 
 Internal FLAMORIS components do not call one another through MCP or MCP Hub. A replaceable gateway is an internal interface, not a synonym for an MCP server or a new central service.
 
-## Two Workflows, two owners
+## Two named execution concepts, two owners
 
 | Term | Meaning | Owner |
 | --- | --- | --- |
-| Generation Workflow | Build a provider execution definition, especially ComfyUI API-format workflow JSON with declared parameter/reference bindings | Generation Controller; ComfyUI executes the graph |
-| AI Runtime Workflow | Control inference execution and its active steps/state | AI Runtime |
+| ComfyWorkFlow | Build a provider execution definition, especially ComfyUI API-format workflow JSON with declared parameter/reference bindings | Generation Controller; ComfyUI executes the graph |
+| ExecutionPlan | Control inference execution and its active steps/state | AI Runtime |
 
-**Do not move the ComfyUI Workflow Builder into AI Runtime.** JSON construction does not require an Agent, inference Workflow engine, MCP Hub or GPU inference. Actual provider submission and production qualification are separate operations.
+**Do not move the ComfyWorkFlow Builder into AI Runtime.** JSON construction does not require an Agent, ExecutionPlan engine, MCP Hub or GPU inference. Actual provider submission and production qualification are separate operations.
 
 ## Repository responsibilities
 
 | Repository | Role |
 | --- | --- |
-| [flamoris-generation-controller](https://github.com/flamoris-jp/flamoris-generation-controller) | Internal generation domain: provider adapters, ComfyUI workflow construction, generation jobs, inputs/references and assets. Extraction is planned, not implemented here. |
+| [flamoris-generation-controller](https://github.com/flamoris-jp/flamoris-generation-controller) | Internal generation domain: provider adapters, ComfyUI workflow construction, generation jobs, inputs/references and assets. The repository is documentation-only. The existing Generation MCP ComfyWorkFlow implementation is not planned for code transfer; when Generation work resumes it should be retired from the MCP side, and any future Controller implementation must be designed separately. |
 | [flamoris-generation-mcp](https://github.com/flamoris-jp/flamoris-generation-mcp) | External MCP adapter for generation capabilities; existing co-located domain code is the extraction baseline. |
 | [flamoris-intelligence-mcp](https://github.com/flamoris-jp/flamoris-intelligence-mcp) | External MCP facade for intelligence capabilities, not the internal execution gateway for Agent or Studio. |
 | [flamoris-ai-agent](https://github.com/flamoris-jp/flamoris-ai-agent) | Optional personality, conversations, memory, principal/session and context policy. |
-| [flamoris-ai-runtime](https://github.com/flamoris-jp/flamoris-ai-runtime) | Model-adjacent inference Runtime with inference Workflows, active jobs/state, control points and resources. |
+| [flamoris-ai-runtime](https://github.com/flamoris-jp/flamoris-ai-runtime) | Model-adjacent inference Runtime with ExecutionPlans, active jobs/state, control points and resources. |
 | [flamoris-mcp-hub](https://github.com/flamoris-jp/flamoris-mcp-hub) | External MCP aggregation, catalog, connection and routing boundary. |
 | [flamoris-gpu-node-manager](https://github.com/flamoris-jp/flamoris-gpu-node-manager) | Host-wide configured runtime/GPU lifecycle authority; its CLI/HTTP/MCP adapters share that authority. |
 | [flamoris-studio](https://github.com/flamoris-jp/flamoris-studio) | Authenticated creative UI, product drafts and user-scoped access to internal capabilities. |
@@ -49,7 +49,7 @@ Internal FLAMORIS components do not call one another through MCP or MCP Hub. A r
 
 ## Change discipline
 
-Preserve existing useful code, tests, identities, data and evidence. Separate transport extraction from new features. Keep authorization, bounded inputs/outputs, automated qualification and uncertain-request/no-replay protections. Do not duplicate a generation store or host lifecycle merely because there are two frontends.
+Preserve useful tests, identities, data and evidence, but do not preserve misplaced code merely to avoid deletion. In particular, the current Generation MCP ComfyWorkFlow implementation is not a migration source for Controller code. Separate architecture cleanup from new features. Keep authorization, bounded inputs/outputs, automated qualification and uncertain-request/no-replay protections. Do not duplicate a generation store or host lifecycle merely because there are two frontends.
 
 Exact internal APIs, package/service layout and migration details belong in the owning child Issues. Do not invent deployment commands, endpoints or ports in the architecture map. No new Intelligence Controller repository is implied.
 
@@ -57,11 +57,11 @@ Follow the [FLAMORIS Repository Policy](https://github.com/flamoris-jp/flamoris-
 
 ## 日本語
 
-FLAMORIS AIはAI関連の責務と依存方向を整理する管制塔です。現在は[#18](https://github.com/flamoris-jp/flamoris-ai/issues/18)に基づく文書・Issue整理の段階で、実装や実機の移行はしていません。
+FLAMORIS AIはAI関連の責務と依存方向を整理する管制塔です。現在は[#18](https://github.com/flamoris-jp/flamoris-ai/issues/18)に基づく文書・Issue整理の段階で、実装や実機の移行はしていません。Generation Controllerもまだ実装しません。次の実装優先はIntelligence関連の内部MCP依存整理です。
 
 **MCPはChatGPT側の外部入口。内部通信には使いません。** 生成domainはGeneration Controller、人格が必要なときだけAI Agent、推論と推論WorkflowはAI Runtime、hostのGPU/runtime起動停止はGPU Node Managerが担当します。
 
-**GenerationのWorkflowはComfyUI等へ渡すJSONの生成、AI RuntimeのWorkflowは推論の制御です。** 同じ名前でも別物であり、ComfyUIのbuilderをAI Runtimeへ移しません。マージ済みの成果や安全対策は残し、責務の分離と機能追加を別に扱います。
+**ComfyUI系は `ComfyWorkFlow`、AI Runtime側は `ExecutionPlan` と呼びます。単独の `Workflow` は使いません。** 同じ名前でも別物であり、ComfyUIのbuilderをAI Runtimeへ移しません。マージ済みの成果や安全対策は残し、責務の分離と機能追加を別に扱います。
 
 ## FLAMORIS and license
 
