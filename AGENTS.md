@@ -6,17 +6,17 @@ Read README.md, docs/ARCHITECTURE.md, docs/ai-ecosystem.md, docs/ROADMAP.md and 
 
 ## Current authorization
 
-The active correction stage permits documentation and Issue organization in Chat only. Do not delegate this stage to Work, implement code, merge PRs, deploy, restart services, change credentials, run paid inference or resume Workflow/reference-image development. Existing merged work is preserved. Documentation merge and Issue creation do not lift the hold; implementation and operational resumption need explicit user direction.
+The active correction stage permits documentation and Issue organization in Chat only. Terminology is fixed: `ExecutionPlan` for AI Runtime execution plans and `ComfyWorkFlow` for ComfyUI execution definitions; do not use bare `Workflow` for either. Do not delegate this stage to Work, implement code, merge PRs, deploy, restart services, change credentials, run paid inference or resume Workflow/reference-image development. Existing merged work is preserved. Documentation merge and Issue creation do not lift the hold; implementation and operational resumption need explicit user direction.
 
 ## Canonical boundaries
 
 - `flamoris-generation-mcp` and `flamoris-intelligence-mcp` are external MCP adapters/facades. Internal Studio/Agent/Controller/AI Runtime calls do not use MCP or MCP Hub.
 - MCP Hub owns external aggregation/routing/catalog/connection behavior, not application orchestration or an internal service bus.
-- Generation Controller owns the generation domain extracted from Generation MCP: provider adapters, generation definitions/jobs, inputs/references and assets.
-- **Generation Workflow means ComfyUI/provider execution-definition construction. AI Runtime Workflow means inference control. Never move the ComfyUI JSON builder into AI Runtime because the names match.**
+- Generation Controller is the future internal generation-domain owner, but it remains documentation-only. Do not implement it in the current phase. The existing Generation MCP ComfyWorkFlow subsystem is not to be copied into it.
+- **ComfyWorkFlow means ComfyUI/provider execution-definition construction. ExecutionPlan means inference control. Never move the ComfyUI JSON builder into AI Runtime because the names match.**
 - ComfyUI executes its graph. The Controller builds/validates/submits it; JSON construction does not require Agent, Runtime, Hub or live GPU inference.
 - AI Agent is optional personality, conversations, memory, principal/session and context policy. It is not the mandatory center of all inference or generation.
-- AI Runtime remains model-adjacent inference execution with inference Workflows, active state, supported control points, Jobs/Continuations and resource accounting. Do not reduce it to a generic provider-API orchestrator.
+- AI Runtime remains model-adjacent inference execution with ExecutionPlans, active state, supported control points, Jobs/Continuations and resource accounting. Do not reduce it to a generic provider-API orchestrator.
 - GPU Node Manager remains host-wide runtime/GPU lifecycle authority. CLI/HTTP/MCP may adapt the same implementation; an external MCP surface does not justify internal MCP dependencies.
 - Replaceable gateways are ordinary internal interfaces. Do not invent a new central gateway, Intelligence Controller repository, service hop or deployment topology without a concrete reviewed need.
 
@@ -34,7 +34,7 @@ Preserve principal isolation, consent for the complete remotely sent context, im
 
 ## Independent model boundaries
 
-Maidionis owns specialization-neutral model/training/evaluation/artifact and bounded inference contracts. Arbitrium owns Decision-specific semantics, curricula and research evidence. Neither owns inference Workflow scheduling, tool permission or host lifecycle.
+Maidionis owns specialization-neutral model/training/evaluation/artifact and bounded inference contracts. Arbitrium owns Decision-specific semantics, curricula and research evidence. Neither owns ExecutionPlan scheduling, tool permission or host lifecycle.
 
 Oblivionis retains its independent name and experimental model authority: Active Field dynamics, firing responses, forgetting, snapshots and Profundumis recall. Runtime owns bounded application of modulation. Firing/modulation of existing inference and triggering new work are distinct. Max-state search and percentage reactivation apply after latent storage during association/recall, not ordinary firing thresholds or continuous restoration. Keep its sensor/trigger and latent-recall issues separate; do not silently redesign these models in this correction.
 
