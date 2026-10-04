@@ -1,278 +1,51 @@
-# AGENTS.md
+# Contributor and AI-agent instructions
 
-This repository is the integration, architecture, and roadmap home for the FLAMORIS AI ecosystem.
+This repository coordinates FLAMORIS AI architecture and cross-repository work. It is not a shared runtime implementation repository.
 
-AI agents and human contributors should treat it as a coordination repository, not as a dumping ground for every AI-related implementation.
+Read README.md, docs/ARCHITECTURE.md, docs/ai-ecosystem.md, docs/ROADMAP.md and [Issue #18](https://github.com/flamoris-jp/flamoris-ai/issues/18) before changing AI integration.
 
-## Core role
+## Current authorization
 
-`flamoris-ai` documents and coordinates:
+The active correction stage permits documentation and Issue organization in Chat only. Do not delegate this stage to Work, implement code, merge PRs, deploy, restart services, change credentials, run paid inference or resume Workflow/reference-image development. Existing merged work is preserved. Documentation merge and Issue creation do not lift the hold; implementation and operational resumption need explicit user direction.
 
-- boundaries between FLAMORIS AI repositories;
-- shared AI architecture principles;
-- repository ownership and dependency direction;
-- the integrated cross-repository roadmap;
-- major cross-repository gates and convergence decisions.
+## Canonical boundaries
 
-It should remain small.
+- `flamoris-generation-mcp` and `flamoris-intelligence-mcp` are external MCP adapters/facades. Internal Studio/Agent/Controller/AI Runtime calls do not use MCP or MCP Hub.
+- MCP Hub owns external aggregation/routing/catalog/connection behavior, not application orchestration or an internal service bus.
+- Generation Controller owns the generation domain extracted from Generation MCP: provider adapters, generation definitions/jobs, inputs/references and assets.
+- **Generation Workflow means ComfyUI/provider execution-definition construction. AI Runtime Workflow means inference control. Never move the ComfyUI JSON builder into AI Runtime because the names match.**
+- ComfyUI executes its graph. The Controller builds/validates/submits it; JSON construction does not require Agent, Runtime, Hub or live GPU inference.
+- AI Agent is optional personality, conversations, memory, principal/session and context policy. It is not the mandatory center of all inference or generation.
+- AI Runtime remains model-adjacent inference execution with inference Workflows, active state, supported control points, Jobs/Continuations and resource accounting. Do not reduce it to a generic provider-API orchestrator.
+- GPU Node Manager remains host-wide runtime/GPU lifecycle authority. CLI/HTTP/MCP may adapt the same implementation; an external MCP surface does not justify internal MCP dependencies.
+- Replaceable gateways are ordinary internal interfaces. Do not invent a new central gateway, Intelligence Controller repository, service hop or deployment topology without a concrete reviewed need.
 
-Runtime implementations belong in their dedicated repositories unless an Issue explicitly establishes a new shared boundary.
+## Current implementation versus target
 
-The canonical roadmap is `docs/ROADMAP.md`. Fast-changing implementation status belongs in the owning repository's Issues and PRs.
+Current source/tests show what exists. Issue #18 and the corrected architecture define where ownership must go. Old diagrams and implementation-specific MCP adapters are migration inputs, not permission to extend the rejected dependency direction.
 
-## Core dependency direction
+Describe unimplemented extraction honestly. Do not state that services or live routes have changed because a documentation PR exists. Preserve original evidence through pinned history and owning Issues; do not erase completed work or invent completion.
 
-The provider-neutral service dependency direction remains:
+## Domain and safety preservation
 
-```text
-Agent → Intelligence MCP → model/provider
-```
+One owner per state: Agent conversation/personality; Controller generation jobs/inputs/assets; Runtime active inference; GPU Manager host lifecycle; each product its own documents and UI state. Multiple frontends must not instantiate independent competing stores/reservations.
 
-FLAMORIS AI Runtime adds a separate model-adjacent execution path when direct control over active inference/workflow state is required:
+Preserve principal isolation, consent for the complete remotely sent context, immutable input/reference identity, bounded decoding/staging/transfer, safe paths and errors, provenance, automated qualification and uncertain-submit/no-replay behavior. Internal callers still require authorization. Do not replace qualification with a hand-written ready flag or human approval. Distinguish static JSON validation, provider availability and real execution evidence.
 
-```text
-Agent / Application → AI Runtime → controlled model/backend execution
-                                   └─→ Oblivionis
-```
+## Independent model boundaries
 
-The planned response path is Oblivionis firing/state-derived signals → Runtime-owned bounded modulation. This is not an inversion of execution ownership, and it is distinct from a condition that starts new work.
+Maidionis owns specialization-neutral model/training/evaluation/artifact and bounded inference contracts. Arbitrium owns Decision-specific semantics, curricula and research evidence. Neither owns inference Workflow scheduling, tool permission or host lifecycle.
 
-Do not invert the service path by treating the persistent Agent as just another model provider inside Intelligence MCP. Do not turn AI Runtime into the owner of durable Agent identity or long-term Agent memory.
+Oblivionis retains its independent name and experimental model authority: Active Field dynamics, firing responses, forgetting, snapshots and Profundumis recall. Runtime owns bounded application of modulation. Firing/modulation of existing inference and triggering new work are distinct. Max-state search and percentage reactivation apply after latent storage during association/recall, not ordinary firing thresholds or continuous restoration. Keep its sensor/trigger and latent-recall issues separate; do not silently redesign these models in this correction.
 
-## Repository boundaries
+## Documentation and Issue discipline
 
-### `flamoris-ai-agent`
+The architecture is docs/ARCHITECTURE.md; docs/ai-ecosystem.md is orientation; docs/ROADMAP.md holds sequencing. Detailed contracts and source inventories belong in the owning repositories. Avoid duplicated fast-changing test counts or deployment status.
 
-Owns persistent Agent behavior and Agent-facing state, including:
+For affected old Issues, retain history and state, add explicit hold/replacement links, then re-scope remaining requirements after review. Do not mass-close, reopen completed work or leave conflicting implementation instructions unmarked. Native model and unrelated maintenance issues are not invalidated by this correction.
 
-- identity / personality;
-- conversations/messages;
-- memory;
-- knowledge context;
-- prompts / Agent policy;
-- later tools and durable Agent orchestration state;
-- the bounded Agent MCP surface.
+Use small documentation PRs. Do not auto-merge. Verify the diff is documentation-only; distinguish text/link checks from runtime tests or live acceptance. Read the actual target repository and its AGENTS.md before later changes. Do not invent commands, paths, services, APIs or credentials.
 
-For now, the Agent MCP surface belongs inside `flamoris-ai-agent`.
+Public docs must remain portable and contain no private topology, user data, model weights or secrets. Follow the [shared repository policy](https://github.com/flamoris-jp/flamoris-commons/blob/main/docs/repository-policy.md). Generic shared infrastructure belongs in Commons or its dedicated repositories; AI implementations stay with their domain owners.
 
-Do not create a separate `flamoris-agent-mcp` repository unless an Issue demonstrates a real deployment, lifecycle, or ownership boundary that requires the split.
-
-The Agent may call Intelligence MCP and Generation MCP, but those services must not become second owners of Agent state.
-
-### `flamoris-ai-runtime`
-
-Owns the model-adjacent active execution boundary for the models/backends it directly controls.
-
-Planned scope includes:
-
-- active inference lifecycle and backend state where supported;
-- Workflow IR validation/compilation/execution;
-- scheduler-visible Jobs and Job-owned Continuations;
-- interrupts, pause/resume/cancellation where supported;
-- registered local/external capabilities;
-- resource accounting/scheduling;
-- structured runtime events and traces.
-
-It must not become the durable authority for Agent identity, conversation history, personality, goals, or long-term Agent memory.
-
-External services called through Runtime capabilities retain their own authority. GPU Node Manager remains the host-wide runtime/GPU lifecycle authority.
-
-For Oblivionis-derived modulation, Runtime owns the mapping, supported execution points, timing, limits, and decision to apply a signal. Do not imply that a firing response grants execution permission or can directly rewrite arbitrary runtime internals.
-
-### `Oblivionis`
-
-Owns an experimental non-LLM dynamic state and memory model exploring experience-dependent AI behavior. The intended path is experience → changing oscillatory state → firing → runtime fluctuation → changed behavior.
-
-Planned ownership includes:
-
-- the evolving Active Field;
-- oscillation/resonance/coupling/fatigue/fluctuation dynamics;
-- model-level firing responses and state-derived modulation signals;
-- forgetting transitions and model-state snapshots;
-- associative/resonance recall;
-- Profundumis latent storage semantics.
-
-Oblivionis must not absorb Agent identity, workflow scheduling, application of modulation inside Runtime, media-generation domains, or external asset lifecycle.
-
-Do not reduce its role to a memory lookup, an independent noise generator, or only a Workflow-start trigger. Firing, modulation of existing execution, and triggering new work are distinct concepts; not every firing or recall starts work. These remain planned integration concepts, not biological-fidelity or shipped-capability claims.
-
-Max may be recorded during experience, but Max-state search and percentage reactivation apply after storage in Profundumis during association/recall. Never use retained Max as an ordinary firing/trigger threshold or continuous restoration rule. Keep [sensor/trigger work](https://github.com/flamoris-jp/Oblivionis/issues/3) and [latent recall](https://github.com/flamoris-jp/Oblivionis/issues/4) independently scoped; detailed model semantics remain in the owning repository.
-
-The repository name intentionally omits the `flamoris-` prefix. Preserve that independent model identity unless a reviewed architecture decision explicitly changes it.
-
-### `flamoris-intelligence-mcp`
-
-Owns provider-neutral raw intelligence execution for language, reasoning, coding, and related bounded workloads.
-
-It may route to local or remote providers.
-
-It must not silently own:
-
-- persistent Agent conversations;
-- Agent memory/knowledge;
-- personality or Agent policy;
-- generated-media workflows/assets;
-- product documents;
-- LIME runtime switching.
-
-### `flamoris-generation-mcp`
-
-Owns provider-neutral generative-media and closely related media-analysis execution exposed through MCP, including capabilities, workflows, jobs, providers, and generated/materialized assets.
-
-ComfyUI is a provider, not the identity of the project.
-
-The Generation Hub foundation belongs inside `flamoris-generation-mcp` unless a future Issue demonstrates an independent boundary.
-
-### `flamoris-mcp-hub`
-
-MCP Hub is the routing/aggregation boundary.
-
-The intended public namespace family is:
-
-```text
-generation.*
-intelligence.*
-agent.*
-lime.*
-```
-
-Hub should preserve lazy upstream composition and must not become a duplicate Agent, Generation, Intelligence, or runtime state machine.
-
-### `flamoris-jp/flamoris-gpu-node-manager`
-
-GPU Node Manager is the provider-neutral local runtime/GPU authority. LIME is one deployment of that service, not part of the public repository identity.
-
-Other AI services may query or request bounded runtime transitions through its public interfaces but must not reproduce systemd/GPU switching logic.
-
-### Product repositories
-
-FLAMORIS Studio and other applications remain authoritative for their own product/document state and editing behavior.
-
-AI services may assist those applications but must not silently create a second source of truth.
-
-### FLAMORIS Commons
-
-Logging, generic MCP foundations, diagnostics, security primitives, and other infrastructure that is not specifically AI-domain logic belongs in FLAMORIS Commons or its dedicated shared repositories.
-
-## Roadmap discipline
-
-The roadmap is organized into three parallel tracks:
-
-1. **Track A — ecosystem stabilization / existing Issue burn-down**
-2. **Track B — Intelligence MCP / raw LLM access**
-3. **Track C — Agent runtime / Agent MCP**
-
-Use `flamoris-ai` trackers to coordinate sequencing and dependencies.
-
-Use the owning repository's Issue as the implementation authority.
-
-Do not copy full implementation specifications into both places.
-
-Update the roadmap when:
-
-- repository ownership changes;
-- dependency direction changes;
-- major phases or tracks change;
-- a cross-repository gate is introduced/resolved;
-- a new stable public boundary is introduced;
-- the AI Runtime / Oblivionis integration boundary materially changes.
-
-Do not update it for every minor commit.
-
-## Architecture principles
-
-1. **One authority per domain**
-   - Keep state ownership explicit.
-   - Do not duplicate conversations, jobs, documents, runtime state, or provider state without an explicit synchronization contract.
-
-2. **Provider-neutral FLAMORIS boundaries**
-   - Local and remote providers are replaceable implementation choices.
-   - Avoid leaking provider-specific assumptions through public contracts unless intentionally provider-specific.
-
-3. **Local-first, not local-only**
-   - Support local runtimes without hard-coding machine names, usernames, private topology, tunnel IDs, credentials, or developer-local absolute paths.
-   - Remote providers may use the same explicit provider boundary where appropriate.
-
-4. **No speculative mega-framework**
-   - Prefer small adapters and explicit contracts.
-   - Add abstractions only when real implementations demonstrate a reusable boundary.
-
-5. **Bounded and inspectable behavior**
-   - Generation, inference, tool execution, filesystem access, network access, and resource use should have explicit limits.
-   - Avoid hidden retries of non-idempotent operations.
-
-6. **AI-native, human-authoritative**
-   - AI-assisted development is welcome.
-   - Humans remain responsible for review, licensing, security, compatibility, and release decisions.
-
-## Before changing architecture
-
-For a substantial or cross-repository change:
-
-- read this file, README.md, and `docs/ROADMAP.md`;
-- inspect the relevant child repositories and their `AGENTS.md` files;
-- read the current Issues/design documents that define the scope;
-- identify the authority for each piece of state;
-- identify dependency direction;
-- confirm whether the change belongs here, in one child repository, or in FLAMORIS Commons;
-- avoid creating a new repository unless the boundary is clear enough to stand alone.
-
-Prefer an Issue that records:
-
-- the problem;
-- current ownership;
-- proposed boundary;
-- dependency direction;
-- migration impact;
-- compatibility and security risks.
-
-## Work handoff guidance
-
-When handing implementation to ChatGPT Work, include where possible:
-
-- target repository / Issue / branch;
-- in-scope and out-of-scope work;
-- design documents to read first;
-- existing architecture to reuse;
-- recommended model / reasoning;
-- commit strategy;
-- required tests;
-- whether PR creation/review is in scope.
-
-Use **Medium** reasoning for narrow/local implementation and focused tests.
-
-Use **High** reasoning for public contract design, provider architecture, runtime/state-machine changes, cross-repository boundaries, difficult debugging, and final architecture review.
-
-Keep meaningful changes in small, single-purpose commits.
-
-Do not auto-merge unless explicitly requested.
-
-## Documentation discipline
-
-Do not duplicate fast-changing child-repository implementation status in README.
-
-Keep README focused on stable responsibility boundaries and links.
-
-Do not document planned behavior as already implemented.
-
-Never commit or document secrets, private hostnames/topology, tunnel identifiers, model weights, generated private media, private datasets, or local credentials.
-
-## Models, datasets, prompts, and generated media
-
-Repository code licenses do not automatically cover AI models, model weights, datasets, generated media, third-party prompts, provider-hosted assets, or other non-code material.
-
-Verify redistribution rights, commercial-use restrictions, attribution, and applicable terms before adding such material.
-
-## Testing
-
-This repository may remain documentation-only.
-
-If executable code is introduced later, changes should include focused deterministic tests where practical and should not require live paid APIs, GPU hardware, private credentials, or locally installed model weights in normal CI.
-
-## Licensing and support
-
-Unless stated otherwise, code and documentation in this repository are licensed under Apache License 2.0.
-
-FLAMORIS does not provide guaranteed individual support.
-
-Repository documentation, Issues, tests, logs, and source code are the primary support references. AI-assisted self-support is encouraged.
+Code and documentation are Apache-2.0 unless otherwise noted. Model/data/media/provider terms remain separate. FLAMORIS is provided as-is without guaranteed individual support.
