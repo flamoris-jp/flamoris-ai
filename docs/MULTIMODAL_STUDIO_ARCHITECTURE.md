@@ -62,4 +62,4 @@ The old #15 children retain their requirements and evidence, with conflicting as
 
 ## 日本語
 
-Studioの通常生成、素の推論、人格つきAgent Supportは別の内部経路です。ComfyUI用WorkflowのJSON生成をAI Runtimeへ移さず、内部でMCP Hubを経由しません。既存の認可・参照入力保護・検証・履歴は保持し、実装と実機変更は別途指示後に行います。
+Studioの通常生成、素の推論、人格つきAgent Supportは別の内部経路です。ComfyWorkFlow JSON生成をAI Runtimeへ移さず、内部でMCP Hubを経由しません。既存の認可・参照入力保護・検証・履歴は保持し、実装と実機変更は別途指示後に行います。
