@@ -4,7 +4,7 @@ Updated: 2026-10-04. Active architecture correction: [#18](https://github.com/fl
 
 ## Current stage: documentation and Issues in Chat
 
-Workflow and reference-image development is paused at the user's merged baseline. Current work does not authorize implementation, Work delegation, merge, deployment, service restart, DB/credential changes or paid calls. Merging documentation does not lift the hold. Explicit user direction is required to resume implementation or operations.
+ComfyWorkFlow and reference-image development is paused at the user's merged baseline. Current work does not authorize implementation, Work delegation, merge, deployment, service restart, DB/credential changes or paid calls. Merging documentation does not lift the hold. Explicit user direction is required to resume implementation or operations.
 
 The target is [ARCHITECTURE.md](ARCHITECTURE.md): external MCP adapters, internal Generation Controller, optional personality Agent and model-adjacent inference Runtime. ComfyWorkFlow means ComfyUI/provider JSON construction, not AI Runtime's ExecutionPlan.
 
@@ -50,7 +50,7 @@ Plan one-authority cutover, retained-data/uncertain-work reconciliation, client 
 | Existing trackers | Treatment |
 | --- | --- |
 | AI #1/#4/#5/#6/#7/#15/#17 | Preserve requirements/history; old internal-MCP diagrams and automatic parallel-work sequence are superseded by #18 |
-| Generation #19/#42/#30 | Hold further Workflow/reference work; re-scope remaining generation requirements through Controller #1 and Generation MCP #67 |
+| Generation #19/#42/#30 | Hold further ComfyWorkFlow/reference work; re-scope remaining generation requirements through Controller #1 and Generation MCP #67 |
 | Generation #25/#31 and work tracked by #45 | Retain provider and completed v3 evidence; separate expansion/optional composition from extraction |
 | Agent #24/#35 and Intelligence #8 | Do not extend internal MCP execution; re-scope under Agent #38 / Intelligence #10 |
 | Studio #39/#56/#36/#21/#11/#3 | Retain valid UI/authorization/result requirements; replace internal transport assumptions through #62 |
