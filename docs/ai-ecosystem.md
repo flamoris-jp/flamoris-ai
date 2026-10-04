@@ -45,7 +45,7 @@ Internal FLAMORIS calls do not use MCP/Hub. Ordinary API calls need not be force
 
 [Oblivionis](https://github.com/flamoris-jp/Oblivionis) retains its independent name and experimental non-LLM model identity. Its intended path is experience -> evolving oscillatory state -> firing -> Runtime modulation -> changed behavior. This is a model concept, not a claim of deployed integration or biological fidelity.
 
-Its planned authority includes Active Field dynamics, oscillation/resonance/coupling/fatigue/fluctuation, firing responses, forgetting, snapshots and association/recall through Profundumis. Runtime owns the bounded mapping, timing and application of modulation. The model is not just a memory lookup, independent noise generator or Workflow-start detector.
+Its planned authority includes Active Field dynamics, oscillation/resonance/coupling/fatigue/fluctuation, firing responses, forgetting, snapshots and association/recall through Profundumis. Runtime owns the bounded mapping, timing and application of modulation. The model is not just a memory lookup, independent noise generator or ExecutionPlan-start detector.
 
 Firing or modulation of existing execution is distinct from triggering new work. Keep [sensor/trigger #3](https://github.com/flamoris-jp/Oblivionis/issues/3) and [latent-recall #4](https://github.com/flamoris-jp/Oblivionis/issues/4) independent. Max-state search and percentage reactivation apply after latent storage during association/recall, not ordinary firing thresholds or continuous restoration. Detailed semantics stay in the [owning model concept](https://github.com/flamoris-jp/Oblivionis/blob/main/docs/MODEL.md).
 
@@ -53,7 +53,7 @@ This architecture correction does not redesign these models, their native infere
 
 ## Host and product boundaries
 
-[GPU Node Manager](https://github.com/flamoris-jp/flamoris-gpu-node-manager) owns host-wide configured runtime/GPU lifecycle and transition coordination. CLI/HTTP/MCP may adapt the same manager. Internal callers use an internal non-MCP interface; external ChatGPT access may use the MCP surface through Hub. Do not duplicate systemd/GPU state machines in Controller, Runtime, Agent or Studio. Lifecycle readiness and per-generation-workflow qualification remain separate.
+[GPU Node Manager](https://github.com/flamoris-jp/flamoris-gpu-node-manager) owns host-wide configured runtime/GPU lifecycle and transition coordination. CLI/HTTP/MCP may adapt the same manager. Internal callers use an internal non-MCP interface; external ChatGPT access may use the MCP surface through Hub. Do not duplicate systemd/GPU state machines in Controller, Runtime, Agent or Studio. Lifecycle readiness and per-ComfyWorkFlow qualification remain separate.
 
 [Studio](https://github.com/flamoris-jp/flamoris-studio) owns its authenticated creative UI, drafts, account/session mappings and per-user access. It uses the internal Controller/runtime/API/Agent boundaries and does not inspect raw ComfyUI nodes or own provider execution. Asset/conversation references do not by themselves grant authorization.
 
@@ -61,7 +61,7 @@ Desktop products retain their own document/project state and editing semantics. 
 
 ## 日本語
 
-内部の生成制御はGeneration Controller、外部のMCP公開はGeneration MCP / Intelligence MCP、人格は必要な場合だけAI Agent、推論と推論WorkflowはAI Runtimeです。ComfyUI用Workflow JSONの生成はController側に残ります。内部の呼び出しにMCP Hubを使いません。
+内部の生成制御はGeneration Controller、外部のMCP公開はGeneration MCP / Intelligence MCP、人格は必要な場合だけAI Agent、推論とExecutionPlanはAI Runtimeです。ComfyWorkFlow JSONの生成はController側に残ります。内部の呼び出しにMCP Hubを使いません。
 
 Maidionis・Arbitrium・Oblivionisのモデル責務、GPU Node Managerのhost lifecycle、各アプリの制作データ所有権は維持します。ここは修正後の責務地図であり、移設や実機検証が完了したという記録ではありません。
 
