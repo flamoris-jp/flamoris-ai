@@ -16,13 +16,13 @@ ChatGPT -> MCP Hub -> Generation MCP -> Generation Controller -> provider
 Studio ------------------------------> Generation Controller -> provider
 ```
 
-The Controller owns **ComfyWorkFlow construction**, including ComfyUI API-format JSON. ComfyUI owns graph execution. This is distinct from **AI Runtime ExecutionPlans**; a name shared by two concepts does not transfer ownership.
+The Controller owns **ComfyWorkFlow construction**, including ComfyUI API-format JSON. ComfyUI owns graph execution. This is distinct from **AI Runtime ExecuteFlows**; a name shared by two concepts does not transfer ownership.
 
 ## Personality and inference
 
 [AI Agent](https://github.com/flamoris-jp/flamoris-ai-agent) owns personality, identity, conversations, memory, principal/session and context policy. It participates when personality is requested, not as a mandatory step for every inference or generation operation. Its model choice is independent of personality identity.
 
-[AI Runtime](https://github.com/flamoris-jp/flamoris-ai-runtime) owns model-adjacent inference and supported active state/control points, ExecutionPlan validation/compilation/execution, Jobs/Continuations, interrupts, resource accounting and execution events. It is neither the ComfyUI JSON builder nor the durable Agent-memory store.
+[AI Runtime](https://github.com/flamoris-jp/flamoris-ai-runtime) owns model-adjacent inference and supported active state/control points, ExecuteFlow validation/compilation/execution, Jobs/Continuations, interrupts, resource accounting and execution events. It is neither the ComfyUI JSON builder nor the durable Agent-memory store.
 
 ```text
 Studio raw inference -> internal runtime / API / vendor interface
@@ -35,7 +35,7 @@ Internal FLAMORIS calls do not use MCP/Hub. Ordinary API calls need not be force
 
 ### Maidionis
 
-[Maidionis](https://github.com/flamoris-jp/Maidionis) owns specialization-neutral model/training/evaluation/artifact machinery and bounded inference contracts: reusable model and training mechanisms, dataset/manifest contracts, education, checkpointing, reproducibility, serialization, calibration and specialization identity. It does not own ExecutionPlan scheduling, tool authorization, retry/fallback orchestration, product state or host lifecycle.
+[Maidionis](https://github.com/flamoris-jp/Maidionis) owns specialization-neutral model/training/evaluation/artifact machinery and bounded inference contracts: reusable model and training mechanisms, dataset/manifest contracts, education, checkpointing, reproducibility, serialization, calibration and specialization identity. It does not own ExecuteFlow scheduling, tool authorization, retry/fallback orchestration, product state or host lifecycle.
 
 ### Arbitrium
 
@@ -45,7 +45,7 @@ Internal FLAMORIS calls do not use MCP/Hub. Ordinary API calls need not be force
 
 [Oblivionis](https://github.com/flamoris-jp/Oblivionis) retains its independent name and experimental non-LLM model identity. Its intended path is experience -> evolving oscillatory state -> firing -> Runtime modulation -> changed behavior. This is a model concept, not a claim of deployed integration or biological fidelity.
 
-Its planned authority includes Active Field dynamics, oscillation/resonance/coupling/fatigue/fluctuation, firing responses, forgetting, snapshots and association/recall through Profundumis. Runtime owns the bounded mapping, timing and application of modulation. The model is not just a memory lookup, independent noise generator or ExecutionPlan-start detector.
+Its planned authority includes Active Field dynamics, oscillation/resonance/coupling/fatigue/fluctuation, firing responses, forgetting, snapshots and association/recall through Profundumis. Runtime owns the bounded mapping, timing and application of modulation. The model is not just a memory lookup, independent noise generator or ExecuteFlow-start detector.
 
 Firing or modulation of existing execution is distinct from triggering new work. Keep [sensor/trigger #3](https://github.com/flamoris-jp/Oblivionis/issues/3) and [latent-recall #4](https://github.com/flamoris-jp/Oblivionis/issues/4) independent. Max-state search and percentage reactivation apply after latent storage during association/recall, not ordinary firing thresholds or continuous restoration. Detailed semantics stay in the [owning model concept](https://github.com/flamoris-jp/Oblivionis/blob/main/docs/MODEL.md).
 
@@ -61,7 +61,7 @@ Desktop products retain their own document/project state and editing semantics. 
 
 ## 日本語
 
-内部の生成制御はGeneration Controller、外部のMCP公開はGeneration MCP / Intelligence MCP、人格は必要な場合だけAI Agent、推論とExecutionPlanはAI Runtimeです。ComfyWorkFlow JSONの生成はController側に残ります。内部の呼び出しにMCP Hubを使いません。
+内部の生成制御はGeneration Controller、外部のMCP公開はGeneration MCP / Intelligence MCP、人格は必要な場合だけAI Agent、推論とExecuteFlowはAI Runtimeです。ComfyWorkFlow JSONの生成はController側に残ります。内部の呼び出しにMCP Hubを使いません。
 
 Maidionis・Arbitrium・Oblivionisのモデル責務、GPU Node Managerのhost lifecycle、各アプリの制作データ所有権は維持します。ここは修正後の責務地図であり、移設や実機検証が完了したという記録ではありません。
 
@@ -70,4 +70,4 @@ See the [organization map](https://github.com/flamoris-jp/.github) and [desktop 
 
 ## Terminology decision, 2026-10-04
 
-Do not use bare `Workflow` for the two unrelated execution concepts in this map. Use **ExecutionPlan** for AI Runtime inference execution and **ComfyWorkFlow** for ComfyUI provider execution definitions. Generation Controller remains documentation-only; existing Generation MCP ComfyWorkFlow code is not scheduled for transfer into it. Intelligence boundary cleanup is the next implementation priority.
+Do not use bare `Workflow` for the two unrelated execution concepts in this map. Use **ExecuteFlow** for AI Runtime inference execution and **ComfyWorkFlow** for ComfyUI provider execution definitions. Generation Controller remains documentation-only; existing Generation MCP ComfyWorkFlow code is not scheduled for transfer into it. Intelligence boundary cleanup is the next implementation priority.
