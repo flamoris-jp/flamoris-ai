@@ -1,10 +1,10 @@
 # Status note: superseded terminology and sequencing
 
-This proposal predates the 2026-10-04 correction in [AI #18](https://github.com/flamoris-jp/flamoris-ai/issues/18). Active terminology is `ExecutionPlan` for AI Runtime and `ComfyWorkFlow` for ComfyUI execution definitions. Generation Controller is not being implemented yet, and Intelligence boundary cleanup is the next implementation priority. Conflicting dependency directions or sequencing below are historical proposal material, not current implementation authority.
+This proposal predates the 2026-10-04 correction in [AI #18](https://github.com/flamoris-jp/flamoris-ai/issues/18). Active terminology is `ExecuteFlow` for AI Runtime and `ComfyWorkFlow` for ComfyUI execution definitions. Generation Controller is not being implemented yet, and Intelligence boundary cleanup is the next implementation priority. Conflicting dependency directions or sequencing below are historical proposal material, not current implementation authority.
 
 # Studio integration boundaries
 
-Updated under [AI #18](https://github.com/flamoris-jp/flamoris-ai/issues/18), 2026-10-04. The previous integration proposal coordinated by #15 mixed internal MCP routing with generation and ExecutionPlan concepts. Its dependency direction and compulsory bridge sequence are superseded. The complete earlier proposal and baseline evidence remain available in [pinned history](LEGACY_DESIGN.md).
+Updated under [AI #18](https://github.com/flamoris-jp/flamoris-ai/issues/18), 2026-10-04. The previous integration proposal coordinated by #15 mixed internal MCP routing with generation and ExecuteFlow concepts. Its dependency direction and compulsory bridge sequence are superseded. The complete earlier proposal and baseline evidence remain available in [pinned history](LEGACY_DESIGN.md).
 
 This is a documentation-stage target, not deployed behavior. Current implementation and live acceptance remain with their owning repositories.
 
@@ -29,7 +29,7 @@ ChatGPT -> MCP Hub -> Generation MCP -> Generation Controller
 
 ComfyWorkFlow selection refers to provider metadata and ComfyUI execution-definition construction. The Controller applies declared parameter/reference bindings; ComfyUI executes the resulting JSON. Studio does not parse provider node graphs or translate every definition into AI Runtime IR.
 
-AI Runtime's ExecutionPlan controls inference itself and is separately owned. Optional future inference-to-generation integration requires its own explicit use case; it is not a gate for ordinary generation or reference-image support.
+AI Runtime's ExecuteFlow controls inference itself and is separately owned. Optional future inference-to-generation integration requires its own explicit use case; it is not a gate for ordinary generation or reference-image support.
 
 ## Valid product requirements to retain
 
