@@ -28,9 +28,9 @@ Internal FLAMORIS components do not call one another through MCP or MCP Hub. A r
 | Term | Meaning | Owner |
 | --- | --- | --- |
 | ComfyWorkFlow | Build a provider execution definition, especially ComfyUI API-format workflow JSON with declared parameter/reference bindings | Generation Controller; ComfyUI executes the graph |
-| ExecutionPlan | Control inference execution and its active steps/state | AI Runtime |
+| ExecuteFlow | Control inference execution and its active steps/state | AI Runtime |
 
-**Do not move the ComfyWorkFlow Builder into AI Runtime.** JSON construction does not require an Agent, ExecutionPlan engine, MCP Hub or GPU inference. Actual provider submission and production qualification are separate operations.
+**Do not move the ComfyWorkFlow Builder into AI Runtime.** JSON construction does not require an Agent, ExecuteFlow engine, MCP Hub or GPU inference. Actual provider submission and production qualification are separate operations.
 
 ## Repository responsibilities
 
@@ -40,7 +40,7 @@ Internal FLAMORIS components do not call one another through MCP or MCP Hub. A r
 | [flamoris-generation-mcp](https://github.com/flamoris-jp/flamoris-generation-mcp) | External MCP adapter for generation capabilities; existing co-located domain code is the extraction baseline. |
 | [flamoris-intelligence-mcp](https://github.com/flamoris-jp/flamoris-intelligence-mcp) | External MCP facade for intelligence capabilities, not the internal execution gateway for Agent or Studio. |
 | [flamoris-ai-agent](https://github.com/flamoris-jp/flamoris-ai-agent) | Optional personality, conversations, memory, principal/session and context policy. |
-| [flamoris-ai-runtime](https://github.com/flamoris-jp/flamoris-ai-runtime) | Model-adjacent inference Runtime with ExecutionPlans, active jobs/state, control points and resources. |
+| [flamoris-ai-runtime](https://github.com/flamoris-jp/flamoris-ai-runtime) | Model-adjacent inference Runtime with ExecuteFlows, active jobs/state, control points and resources. |
 | [flamoris-mcp-hub](https://github.com/flamoris-jp/flamoris-mcp-hub) | External MCP aggregation, catalog, connection and routing boundary. |
 | [flamoris-gpu-node-manager](https://github.com/flamoris-jp/flamoris-gpu-node-manager) | Host-wide configured runtime/GPU lifecycle authority; its CLI/HTTP/MCP adapters share that authority. |
 | [flamoris-studio](https://github.com/flamoris-jp/flamoris-studio) | Authenticated creative UI, product drafts and user-scoped access to internal capabilities. |
@@ -59,9 +59,9 @@ Follow the [FLAMORIS Repository Policy](https://github.com/flamoris-jp/flamoris-
 
 FLAMORIS AIはAI関連の責務と依存方向を整理する管制塔です。現在は[#18](https://github.com/flamoris-jp/flamoris-ai/issues/18)に基づく文書・Issue整理の段階で、実装や実機の移行はしていません。Generation Controllerもまだ実装しません。次の実装優先はIntelligence関連の内部MCP依存整理です。
 
-**MCPはChatGPT側の外部入口。内部通信には使いません。** 生成domainはGeneration Controller、人格が必要なときだけAI Agent、推論とExecutionPlanはAI Runtime、hostのGPU/runtime起動停止はGPU Node Managerが担当します。
+**MCPはChatGPT側の外部入口。内部通信には使いません。** 生成domainはGeneration Controller、人格が必要なときだけAI Agent、推論とExecuteFlowはAI Runtime、hostのGPU/runtime起動停止はGPU Node Managerが担当します。
 
-**ComfyUI系は `ComfyWorkFlow`、AI Runtime側は `ExecutionPlan` と呼びます。単独の `Workflow` は使いません。** 同じ名前でも別物であり、ComfyUIのbuilderをAI Runtimeへ移しません。マージ済みの成果や安全対策は残し、責務の分離と機能追加を別に扱います。
+**ComfyUI系は `ComfyWorkFlow`、AI Runtime側は `ExecuteFlow` と呼びます。単独の `Workflow` は使いません。** 同じ名前でも別物であり、ComfyUIのbuilderをAI Runtimeへ移しません。マージ済みの成果や安全対策は残し、責務の分離と機能追加を別に扱います。
 
 ## FLAMORIS and license
 
