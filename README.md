@@ -4,7 +4,7 @@ Architecture, responsibility boundaries and roadmap coordination for the AI-faci
 
 ## Architecture correction
 
-[Issue #18](https://github.com/flamoris-jp/flamoris-ai/issues/18) records the corrected target architecture. **The current stage is documentation and Issue organization in Chat only.** Existing implementations and deployments have not been migrated by these documents. Workflow/reference-image development remains paused; merging documentation does not authorize implementation or deployment.
+[Issue #18](https://github.com/flamoris-jp/flamoris-ai/issues/18) records the corrected target architecture. **The current stage is documentation and Issue organization in Chat only.** Existing implementations and deployments have not been migrated by these documents. ComfyWorkFlow/reference-image development remains paused; merging documentation does not authorize implementation or deployment.
 
 Start with the [architecture](docs/ARCHITECTURE.md), [repository map](docs/ai-ecosystem.md), [roadmap](docs/ROADMAP.md) and [Studio integration boundaries](docs/MULTIMODAL_STUDIO_ARCHITECTURE.md). Earlier designs remain available as [pinned historical records](docs/LEGACY_DESIGN.md); their internal-MCP dependency diagrams are not the target architecture.
 
@@ -59,7 +59,7 @@ Follow the [FLAMORIS Repository Policy](https://github.com/flamoris-jp/flamoris-
 
 FLAMORIS AIはAI関連の責務と依存方向を整理する管制塔です。現在は[#18](https://github.com/flamoris-jp/flamoris-ai/issues/18)に基づく文書・Issue整理の段階で、実装や実機の移行はしていません。Generation Controllerもまだ実装しません。次の実装優先はIntelligence関連の内部MCP依存整理です。
 
-**MCPはChatGPT側の外部入口。内部通信には使いません。** 生成domainはGeneration Controller、人格が必要なときだけAI Agent、推論と推論WorkflowはAI Runtime、hostのGPU/runtime起動停止はGPU Node Managerが担当します。
+**MCPはChatGPT側の外部入口。内部通信には使いません。** 生成domainはGeneration Controller、人格が必要なときだけAI Agent、推論とExecutionPlanはAI Runtime、hostのGPU/runtime起動停止はGPU Node Managerが担当します。
 
 **ComfyUI系は `ComfyWorkFlow`、AI Runtime側は `ExecutionPlan` と呼びます。単独の `Workflow` は使いません。** 同じ名前でも別物であり、ComfyUIのbuilderをAI Runtimeへ移しません。マージ済みの成果や安全対策は残し、責務の分離と機能追加を別に扱います。
 
