@@ -6,7 +6,7 @@ Updated: 2026-10-04. Active architecture correction: [#18](https://github.com/fl
 
 ComfyWorkFlow and reference-image development is paused at the user's merged baseline. Current work does not authorize implementation, Work delegation, merge, deployment, service restart, DB/credential changes or paid calls. Merging documentation does not lift the hold. Explicit user direction is required to resume implementation or operations.
 
-The target is [ARCHITECTURE.md](ARCHITECTURE.md): external MCP adapters, internal Generation Controller, optional personality Agent and model-adjacent inference Runtime. ComfyWorkFlow means ComfyUI/provider JSON construction, not AI Runtime's ExecutionPlan.
+The target is [ARCHITECTURE.md](ARCHITECTURE.md): external MCP adapters, internal Generation Controller, optional personality Agent and model-adjacent inference Runtime. ComfyWorkFlow means ComfyUI/provider JSON construction, not AI Runtime's ExecuteFlow.
 
 ## Owning correction tasks
 
@@ -18,7 +18,7 @@ These are design/documentation tasks now, not an automatically executing impleme
 | Generation MCP | [#67](https://github.com/flamoris-jp/flamoris-generation-mcp/issues/67) | External adapter versus generation domain; ComfyUI builder stays with Controller |
 | AI Agent | [#38](https://github.com/flamoris-jp/flamoris-ai-agent/issues/38) | Optional personality and non-MCP internal execution boundary |
 | Intelligence MCP | [#10](https://github.com/flamoris-jp/flamoris-intelligence-mcp/issues/10) | External intelligence facade; reusable adapter ownership review |
-| AI Runtime | [#23](https://github.com/flamoris-jp/flamoris-ai-runtime/issues/23) | ExecutionPlan semantics, no compulsory ComfyUI bridge |
+| AI Runtime | [#23](https://github.com/flamoris-jp/flamoris-ai-runtime/issues/23) | ExecuteFlow semantics, no compulsory ComfyUI bridge |
 | Studio | [#62](https://github.com/flamoris-jp/flamoris-studio/issues/62) | Separate internal generation, raw inference and Agent Support paths |
 | MCP Hub | [#36](https://github.com/flamoris-jp/flamoris-mcp-hub/issues/36) | External routing only; remove internal consumer assumptions |
 | GPU Node Manager | [#11](https://github.com/flamoris-jp/flamoris-gpu-node-manager/issues/11) | Host lifecycle versus generation qualification audit, not core redesign |
