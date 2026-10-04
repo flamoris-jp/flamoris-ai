@@ -30,14 +30,14 @@ An external Intelligence MCP capability may expose personality-enabled behavior 
 | AI Agent | Optional personality, conversation/memory, principal/session and context policy | Mandatory mediation of all AI work |
 | AI Runtime | Model-adjacent inference, ExecutionPlans, active Jobs/Continuations/state/resources | ComfyUI graph construction or durable Agent identity |
 | MCP Hub | External catalog/connection/routing and transport boundary | Internal service bus, provider selection, generation or inference scheduling |
-| GPU Node Manager | Host-wide configured runtime/GPU transitions and lifecycle coordination | Generation jobs, provider graph semantics or per-Workflow approval |
+| GPU Node Manager | Host-wide configured runtime/GPU transitions and lifecycle coordination | Generation jobs, provider graph semantics or per-ComfyWorkFlow approval |
 | Studio | Authenticated UI, product drafts, user-scoped access and presentation | Provider-specific graph implementation, duplicate domain stores or host control logic |
 
 ## ExecutionPlan and ComfyWorkFlow are different concepts
 
 ### ComfyWorkFlow
 
-For the current ComfyUI path, this means building ComfyUI API-format workflow JSON from a trusted definition and allowed parameter/reference bindings. The provider executes that graph.
+For the current ComfyUI path, this means building ComfyUI API-format ComfyWorkFlow JSON from a trusted definition and allowed parameter/reference bindings. The provider executes that graph.
 
 ```text
 trusted graph + declared bindings + validated values
@@ -79,11 +79,11 @@ Static JSON validation, domain/provider fixture tests, external MCP mapping test
 
 Generation logic is currently co-located in Generation MCP, and existing internal callers may still use MCP adapters. These are as-built facts to inventory, not the corrected target. Generation Controller stays documentation-only. The current Generation MCP ComfyWorkFlow implementation is not an extraction source: later Generation cleanup should delete it from the MCP side rather than move it. No deployed service, data or API changed in this documentation pass.
 
-The [roadmap](ROADMAP.md) and #18 children track source/test inventory and the minimal internal contract. Workflows and reference-image feature development remain paused at the merged baseline. Documentation review/merge does not automatically authorize extraction, deployment or new features.
+The [roadmap](ROADMAP.md) and #18 children track source/test inventory and the minimal internal contract. ComfyWorkFlows and reference-image feature development remain paused at the merged baseline. Documentation review/merge does not automatically authorize extraction, deployment or new features.
 
 ## 日本語
 
-MCPは外部入口、Generation Controllerは生成domain、AI Agentは任意の人格、AI Runtimeは推論と推論Workflow、GPU Node Managerはhostの起動停止を担当します。Studioは内部interfaceを利用します。
+MCPは外部入口、Generation Controllerは生成domain、AI Agentは任意の人格、AI Runtimeは推論とExecutionPlan、GPU Node Managerはhostの起動停止を担当します。Studioは内部interfaceを利用します。
 
 ComfyWorkFlowはComfyUI等へ渡すJSONの組み立てで、実行はproviderが行います。ExecutionPlanは推論を制御する別物です。前者を後者へ移管したり、単純なJSON生成に推論基盤を必須化したりしません。現在のコードと新設計を区別し、移設は別途承認後に行います。
 
