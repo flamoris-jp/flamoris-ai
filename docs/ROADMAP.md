@@ -1,432 +1,49 @@
 # FLAMORIS AI Roadmap
 
-Updated: 2026-10-02
+Updated: 2026-10-04. Active authority: [AI #18](https://github.com/flamoris-jp/flamoris-ai/issues/18). [ARCHITECTURE.md](ARCHITECTURE.md) defines terminology and boundaries.
 
-This is the cross-repository roadmap for the AI- and MCP-facing parts of FLAMORIS.
+## Current scope
 
-`flamoris-ai` is the coordination and architecture control tower. It does not replace implementation authority in the repositories it coordinates.
+Review, correct and explicitly merge documentation in Chat. This does not start a Work task, source deletion, deployment, service restart, DB/credential change or paid inference. Generation and reference-image development remain paused at the user-merged baseline.
 
-## Trackers
+**Intelligence first. Controller not yet. Existing MCP-side ComfyWorkFlow implementation: later removal, not transfer or automatic recreation.**
 
-- [#4 FLAMORIS AI integrated roadmap](https://github.com/flamoris-jp/flamoris-ai/issues/4)
-- [#5 Track A — ecosystem stabilization and generation expansion](https://github.com/flamoris-jp/flamoris-ai/issues/5)
-- [#6 Track B — Intelligence MCP and raw LLM access](https://github.com/flamoris-jp/flamoris-ai/issues/6)
-- [#7 Track C — Agent runtime and Agent MCP](https://github.com/flamoris-jp/flamoris-ai/issues/7)
+## Sequence
 
-Implementation specifications remain in the repository that owns the behavior. This document records sequencing, boundaries, dependencies, and cross-repository gates.
+1. Finish the current documentation review/fix/merge pass.
+2. Under Agent #38, Intelligence MCP #10 and Studio #62, inventory internal MCP-only configuration, discovery, dispatch and translation; identify retained callers, execution contracts and safeguards. Specify the smallest functioning non-MCP path before deleting a currently used path.
+3. Hand a bounded deletion-first Intelligence task to Work only under explicit implementation authorization. Keep Agent personality/conversations/principals, model provenance, complete-context consent and durable request fences. Do not remove the external Intelligence MCP facade simply because internal clients stop using it.
+4. Keep Generation Controller unimplemented and Generation #67 paused. Later inventory the MCP-side ComfyWorkFlow removal, affected public tools/callers/tests and retained data separately. Do not migrate that subsystem into Controller or make a replacement a prerequisite for Intelligence work.
+5. Perform live migration, configuration changes, reconciliation and rollback only under separate operational approval.
 
-## Scope
+Deleting obsolete code is not permission to delete historical records or leave retained calls silently succeeding without execution. Do not introduce a fallback to the deprecated MCP route. Do not choose endpoints, ports, new repositories or a universal gateway framework in this roadmap.
 
-Included:
+## Owning correction tasks
 
-- `flamoris-generation-mcp`
-- `flamoris-intelligence-mcp`
-- `flamoris-ai-agent`
-- `flamoris-ai-runtime`
-- `Maidionis`
-- `Arbitrium`
-- `Oblivionis`
-- `flamoris-mcp-hub`
-- `flamoris-jp/flamoris-gpu-node-manager`
-- AI-facing `flamoris-studio` integration
-- future local / remote intelligence provider boundaries
+| Repository | Issue | Scope / sequencing |
+| --- | --- | --- |
+| AI Agent | [#38](https://github.com/flamoris-jp/flamoris-ai-agent/issues/38) | First: optional personality, retained ExecutionClient and removal inventory for internal MCP coupling |
+| Intelligence MCP | [#10](https://github.com/flamoris-jp/flamoris-intelligence-mcp/issues/10) | First: external facade, no internal gateway requirement |
+| Studio | [#62](https://github.com/flamoris-jp/flamoris-studio/issues/62) | Intelligence caller audit first; generation rewiring deferred |
+| AI Runtime | [#23](https://github.com/flamoris-jp/flamoris-ai-runtime/issues/23) | ExecuteFlow distinct from compiled ExecutionPlan and ComfyWorkFlow; no kernel redesign |
+| Generation Controller | [#1](https://github.com/flamoris-jp/flamoris-generation-controller/issues/1) | Future boundary documentation only; implementation held |
+| Generation MCP | [#67](https://github.com/flamoris-jp/flamoris-generation-mcp/issues/67) | Later MCP-side ComfyWorkFlow retirement; no transfer to Controller |
+| MCP Hub | [#36](https://github.com/flamoris-jp/flamoris-mcp-hub/issues/36) | External routing audit; no internal service bus |
+| GPU Node Manager | [#11](https://github.com/flamoris-jp/flamoris-gpu-node-manager/issues/11) | Host lifecycle/qualification boundary audit only |
 
-Excluded:
+These are linked design/correction Issues, not proof that implementation or inventories are complete.
 
-- Windows image/video editor implementation such as FLAMORIS 2D, Cutwork, and Kachinco
-- FLAMORIS Commons and generic shared infrastructure
-- product-specific document/editing authority
+## Existing tracker reconciliation
 
-## Target architecture
-
-```text
-ChatGPT / Studio / FLAMORIS clients
-                │
-                ▼
-             MCP Hub
-       ┌────────┼────────┬────────┐
-       │        │        │        │
-       ▼        ▼        ▼        ▼
- generation.* intelligence.* agent.* lime.*
-       │        │        │        │
-       ▼        │        ▼        ▼
-Generation MCP  │   Agent MCP   GPU Node Manager
-                │        │
-                └───┬────┘
-                    ▼
-             Intelligence MCP
-                    │
-                    ▼
-           local / remote providers
-```
-
-The provider-neutral service dependency direction remains:
-
-```text
-Agent → Intelligence MCP → model/provider
-```
-
-For workloads that require model-adjacent execution control, the architecture also includes:
-
-```text
-Agent / Application
-        │
-        ▼
-FLAMORIS AI Runtime
-   ├─→ controlled model/backend execution
-   ├─→ registered capabilities
-   ├─→ Maidionis specialization
-   │     └─→ Arbitrium (Decision)
-   └─→ Oblivionis
-
-Planned response path:
-Oblivionis → history-shaped firing signals → Runtime-owned modulation
-```
-
-AI Runtime, Maidionis, Arbitrium, and Oblivionis are tracked here as cross-repository architecture boundaries, while their implementation plans remain authoritative in their own repositories.
-
-### AI Runtime
-
-`flamoris-ai-runtime` is the model-adjacent execution layer for active inference/workflow control. Its design covers inference lifecycle, Workflow IR, Jobs, Continuations, interrupts, capabilities, resource accounting, and structured runtime events/traces.
-
-It does not replace durable Agent state authority, Generation job/asset authority, Intelligence MCP's provider-neutral service boundary, or GPU Node Manager's host-wide runtime/GPU lifecycle authority.
-
-### Maidionis and Arbitrium
-
-`Maidionis` is the specialization-neutral foundation for training, evaluating, packaging, and exposing small bounded task-specific AI models to Runtime. `Arbitrium` is its first Decision specialization and owns Decision-specific TaskSpecs, curricula, experiment evidence, failure analysis, and specialization metadata.
-
-Their stable boundary is:
-
-```text
-Maidionis Core
-    ↓ education / specialization
-Arbitrium (Decision)
-    ↓ bounded inference
-FLAMORIS AI Runtime
-    ↓ workflow / jobs / shared execution state
-Applications
-```
-
-Maidionis owns reusable model/training/evaluation/artifact contracts. Arbitrium owns Decision semantics and research provenance. AI Runtime owns execution/orchestration. Neither repository should absorb Workflow authority, host lifecycle, authorization, product state, or GPU/runtime policy.
-
-Current work is bootstrap/design and research migration, tracked by [Maidionis #1](https://github.com/flamoris-jp/Maidionis/issues/1) and [Arbitrium #1](https://github.com/flamoris-jp/Arbitrium/issues/1). Do not claim production-ready model quality or Runtime integration until the owning repositories establish and verify those gates.
-
-### Oblivionis
-
-`Oblivionis` is an experimental non-LLM dynamic state and memory model exploring experience-dependent AI behavior: evolving oscillatory state produces firing responses that Runtime may use as the basis for bounded fluctuation. Planned model ownership includes state, firing responses, forgetting, association/recall, snapshots, and Profundumis; Runtime owns application of modulation.
-
-Its repository intentionally keeps an independent model identity without the `flamoris-` prefix.
-
-Before claiming integrated behavioral modulation, review the model response boundary and the Runtime-owned mapping/control points, then demonstrate history-dependent influence through a test adapter and eventually the actual runtime. Keep this distinct from starting new work: existing execution may be modulated without a new Workflow trigger.
-
-[Oblivionis #3](https://github.com/flamoris-jp/Oblivionis/issues/3) tracks sensor/trigger integration and [#4](https://github.com/flamoris-jp/Oblivionis/issues/4) independently tracks Profundumis association/recall. Max-state search and percentage reactivation apply only after latent storage, not to ordinary firing. The [model concept](https://github.com/flamoris-jp/Oblivionis/blob/main/docs/MODEL.md) owns the detailed design; this coordination gate does not reorder the existing three work tracks or claim the integration is implemented.
-
-### Intelligence
-
-Intelligence MCP is the provider-neutral boundary for raw language, reasoning, and coding execution.
-
-It may be called directly by ChatGPT, Studio, Agent, or another FLAMORIS component when persistent Agent state is not required.
-
-It does not own persistent conversations, Agent memory/knowledge, personality, Agent policy, generation assets, or LIME runtime switching.
-
-### Agent
-
-The Agent is a persistent FLAMORIS-aware entity. It owns Agent identity, conversations/messages, memory, knowledge context, personality/character context, prompts/Agent policy, and later durable tool/orchestration state.
-
-The Agent exposes a bounded MCP surface separate from Intelligence MCP.
-
-For now, Agent MCP belongs inside `flamoris-ai-agent`. Do not create a separate `flamoris-agent-mcp` repository unless a future Issue demonstrates a real deployment or ownership boundary.
-
-### Generation
-
-Generation MCP owns provider-neutral generative-media and closely related media-analysis workflows, jobs, and assets.
-
-Its central execution model remains:
-
-```text
-Capability
-    ↓
-Workflow
-    ↓
-Job
-    ↓
-Provider
-    ↓
-Assets
-```
-
-### GPU Node Manager
-
-`flamoris-gpu-node-manager` is the provider-neutral local runtime/GPU transition authority. LIME is one configured deployment rather than the identity of the service.
-
-Other services may request activation/status through its bounded interfaces, but must not reproduce its systemd/GPU state machine.
-
-### MCP Hub
-
-MCP Hub is the aggregation/routing boundary.
-
-Target namespaces:
-
-```text
-generation.*
-intelligence.*
-agent.*
-lime.*
-```
-
-Hub must not become a hidden workflow or runtime orchestration authority.
-
----
-
-# Operating model — three parallel tracks
-
-Keep one useful unit of work moving in each track whenever dependencies allow.
-
-| Track | Responsibility | Tracker |
-|---|---|---|
-| A | existing Issue burn-down, Generation/Hub/LIME/Studio integration | [#5](https://github.com/flamoris-jp/flamoris-ai/issues/5) |
-| B | provider-neutral Intelligence MCP / raw LLM access | [#6](https://github.com/flamoris-jp/flamoris-ai/issues/6) |
-| C | persistent Agent runtime / Agent MCP | [#7](https://github.com/flamoris-jp/flamoris-ai/issues/7) |
-
-This keeps the three tracks independently reviewable while still converging on the shared Intelligence MCP and Generation MCP boundaries.
-
-Maidionis/Arbitrium currently form a separate model-specialization lane rather than a fourth service track. Their bootstrap/design and research migration remain in their owning repositories until a concrete Runtime integration gate needs cross-track scheduling.
-
----
-
-# Track A — ecosystem stabilization and generation expansion
-
-## A0 — cross-repository asset and input contracts
-
-Current contract work spans the owning repositories rather than living in one service:
-
-- [generation-mcp #30 managed input snapshots](https://github.com/flamoris-jp/flamoris-generation-mcp/issues/30)
-- [mcp-hub #13 bounded Generation asset transfer schemas](https://github.com/flamoris-jp/flamoris-mcp-hub/issues/13)
-- [mcp-hub #14 managed-input schemas](https://github.com/flamoris-jp/flamoris-mcp-hub/issues/14)
-- [studio #20 bounded transfer authorization](https://github.com/flamoris-jp/flamoris-studio/issues/20)
-- [studio #21 managed-input authorization](https://github.com/flamoris-jp/flamoris-studio/issues/21)
-
-Keep authorization in Studio, transfer/materialization authority in Generation MCP, and schema routing in MCP Hub.
-
-## A1 — finish the Generation workflow foundation
-
-Primary gate:
-
-- [generation-mcp #19 versioned trusted ComfyUI workflow registry](https://github.com/flamoris-jp/flamoris-generation-mcp/issues/19)
-
-Do this before substantial AnimeGen / SeeThrough integration so workflow graphs do not continue to accumulate as Python construction logic.
-
-
-## A2 — multi-provider Generation expansion
-
-Umbrella:
-
-- [generation-mcp #25 YuE2 / SheetSage2 / Irodori / AnimeGen / SeeThrough](https://github.com/flamoris-jp/flamoris-generation-mcp/issues/25)
-
-Current first provider-contract slice:
-
-- [generation-mcp #31 YuE2 + SheetSage2 provider contracts](https://github.com/flamoris-jp/flamoris-generation-mcp/issues/31)
-
-Recommended implementation order:
-
-1. YuE2 + SheetSage2
-2. Irodori
-3. AnimeGen
-4. SeeThrough
-
-Keep #25 as the umbrella authority. Split child Issues in `flamoris-generation-mcp` when a phase becomes large enough to review independently.
-
-Before AnimeGen, SeeThrough, or reference-audio speech become public capabilities, establish a bounded managed-input asset contract that never accepts arbitrary host filesystem paths.
-
-For large/multi-asset outputs coordinate:
-
-- [mcp-hub #8 user-visible generated asset delivery](https://github.com/flamoris-jp/flamoris-mcp-hub/issues/8)
-- [studio #11 large generated asset reliability](https://github.com/flamoris-jp/flamoris-studio/issues/11)
-
-Do not solve this only by increasing base64 payload limits.
-
-## A3 — runtime improvements when demanded by providers
-
-GPU Node Manager:
-
-- [#1 provider-neutral runtime sleep/wake lifecycle](https://github.com/flamoris-jp/flamoris-gpu-node-manager/issues/1)
-
-Provider-specific runtime profiles should be added only when a real provider integration needs them.
-
-## A4 — Studio capability unlocks
-
-- [studio #3 Music editor](https://github.com/flamoris-jp/flamoris-studio/issues/3) after the Generation music contract exists
-- [studio #1 Image vertical slice](https://github.com/flamoris-jp/flamoris-studio/issues/1) should close as remaining acceptance criteria are satisfied
-
-Studio Intelligence belongs primarily to Track B.
-
----
-
-# Track B — Intelligence MCP and raw LLM access
-
-## B0 — implemented Phase 1, live acceptance remains
-
-The provider-neutral Python runtime and public Phase 1 contract are implemented and mock/CI validated.
-
-Live deployment acceptance remains under the owning implementation issue:
-
-- [intelligence-mcp #3 Phase 1 llama.cpp / GPT-OSS provider](https://github.com/flamoris-jp/flamoris-intelligence-mcp/issues/3)
-
-## B1 — live provider acceptance and stabilization
-
-Primary implementation authority remains:
-
-- [intelligence-mcp #3 Phase 1 llama.cpp / GPT-OSS provider](https://github.com/flamoris-jp/flamoris-intelligence-mcp/issues/3)
-
-The implemented Phase 1 contract covers health, capability/model discovery, bounded provider-neutral inference, request/output limits, timeout/cancellation, and normalized provider errors/metadata.
-
-Do not add Agent memory/conversation authority here.
-
-## B2 — MCP Hub integration
-
-The public contract is sufficient to design/register the Hub catalog. Create an owning-repository Issue in `flamoris-mcp-hub` to expose Intelligence MCP lazily under:
-
-```text
-intelligence.*
-```
-
-Hub must not become an inference state machine. Because Hub discovery is static and upstream connection is lazy, schema/catalog integration does not require the live llama.cpp provider to be available; live provider acceptance remains the gate for runtime-readiness claims, not for registering the reviewed MCP contract.
-
-## B3 — Studio Intelligence
-
-- [studio #2 Intelligence editor](https://github.com/flamoris-jp/flamoris-studio/issues/2)
-
-The Intelligence MCP public contract exists, so Studio #2 may proceed against it. Studio must not call llama.cpp directly; unavailable deployment/provider state should remain an explicit Studio availability state.
-
-## B4 — future provider layer
-
-A future `flamoris-llm` may become a local provider/runtime layer beneath Intelligence MCP if a concrete reusable boundary appears.
-
-Do not create it merely to rename the current llama.cpp adapter.
-
----
-
-# Track C — Agent runtime and Agent MCP
-
-## C0 — Agent foundation implemented
-
-Repository layout/CI, previous-conversation trust hardening, packaged console entry points, and the bounded Agent MCP surface are present in current main.
-
-The remaining Phase 0 deployment gate is:
-
-- [ai-agent #2 run imported Agent baseline on GPT-OSS via llama.cpp](https://github.com/flamoris-jp/flamoris-ai-agent/issues/2)
-
-Mock/CI success is not a substitute for the live PostgreSQL/restart/provider acceptance recorded by that issue.
-
-## C1 — Agent intelligence client boundary
-
-Keep the current narrow execution boundary provider-neutral and preserve Agent-owned PostgreSQL state. The direct llama.cpp path remains a Phase 0 compatibility path while Track B stabilizes.
-
-## C2 — Agent MCP implemented
-
-The repository now exposes the deliberately small Agent MCP surface:
-
-```text
-agent.health
-agent.ask
-```
-
-Do not expand internal Memory/Knowledge operations merely because MCP exists.
-
-## C3 — migrate Agent execution to Intelligence MCP
-
-After Track B is stable:
-
-```text
-Agent MCP
-   ↓
-Agent runtime
-   ↓
-Intelligence MCP
-   ↓
-GPT-OSS / future providers
-```
-
-This is an execution-dependency migration, not a Memory/Conversation redesign.
-
-## C4 — later Agent evolution
-
-Only after runtime and MCP boundaries are stable:
-
-- Memory / Knowledge lifecycle evolution
-- retrieval/indexing
-- tools
-- Generation MCP use
-- bounded multi-agent/orchestration behavior
-
----
-
-# Proposed Multimodal Studio convergence
-
-[Architecture proposal](MULTIMODAL_STUDIO_ARCHITECTURE.md) and [coordination #15](https://github.com/flamoris-jp/flamoris-ai/issues/15) add a reviewed-design gate for capability-driven media editors, pinned nested Workflows and Agent-backed contextual assistance. This is proposed work; it does not replace existing owning-Issue acceptance or describe new deployed behavior.
-
-| Owner | Follow-up gate |
+| Existing trackers | Treatment |
 | --- | --- |
-| flamoris-generation-mcp | [#45](https://github.com/flamoris-jp/flamoris-generation-mcp/issues/45) |
-| flamoris-studio | [#39](https://github.com/flamoris-jp/flamoris-studio/issues/39) |
-| flamoris-ai-agent | [#24](https://github.com/flamoris-jp/flamoris-ai-agent/issues/24) |
-| flamoris-mcp-hub | [#28](https://github.com/flamoris-jp/flamoris-mcp-hub/issues/28) |
-| flamoris-intelligence-mcp | [#8](https://github.com/flamoris-jp/flamoris-intelligence-mcp/issues/8) |
-| flamoris-ai-runtime | [#19](https://github.com/flamoris-jp/flamoris-ai-runtime/issues/19) |
+| AI #1/#4/#5/#6/#7/#15/#17 | Preserve requirements/history; supersede internal-MCP diagrams and automatic parallel-work instructions |
+| Generation #19/#42/#30 | Hold ComfyWorkFlow/reference work; assess remaining scope only when Generation cleanup resumes |
+| Generation #25/#31 and #45-related work | Preserve provider/acceptance evidence; no new expansion, mandatory bridge or blanket extraction |
+| Agent #24/#35 and Intelligence #8 | Replace internal-MCP assumptions through the Intelligence-first tasks |
+| Studio #39/#56/#36/#21/#11/#3 | Preserve valid UI/authorization/result requirements; do not start generation rewiring yet |
+| Hub #26/#28 and Runtime #19 | Hold conflicting rollout/bridge assumptions; audit separately |
 
-Media sequence: shared profile/output/input foundation and one-provider static includes, then Music, Speech, Video and Decompose vertical slices. Keep Generation #25/#31 as provider acceptance authority. Cross-provider/Maidionis composition enters only after an explicit AI Runtime bridge; no new generic scheduler moves into Generation or Hub.
+Retain history and links; do not mass-close, reopen completed work or erase evidence. Code cleanup Issues stay open until their actual scope is accepted. Independent native-model, personality, GPU lifecycle and model-research tasks are not invalidated or started by this pass.
 
-Assistant sequence: AI Agent #18 principal/session isolation, Intelligence MCP execution adapter, Agent-owned bounded context/ask-availability contract, then Studio right-side and standalone Assistant. Local/API target-selection policy belongs in Agent; inference adapters/credentials stay in Intelligence MCP. Studio #2 remains the distinct raw synchronous Intelligence use case, without Agent conversation semantics or a fabricated upstream job.
-
-The current fixed-principal Agent and single-user Runtime are not shared multi-user integration. Exact Workflow automatic attestation, scoped input/output authorization and explicit revision-checked Apply remain acceptance gates. No manual Workflow approval, automatic API fallback, GPU activation or auto-merge is introduced.
-
----
-
-# Cross-track convergence
-
-The main convergence architecture topic is:
-
-- [#1 FLAMORIS Studio AI Workbench](https://github.com/flamoris-jp/flamoris-ai/issues/1)
-
-The Workbench should consume stable contracts from the tracks rather than invent private replacements.
-
-Target distinction:
-
-```text
-intelligence.*  = raw LLM / reasoning / coding
-agent.*         = persistent FLAMORIS-aware Agent
-generation.*    = image / video / music / voice / media analysis
-lime.*          = explicit runtime/GPU operations
-```
-
----
-
-# Current parallel Work wave
-
-| Track | Repository / Issue | Recommended model | Reasoning |
-|---|---|---|---|
-| A | `flamoris-generation-mcp#31` | GPT-5.6 Sol | High |
-| B | `flamoris-intelligence-mcp#3` live acceptance | GPT-5.6 Sol | High |
-| C | `flamoris-ai-agent#2` live acceptance | GPT-5.6 Sol | Medium |
-
-Likely next wave:
-
-| Track | Next direction |
-|---|---|
-| A | Generation #25 provider expansion after #31 |
-| B | Hub `intelligence.*` integration |
-| C | Agent execution migration onto Intelligence MCP |
-
-Use Medium for focused local changes and tests. Use High for public contracts, state-machine changes, provider architecture, cross-repository boundaries, and final review.
-
-Do not auto-merge implementation PRs unless explicitly requested.
-
----
-
-# Roadmap maintenance rule
-
-This file is a map, not a duplicate Issue database.
-
-Update it when repository ownership, dependency direction, major phases, cross-repository gates, or stable public boundaries change.
-
-Fast-changing implementation details belong in the owning repository's Issues and PRs.
+The [historical roadmap](LEGACY_DESIGN.md) is traceability, not active execution guidance. This file records sequencing rather than duplicating test counts, release status or live host facts.
