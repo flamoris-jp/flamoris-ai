@@ -1,29 +1,27 @@
 # Historical architecture records
 
-The corrected target is [ARCHITECTURE.md](ARCHITECTURE.md), coordinated by [AI #18](https://github.com/flamoris-jp/flamoris-ai/issues/18). Earlier dependency diagrams and Work handoff sequences are preserved here for traceability, not as instructions to continue them.
+The current target is [ARCHITECTURE.md](ARCHITECTURE.md), coordinated by [AI #18](https://github.com/flamoris-jp/flamoris-ai/issues/18). Earlier diagrams and Work sequences are traceability, not instructions to continue them.
 
 ## Immutable pre-correction snapshot
 
-The following links pin commit `b7ddfe1982efdc6f1a99727e406945acc6ffe368`, the main baseline inspected before this documentation correction:
+These links pin the inspected pre-correction main commit `b7ddfe1982efdc6f1a99727e406945acc6ffe368`:
 
 - [Original README](https://github.com/flamoris-jp/flamoris-ai/blob/b7ddfe1982efdc6f1a99727e406945acc6ffe368/README.md)
-- [Original AGENTS instructions](https://github.com/flamoris-jp/flamoris-ai/blob/b7ddfe1982efdc6f1a99727e406945acc6ffe368/AGENTS.md)
-- [Original AI ecosystem map](https://github.com/flamoris-jp/flamoris-ai/blob/b7ddfe1982efdc6f1a99727e406945acc6ffe368/docs/ai-ecosystem.md)
-- [Original roadmap and track history](https://github.com/flamoris-jp/flamoris-ai/blob/b7ddfe1982efdc6f1a99727e406945acc6ffe368/docs/ROADMAP.md)
-- [Original Multimodal Studio proposal and inspected baseline](https://github.com/flamoris-jp/flamoris-ai/blob/b7ddfe1982efdc6f1a99727e406945acc6ffe368/docs/MULTIMODAL_STUDIO_ARCHITECTURE.md)
+- [Original AGENTS](https://github.com/flamoris-jp/flamoris-ai/blob/b7ddfe1982efdc6f1a99727e406945acc6ffe368/AGENTS.md)
+- [Original ecosystem map](https://github.com/flamoris-jp/flamoris-ai/blob/b7ddfe1982efdc6f1a99727e406945acc6ffe368/docs/ai-ecosystem.md)
+- [Original roadmap](https://github.com/flamoris-jp/flamoris-ai/blob/b7ddfe1982efdc6f1a99727e406945acc6ffe368/docs/ROADMAP.md)
+- [Original Studio proposal and baseline evidence](https://github.com/flamoris-jp/flamoris-ai/blob/b7ddfe1982efdc6f1a99727e406945acc6ffe368/docs/MULTIMODAL_STUDIO_ARCHITECTURE.md)
 
-These records include useful feature requirements, inspected revisions and safeguards as well as the superseded assumptions. Preserve evidence; do not recreate stale implementation status as current fact.
+Historical files retain original terms, source references, safeguards and status reports. Do not rewrite that history to pretend a naming or deployment migration already occurred.
 
-## What is superseded
+## Superseded assumptions
 
-Internal `Agent -> Intelligence MCP` and `Studio -> MCP Hub/MCP` paths are not the target. Generation-domain logic is to be separated into Generation Controller, rather than making Generation MCP the permanent internal owner. ComfyUI Workflow construction and AI Runtime inference Workflows are distinct; the former is not transferred to the latter. Agent is optional personality.
+Internal Agent -> Intelligence MCP and Studio -> MCP Hub/MCP routes are not the target. MCP is the external facade, Agent is optional personality and internal execution uses non-MCP boundaries.
 
-Old include/composition/Runtime-bridge plans do not automatically become prerequisites for simple ComfyUI JSON construction or for Controller extraction. Existing code is not reverted by changing this documentation.
+Use ExecuteFlow for Runtime inference flow, preserve the compiled ExecutionPlan representation, and use ComfyWorkFlow for ComfyUI graph/JSON. The current Generation MCP ComfyWorkFlow code is for later removal, not transfer to Controller or Runtime. Controller remains unimplemented; no automatic replacement is ordered. Old composition/bridge/parallel-work sequences do not override Intelligence-first sequencing.
 
-## What is not discarded
+## Evidence and authorization
 
-Valid authorization, input/reference confinement, identity/provenance, uncertain-submit protections, bounded behavior and automated verification requirements remain. Model-specialization and native inference work retain their owners. Each old Issue's remaining feature/acceptance scope must be reviewed explicitly; no mass-close, silent deletion or reopening of completed work is implied.
+Retain valid authorization, immutable references, provenance, uncertain-submit protections, limits and real acceptance records. Deleting obsolete code is not deleting user data, source history or proof of completed work. Review unfinished Issue scope individually; do not mass-close or reopen completed work.
 
-## Review status versus execution permission
-
-The current user instruction is documentation and Issue organization in Chat. Historical Work assignments are inactive for this correction. Merging new documentation does not authorize code extraction, further feature development or live operations. Follow #18 and obtain explicit resumption instructions.
+The current authorization covers documentation review/fixes and requested documentation merges only. It does not start Work implementation, Generation cleanup, deployments or provider calls. Follow #18 for the next separately scoped work.
