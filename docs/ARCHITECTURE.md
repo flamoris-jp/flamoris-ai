@@ -43,7 +43,7 @@ The inference dependency/data/control flow owned by AI Runtime. It describes ass
 
 The Runtime's existing compiled representation. The current C++ type is `ExecutionPlan` in `include/flamoris/runtime/compiler.hpp`; preserve it. Conceptually, an ExecuteFlow definition is validated/compiled into an ExecutionPlan, and the scheduler runs Jobs. Do not collapse the source description, compiled representation and active Job state.
 
-Current source/wire identifiers such as `WorkflowIR` and `workflow.node.*` are not renamed by this documentation change. A later explicit naming migration must map each symbol and preserve or version external contracts. The abandoned idea of naming both concepts ExecutionPlan is not the target.
+Current source identifiers such as `WorkflowMachine` and literal schema/path names are not renamed by this documentation change. A later explicit naming migration must map each real identifier and preserve or version external contracts. A prose heading does not establish a C++ type. The abandoned idea of naming both concepts ExecutionPlan is not the target.
 
 ### ComfyWorkFlow
 
