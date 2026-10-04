@@ -16,13 +16,13 @@ ChatGPT -> MCP Hub -> Generation MCP -> Generation Controller -> provider
 Studio ------------------------------> Generation Controller -> provider
 ```
 
-The Controller owns **Generation Workflow construction**, including ComfyUI API-format JSON. ComfyUI owns graph execution. This is distinct from **AI Runtime inference Workflows**; a name shared by two concepts does not transfer ownership.
+The Controller owns **ComfyWorkFlow construction**, including ComfyUI API-format JSON. ComfyUI owns graph execution. This is distinct from **AI Runtime ExecutionPlans**; a name shared by two concepts does not transfer ownership.
 
 ## Personality and inference
 
 [AI Agent](https://github.com/flamoris-jp/flamoris-ai-agent) owns personality, identity, conversations, memory, principal/session and context policy. It participates when personality is requested, not as a mandatory step for every inference or generation operation. Its model choice is independent of personality identity.
 
-[AI Runtime](https://github.com/flamoris-jp/flamoris-ai-runtime) owns model-adjacent inference and supported active state/control points, inference Workflow validation/compilation/execution, Jobs/Continuations, interrupts, resource accounting and execution events. It is neither the ComfyUI JSON builder nor the durable Agent-memory store.
+[AI Runtime](https://github.com/flamoris-jp/flamoris-ai-runtime) owns model-adjacent inference and supported active state/control points, ExecutionPlan validation/compilation/execution, Jobs/Continuations, interrupts, resource accounting and execution events. It is neither the ComfyUI JSON builder nor the durable Agent-memory store.
 
 ```text
 Studio raw inference -> internal runtime / API / vendor interface
@@ -35,7 +35,7 @@ Internal FLAMORIS calls do not use MCP/Hub. Ordinary API calls need not be force
 
 ### Maidionis
 
-[Maidionis](https://github.com/flamoris-jp/Maidionis) owns specialization-neutral model/training/evaluation/artifact machinery and bounded inference contracts: reusable model and training mechanisms, dataset/manifest contracts, education, checkpointing, reproducibility, serialization, calibration and specialization identity. It does not own inference Workflow scheduling, tool authorization, retry/fallback orchestration, product state or host lifecycle.
+[Maidionis](https://github.com/flamoris-jp/Maidionis) owns specialization-neutral model/training/evaluation/artifact machinery and bounded inference contracts: reusable model and training mechanisms, dataset/manifest contracts, education, checkpointing, reproducibility, serialization, calibration and specialization identity. It does not own ExecutionPlan scheduling, tool authorization, retry/fallback orchestration, product state or host lifecycle.
 
 ### Arbitrium
 
@@ -66,3 +66,8 @@ Desktop products retain their own document/project state and editing semantics. 
 Maidionis・Arbitrium・Oblivionisのモデル責務、GPU Node Managerのhost lifecycle、各アプリの制作データ所有権は維持します。ここは修正後の責務地図であり、移設や実機検証が完了したという記録ではありません。
 
 See the [organization map](https://github.com/flamoris-jp/.github) and [desktop ecosystem](https://github.com/flamoris-jp/flamoris-commons/blob/main/docs/desktop-ecosystem.md) for adjacent projects. Release status, test results and live readiness remain with each owner.
+
+
+## Terminology decision, 2026-10-04
+
+Do not use bare `Workflow` for the two unrelated execution concepts in this map. Use **ExecutionPlan** for AI Runtime inference execution and **ComfyWorkFlow** for ComfyUI provider execution definitions. Generation Controller remains documentation-only; existing Generation MCP ComfyWorkFlow code is not scheduled for transfer into it. Intelligence boundary cleanup is the next implementation priority.
