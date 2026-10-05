@@ -41,7 +41,8 @@ The linked PRs and #18 record exact review/CI/merge evidence. Studio's contract
 tests connect its real gateway to the real Agent HTTP service/session and shared
 provider adapter with synthetic state and HTTP. Live providers and deployment
 were not exercised. The [follow-up review](docs/REVIEW_2026-10-05.md) records
-additional open PRs separately from these accepted baselines.
+accepted residual fixes and organization-documentation updates separately from
+these original baselines; PROGRESS.md links the accepted merge commits.
 
 ## Names and responsibilities
 

@@ -9,7 +9,7 @@ the Controller or live-operation holds.
 
 ## Current scope
 
-The [README source matrix](../README.md#implemented-source-boundaries) links accepted internal Intelligence/Agent contracts and bounded generation. The [2026-10-05 review](REVIEW_2026-10-05.md) records additional open PRs. Source acceptance, live acceptance and future Controller work have separate states.
+The [README source matrix](../README.md#implemented-source-boundaries) links accepted internal Intelligence/Agent contracts and bounded generation. The [2026-10-05 review](REVIEW_2026-10-05.md) and PROGRESS §4.4 record accepted residual fixes and organization/coordination documentation. Their reviewed source acceptance is complete; live acceptance and future Controller work remain separate.
 
 Studio generation still uses the retained MCP compatibility route. Controller design/implementation remains held. Production deployment, restarts, DB/data/credential changes, paid inference and new generation/reference-image development require their own resumed scope.
 
@@ -17,7 +17,6 @@ Studio generation still uses the retained MCP compatibility route. Controller de
 
 | Phase | Remaining work | Current status / start condition |
 | --- | --- | --- |
-| Follow-up source review | Accept the owner PRs and updated coordination/organization documentation | Open PRs; see the review report and PROGRESS §4.4 |
 | Live inventory and migration plan | Confirm installed versions, configuration, retained jobs/data, backup and rollback | Pending; resume only for an explicitly selected deployment scope (PROGRESS E1) |
 | Intelligence/Agent live acceptance | Configure the accepted provider-library and Agent HTTP contracts; verify grants, complete-context consent, model identity and request fences | Pending operational work (PROGRESS E2) |
 | Generation live acceptance | Verify retained Image/Speech/Music providers, inputs/assets and unresolved-job protections through the current compatibility route | Pending operational work (PROGRESS E3) |

@@ -63,7 +63,7 @@ Preserve identities, retained assets/inputs/conversations, provenance and uncert
 
 ## Acceptance and remaining work
 
-The [README source matrix](../README.md#implemented-source-boundaries) links accepted contracts. [PROGRESS.md](../PROGRESS.md) and the [review report](REVIEW_2026-10-05.md) retain source/test history and additional open PRs; [roadmap](ROADMAP.md) lists remaining work. Live cutover, retained-data reconciliation, Controller design/implementation and new reference-image features are separate pending or held phases.
+The [README source matrix](../README.md#implemented-source-boundaries) links accepted contracts. [PROGRESS.md](../PROGRESS.md) and the [review report](REVIEW_2026-10-05.md) retain source/test history and accepted follow-up fixes; [roadmap](ROADMAP.md) lists remaining work. Live cutover, retained-data reconciliation, Controller design/implementation and new reference-image features are separate pending or held phases.
 
 ## 日本語
 
