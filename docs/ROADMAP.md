@@ -1,20 +1,25 @@
 # FLAMORIS AI Roadmap
 
-Updated: 2026-10-04. Active authority: [AI #18](https://github.com/flamoris-jp/flamoris-ai/issues/18). [ARCHITECTURE.md](ARCHITECTURE.md) defines terminology and boundaries.
+Updated: 2026-10-05. Active authority: [AI #18](https://github.com/flamoris-jp/flamoris-ai/issues/18). [ARCHITECTURE.md](ARCHITECTURE.md) defines terminology and boundaries.
 
 ## Current scope
 
-Review, correct and explicitly merge documentation in Chat. This does not start a Work task, source deletion, deployment, service restart, DB/credential change or paid inference. Generation and reference-image development remain paused at the user-merged baseline.
+The documentation pass and deletion-first source implementation are recorded in
+the [README source matrix](../README.md#implemented-source-boundaries) and owning
+Issues/PRs. The internal Intelligence/Agent contracts and matching generation
+retirement are implemented there; exact review/CI/merge evidence remains with each
+owner. Production deployment, restarts, DB/data/credential changes, paid inference
+and new generation/reference-image development remain separate.
 
-**Intelligence first. Controller not yet. Existing MCP-side ComfyWorkFlow implementation: later removal, not transfer or automatic recreation.**
+**Intelligence first. Controller not yet. Retire the added MCP-side ComfyWorkFlow registry/composition/delegation; preserve basic generation, generic recipes and retained-data fences. No transfer or recreation.**
 
 ## Sequence
 
-1. Finish the current documentation review/fix/merge pass.
-2. Under Agent #38, Intelligence MCP #10 and Studio #62, inventory internal MCP-only configuration, discovery, dispatch and translation; identify retained callers, execution contracts and safeguards. Specify the smallest functioning non-MCP path before deleting a currently used path.
-3. Hand a bounded deletion-first Intelligence task to Work only under explicit implementation authorization. Keep Agent personality/conversations/principals, model provenance, complete-context consent and durable request fences. Do not remove the external Intelligence MCP facade simply because internal clients stop using it.
-4. Keep Generation Controller unimplemented and Generation #67 paused. Later inventory the MCP-side ComfyWorkFlow removal, affected public tools/callers/tests and retained data separately. Do not migrate that subsystem into Controller or make a replacement a prerequisite for Intelligence work.
-5. Perform live migration, configuration changes, reconciliation and rollback only under separate operational approval.
+1. Documentation review/fix/merge is complete.
+2. Under Agent #38, Intelligence MCP #10 and Studio #62, inventory internal MCP-only configuration, discovery, dispatch and translation; identify retained callers, execution contracts and safeguards.
+3. Implement the smallest functioning non-MCP routes: Studio-to-Agent HTTP and direct shared provider adapters for Agent/raw Studio inference. Keep personality/conversations/principals, model provenance, complete-context consent and durable request fences. External MCP remains separate.
+4. Under Generation #67 and Runtime #23, retire added definition registration/versioning/composition/Runtime delegation and generation-specific lowering. Preserve native ExecuteFlow, original bounded generation templates, generic recipes and unresolved-job fences; update Studio/Hub callers and external catalogs. Controller remains unimplemented.
+5. Verify, independently review, fix and merge. Record exact source acceptance without claiming a live cutover. Production migration, configuration and recovery/rollback remain separate.
 
 Deleting obsolete code is not permission to delete historical records or leave retained calls silently succeeding without execution. Do not introduce a fallback to the deprecated MCP route. Do not choose endpoints, ports, new repositories or a universal gateway framework in this roadmap.
 
@@ -22,26 +27,26 @@ Deleting obsolete code is not permission to delete historical records or leave r
 
 | Repository | Issue | Scope / sequencing |
 | --- | --- | --- |
-| AI Agent | [#38](https://github.com/flamoris-jp/flamoris-ai-agent/issues/38) | First: optional personality, retained ExecutionClient and removal inventory for internal MCP coupling |
-| Intelligence MCP | [#10](https://github.com/flamoris-jp/flamoris-intelligence-mcp/issues/10) | First: external facade, no internal gateway requirement |
-| Studio | [#62](https://github.com/flamoris-jp/flamoris-studio/issues/62) | Intelligence caller audit first; generation rewiring deferred |
+| AI Agent | [#38](https://github.com/flamoris-jp/flamoris-ai-agent/issues/38) | Optional personality, retained ExecutionClient, internal HTTP and direct execution adapters |
+| Intelligence MCP | [#10](https://github.com/flamoris-jp/flamoris-intelligence-mcp/issues/10) | External facade over reusable non-MCP provider adapters |
+| Studio | [#62](https://github.com/flamoris-jp/flamoris-studio/issues/62) | Direct raw inference and Agent HTTP; retired generation calls unavailable |
 | AI Runtime | [#23](https://github.com/flamoris-jp/flamoris-ai-runtime/issues/23) | ExecuteFlow distinct from compiled ExecutionPlan and ComfyWorkFlow; no kernel redesign |
 | Generation Controller | [#1](https://github.com/flamoris-jp/flamoris-generation-controller/issues/1) | Future boundary documentation only; implementation held |
-| Generation MCP | [#67](https://github.com/flamoris-jp/flamoris-generation-mcp/issues/67) | Later MCP-side ComfyWorkFlow retirement; no transfer to Controller |
+| Generation MCP | [#67](https://github.com/flamoris-jp/flamoris-generation-mcp/issues/67) | Added registry/composition/delegation retirement; basic generation and state protections retained |
 | MCP Hub | [#36](https://github.com/flamoris-jp/flamoris-mcp-hub/issues/36) | External routing audit; no internal service bus |
 | GPU Node Manager | [#11](https://github.com/flamoris-jp/flamoris-gpu-node-manager/issues/11) | Host lifecycle/qualification boundary audit only |
 
-These are linked design/correction Issues, not proof that implementation or inventories are complete.
+These are linked correction Issues. Their PRs and recorded checks establish source completion; this table is not deployment evidence.
 
 ## Existing tracker reconciliation
 
 | Existing trackers | Treatment |
 | --- | --- |
 | AI #1/#4/#5/#6/#7/#15/#17 | Preserve requirements/history; supersede internal-MCP diagrams and automatic parallel-work instructions |
-| Generation #19/#42/#30 | Hold ComfyWorkFlow/reference work; assess remaining scope only when Generation cleanup resumes |
+| Generation #19/#42/#30 | Retire the mistaken custom subsystem; preserve historical evidence and keep new reference-image expansion held |
 | Generation #25/#31 and #45-related work | Preserve provider/acceptance evidence; no new expansion, mandatory bridge or blanket extraction |
 | Agent #24/#35 and Intelligence #8 | Replace internal-MCP assumptions through the Intelligence-first tasks |
-| Studio #39/#56/#36/#21/#11/#3 | Preserve valid UI/authorization/result requirements; do not start generation rewiring yet |
+| Studio #39/#56/#36/#21/#11/#3 | Preserve valid UI/authorization/result requirements; internal Intelligence/Agent cutover and old generation call retirement are recorded in #62; Controller rewiring remains deferred |
 | Hub #26/#28 and Runtime #19 | Hold conflicting rollout/bridge assumptions; audit separately |
 
 Retain history and links; do not mass-close, reopen completed work or erase evidence. Code cleanup Issues stay open until their actual scope is accepted. Independent native-model, personality, GPU lifecycle and model-research tasks are not invalidated or started by this pass.

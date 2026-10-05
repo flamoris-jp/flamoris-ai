@@ -1,6 +1,6 @@
 # FLAMORIS AI architecture
 
-Decision: [AI #18](https://github.com/flamoris-jp/flamoris-ai/issues/18), 2026-10-04. This document defines the corrected target, not a migrated deployment. The current pass is documentation review, correction and explicitly authorized documentation merge only.
+Decision: [AI #18](https://github.com/flamoris-jp/flamoris-ai/issues/18), 2026-10-04. The documentation pass is complete; the next explicit instruction authorizes deletion-first implementation and connection correction. This document distinguishes the architecture and source acceptance from deployed routes.
 
 ## External adapters and internal owners
 
@@ -16,7 +16,7 @@ Studio raw intelligence -> internal runtime / API / vendor interface
 Studio Agent Support -> AI Agent -> internal execution interface
 ```
 
-Calls behind an external MCP adapter use the owner's non-MCP internal contract. Internal FLAMORIS components do not route through MCP or MCP Hub. A replaceable interface does not prescribe an additional network service.
+The target is for external MCP adapters to call the owner's non-MCP contract and for internal components to avoid MCP/Hub routing. Intelligence/Agent source now implements that separation. Generation still uses its retained MCP compatibility boundary while Controller is unimplemented. A replaceable interface does not prescribe an additional network service.
 
 Intelligence MCP may expose an explicitly requested personality capability through an internal Agent call. Raw inference does not require Agent. Existing external Agent MCP compatibility is reviewed separately; removing internal MCP dependencies is not permission to remove every external MCP surface.
 
@@ -56,7 +56,7 @@ trusted ComfyUI graph + allowed bindings + validated values
   -> ComfyUI execution
 ```
 
-The existing Generation MCP ComfyWorkFlow implementation is to be removed in a later authorized Generation cleanup, not transferred to Controller or Runtime. The precise source/tool/dependent-test scope must be inventoried first. Controller is still unimplemented; this decision does not order a replacement implementation or a rebuild of the same subsystem.
+The added Generation MCP ComfyWorkFlow definition registry, versioning, composition and Runtime delegation are retired in the cleanup, not transferred to Controller or Runtime. The original bounded image-generation templates and generic provider recipe store have independent callers and remain. Controller is still unimplemented; no replacement subsystem is ordered. Retired definitions and uncertain provider jobs are retained as data rather than executed or silently replayed.
 
 JSON construction can be tested offline. Submission, installed node/model compatibility, generation qualification and user authorization are separate checks. Do not make Agent, a generic scheduler or a Runtime bridge prerequisites for JSON construction. Removing obsolete functionality must not create a safety bypass for retained functionality.
 
@@ -64,7 +64,7 @@ Use the specific names in new design prose. Retain exact spelling for current AP
 
 ## Gateway means replaceability
 
-Keep internal execution details behind narrow interfaces. Removing internal MCP does not mean hard-coding providers into Studio, replicating credentials everywhere or inventing a new central gateway service. Reusable intelligence adapter ownership and the minimal replacement path must be decided against actual source and callers before code removal. No new Intelligence Controller repository is implied.
+Keep internal execution details behind narrow interfaces. The neutral `flamoris_intelligence` namespace in the existing Intelligence distribution owns reusable provider adapters. Agent and Studio raw inference import that namespace without using MCP; Studio Agent Support uses Agent's versioned JSON HTTP API. External MCP facade translation remains separate. No new central gateway service or Intelligence Controller repository is introduced.
 
 ## State and safety
 
@@ -74,16 +74,20 @@ Preserve identities, retained assets/inputs/conversations, provenance and uncert
 
 ## Sequencing
 
-1. Review/fix/merge these documentation PRs. No source, configuration or deployment changes.
-2. Prepare the Intelligence removal inventory and smallest working non-MCP execution contract for a separately scoped Work implementation.
-3. Start that code cleanup only under explicit implementation authorization. Do not mix it with new persona features or Runtime kernel redesign.
-4. Keep Controller implementation and Generation/ComfyWorkFlow/reference-image work paused. Revisit later under separate authorization.
-5. Live cutover, retained-data recovery and rollback require their own operational approval.
+1. The documentation PRs are reviewed, corrected and merged.
+2. Inventory internal MCP clients and obsolete generation additions; retain independent state and safety contracts.
+3. Implement Studio-to-Agent internal HTTP and shared non-MCP provider adapters for Agent/raw Studio inference. Keep external MCP facades separate. Do not mix this with new persona features or Runtime kernel redesign.
+4. Retire the generation registry/composition/delegation and matching caller/catalog assumptions. Preserve Runtime's real ExecuteFlow and compiled ExecutionPlan. Keep Controller unimplemented and new generation/reference-image features deferred.
+5. Verify, independently review, fix and merge the source changes. Live cutover and retained-data recovery remain a separate operational task.
 
-The [roadmap](ROADMAP.md) links the owning tasks. A document merge does not resume code execution or production work.
+The [README source matrix](../README.md#implemented-source-boundaries) and
+[roadmap](ROADMAP.md) link the implemented contracts and owning tasks. The later
+explicit instruction authorized source implementation and merge; it does not
+establish a production cutover. Generation's compatibility exception and held
+Controller/reference-image work remain explicit.
 
 ## 日本語
 
 MCPは外部入口、Agentは任意の人格、Runtimeは推論とExecuteFlow、既存ExecutionPlanはコンパイル済み表現です。ComfyWorkFlowはComfyUI用グラフ・JSONであり、Runtimeへ移しません。
 
-Intelligence整備を先行します。Generation Controllerは未実装のまま。Generation MCPの既存ComfyWorkFlow実装は後の削除対象で、Controllerへ移植したり同じものを作り直したりする指示ではありません。今回は文書のレビュー・修正・マージまでです。
+Intelligence整備を先行し、Studio・Agentの内部MCP依存を直接接続へ置き換えます。Generationの後付け登録・合成・Runtime委譲を削除し、基本生成と保存済みデータの保護は維持します。Generation Controllerは未実装のままで、同じ仕組みの移植や再作成はしません。実機移行は別工程です。
