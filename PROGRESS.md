@@ -8,9 +8,9 @@
 
 このファイルは、ChatGPTの別スレッドや次の作業担当が、目的・現在地・残りの作業をまとめて確認する入口です。設計の基準は [ARCHITECTURE.md](docs/ARCHITECTURE.md)、担当Issueと従来の順序は [ROADMAP.md](docs/ROADMAP.md)。本書はその進捗と次の具体的な工程を記録します。
 
-**現在地：cleanupと追加全体レビューはmain受け入れ済み。続くController実装指示に基づき、MCP-freeの共通生成処理、外部MCP facade、Studioの認証付きHTTP接続を実装しました。対応するController #5・Generation #71・Studio #65はopen／未マージ。実機移行は未着手です。**
+**現在地：cleanupと追加全体レビューはmain受け入れ済み。続くController実装指示に基づき、MCP-freeの共通生成処理、外部MCP facade、Studioの認証付きHTTP接続を実装しました。再レビューと最終CI確認後、対応するController #5・Generation #71・Studio #65をmainへマージしました。受け入れ記録は4.8です。実機移行は未着手です。**
 
-以下の新しいGeneration経路は対応PRのソースを示し、稼働済み設定やmain反映済みの保証ではありません。実機導入、新しい参照画像/custom機能、data/grant/credential変更は別scopeです。
+以下の新しいGeneration経路はmain受け入れ済みのソースです。稼働済み設定や実機切替の保証ではありません。実機導入、新しい参照画像/custom機能、data/grant/credential変更は別scopeです。
 
 2026-10-05の追加全体レビューで、旧機構の手順書13本、未使用request field、Studio Imageの廃止済み参照／固定サイズ分岐と認可再確認の不足を発見・修正しました。**追加修正7PRと組織READMEはmain反映済み。全体の受け入れ記録は [AI #23](https://github.com/flamoris-jp/flamoris-ai/pull/23) です。** [リポジトリ別の全体レビューと残作業](docs/REVIEW_2026-10-05.md) に変更・検証・機能の可否を記録しています。最初のcleanupと追加レビューの受け入れ基準は4.2／4.4で個別に固定しています。
 
@@ -53,8 +53,8 @@ GPU Node Managerがhost-wideなruntime起動停止・GPU handoff・transition lo
 | Studio Agent Support | Studio `AgentGateway` → Agent JSON HTTP `/api/v1` → Agentのapproved execution client → shared adapter | Agentがprincipal・人格・会話・モデル/送信同意を所有する |
 | 外部Intelligence MCP | 外部クライアント → Hub等の外部入口 → Intelligence MCP facade → shared adapter | 外部のtool/schema/transport・結果変換を維持する |
 | 外部Agent MCP | Agentの既存inbound MCP surfaceを保持 | 内部HTTPへの置換とは別の互換面。実際の外部登録・稼働状態は別途確認する |
-| Studio generation | 対応PRでStudio → 認証付きController HTTP v1 → 一つのController → provider | Studioがuser ownership・request/publication fenceを保持。PR未マージ、実機未切替 |
-| 外部Generation MCP | 対応PRで外部client → Hub → Generation MCP facade → 同じController → provider | 23toolとsigned ingress／SDK変換を保持。Studioとは同じruntime／予約を利用 |
+| Studio generation | main受け入れ済みのStudio → 認証付きController HTTP v1 → 一つのController → provider | Studioがuser ownership・request/publication fenceを保持。main反映済み、実機未切替 |
+| 外部Generation MCP | main受け入れ済みの外部client → Hub → Generation MCP facade → 同じController → provider | 23toolとsigned ingress／SDK変換を保持。Studioとは同じruntime／予約を利用 |
 | Runtime | native推論・ExecuteFlow・ExecutionPlan・Job/Continuationを保持 | 必要なら将来、生成能力への任意の内部連携を別scopeで設計する |
 | GPU lifecycle | 既存RuntimeManagerと共通lock。CLI/HTTP/MCPは同じmanagerを利用する | 既存authorityを維持する |
 
@@ -152,6 +152,8 @@ CI：上記の正確な最終headですべて成功。[Controller CI](https://gi
 
 ### 4.7 Controllerのレビュー・修正ループ（2026-10-05）
 
+この節は初回レビュー修正の固定記録です。後続の再レビュー・main受け入れは4.8を参照します。
+
 ユーザーのレビュー・修正ループ指示に基づき、4つのopen PRの正確なhead、core／HTTP／MCP／Studioの責務・lifecycle・認証・保存形式・不確定処理と文書を再確認しました。[詳細レビュー記録](docs/CONTROLLER_REVIEW_2026-10-05.md) に再現・修正・検証を記録しています。
 
 3件を修正しました。終了時に実行中の呼び出しより先に所有権lockを解放する問題は、admitted callのdrainと一つのshield付きcleanup taskで解消。Studioのslow responseは、接続／headers／全streamの絶対期限とupload exchangeの期限で制限。モデル一覧に出る長いIDの取得拒否は、保持された1024 UTF-8 byteのmodel nameとkind prefixを受け付けるDTOで解消しました。新しい型名や保存形式への移行ではありません。
@@ -167,6 +169,23 @@ CI：上記の正確な最終headですべて成功。[Controller CI](https://gi
 
 AI側は変更9文書、相対リンク45件と見出し、固定source／CI記録、文書と実装の整合、diff whitespaceを確認しました。初回の受け入れ履歴と今回の修正結果を分け、親／担当Issueと4PRへ最新head・検証を記録します。
 
+### 4.8 Controllerの再レビューとソース受け入れ（2026-10-05）
+
+ユーザーの「レビュー・修正ループと、問題なくなったらマージ」指示に基づき、4.7の修正後head、CI全job／step、競合とレビュー指摘を再確認しました。core lifecycle／strict HTTP／MCP同居runtime／Studio期限・認証・共有状態を再レビューし、追加の修正必須事項は見つかっていません。重点テストを再実行し、Controller 26件、GenerationのMCP／HTTP 27件、Studioの接続／実契約39件、合計92件が成功しました。全suiteとpackaging／Docker／画面の最終CIは4.7の正確なheadでsuccessのままです。
+
+Controller → Generation MCP → Studioの順にexpected head SHAを指定してsquash mergeしました。全merge treeが検証済みheadのtreeと一致することをGitHubで確認しています。
+
+| 対象 | accepted merge commit | 検証済みtree |
+| --- | --- | --- |
+| [Controller #5](https://github.com/flamoris-jp/flamoris-generation-controller/pull/5) | [bbabc38](https://github.com/flamoris-jp/flamoris-generation-controller/commit/bbabc38240e3af2bf4b2093951da90273b5659d8) | `ca27eaab5f84207d753e811a2f7932b65521f553` |
+| [Generation #71](https://github.com/flamoris-jp/flamoris-generation-mcp/pull/71) | [e592457](https://github.com/flamoris-jp/flamoris-generation-mcp/commit/e59245723ca0208b69cc8d3de4461a1eace596c9) | `99b0aea20abe630b4dec6a76ab6b30141de3876a` |
+| [Studio #65](https://github.com/flamoris-jp/flamoris-studio/pull/65) | [cf11ef4](https://github.com/flamoris-jp/flamoris-studio/commit/cf11ef421bef4c944bb2aca51378ec21200d8a9a) | `f0b2f255ef33a4663a1d72608e28974eb30a6186` |
+| 全体文書 | 本記録・active設計・レビュー履歴を含む[AI #25](https://github.com/flamoris-jp/flamoris-ai/pull/25)のmerge commitを参照 | CI workflowなし。変更9文書・相対リンク46件／見出し・source整合とdiffを検証 |
+
+両dependentとDockerのcore pinは、CIで検証した`b57140954c8bc8176d882a053df70f00fad2be31`を維持します。マージ後も同じsource artifactを導入でき、履歴上のsquash commitへ依存を再指定する必要はありません。Controller #1のソースscopeを受け入れ、運用工程は本書Eと親AI #18へ引き継ぎます。既存Issue履歴・旧cleanup証拠は保持します。
+
+F/Gのソース作業は完了です。実機への反映、installed version、endpoint／private token／namespaceの変更、旧ownerのdrain/reconcile、provider／二account受け入れは未着手です。次の工程はE1の棚卸しとmatched cutover計画で、調査／移行対象が明示された場合に進めます。新しい参照画像/custom機能はHの別scopeです。
+
 ## 5. 詳細ロードマップ
 
 これは工程と依存関係の計画です。将来の工程を列挙したこと自体で、保留中の実装や実機作業が再開するわけではありません。予定日・port・service方式など未決定の事項は固定しません。
@@ -179,7 +198,7 @@ AI側は変更9文書、相対リンク45件と見出し、固定source／CI記�
 | D. ソース受け入れ・引継ぎ | 追加全体レビューを含め受け入れ完了。本書で共有入口を整備 | 最終PR CI、受け入れmerge commit、実装と実機の差、次作業と保留理由を一箇所から辿れる |
 | E. 実機の移行計画・受け入れ | 未着手・今回の認可範囲外 | 実状態の確認、既存debtのreconcile、backup/rollback、明示された範囲の設定切替と実測 |
 | F. Generation Controllerの実装準備・具体設計 | 完了。具体契約／hosting／service permissionを4.6で固定 | README/AGENTS、retained inventoryと実装方針を整備し、最小非MCP契約と一つの状態所有者を決定 |
-| G. Generation内部接続の最終組み換え | 対応PRで実装・最終head CI成功、merge待ち | Controllerへの内部接続と外部MCP facadeを一つのdomain authorityに接続し、互換経路を解消 |
+| G. Generation内部接続の最終組み換え | 完了・main反映済み。最終head CI成功とmerge tree一致を4.8に記録 | Controllerへの内部接続と外部MCP facadeを一つのdomain authorityに接続し、互換経路を解消 |
 | H. 制作機能の拡張 | 個別scope。新しい参照画像/custom構成は保留 | 利用目的、provider契約、実機受け入れを個別に定める。旧v3やmandatory Runtime bridgeを再作成しない |
 
 ### E1. 実機移行前の棚卸し
@@ -225,7 +244,7 @@ AI側は変更9文書、相対リンク45件と見出し、固定source／CI記�
 
 ### G. Generation内部接続の最終組み換え
 
-Controller／外部facade／Studio gatewayのソースを4.6の対応PRで実装し、4.7でレビュー修正しました。最新headのCIは4.7を参照します。残るsource acceptanceは対象を明示したmergeです。PRが未マージの間はmain／installed versionへ反映済みとはしません。live cutoverはEの棚卸し、旧ownerのreconcile、backup/rollback、固定artifactと明示された設定変更に続きます。
+Controller／外部facade／Studio gatewayのソースを4.6で実装し、4.7でレビュー修正、4.8で再レビューしてmain受け入れしました。最終headのCIは4.7、merge commitと検証済みtreeの一致は4.8を参照します。installed versionと実機設定は未変更です。live cutoverはEの棚卸し、旧ownerのreconcile、backup/rollback、固定artifactと明示された設定変更に続きます。
 
 実機ではStudioの旧MCP／Hub endpointから正確な `/api/v1/generation` baseへ変更し、hostの `FLAMORIS_CONTROLLER_TOKEN` と同じprivate `STUDIO_GENERATION_TOKEN`、空の `STUDIO_GENERATION_NAMESPACE` を設定します。これは旧endpointの自動fallbackではありません。old/new ownerを併走させず、既存unknown journalを消しません。
 
@@ -239,10 +258,9 @@ Controller／外部facade／Studio gatewayのソースを4.6の対応PRで実装
 
 | 優先 | 次の候補 | 開始条件 | 現在 |
 | --- | --- | --- | --- |
-| 1 | GのController対応PRのsource acceptance | 今回の実装scope。mergeは適用される明示指示に従う | 最終head CIは成功。対応PRのmergeが残る。Fの契約は決定済み |
-| 2 | E1の実機棚卸し・matched cutover計画 | 実機調査／移行の指示と対象範囲 | 未着手。source実装と実機設定は別 |
-| 3 | E2/E3の実機受け入れ | debt・backup/rollback・versionを確認し、変更範囲が明示される | 未着手。Controller対応版のactivationでは一つのauthorityを維持 |
-| 4 | Hの制作機能拡張 | 個別の利用要件とscope | 新しい参照画像/custom構成は保留 |
+| 1 | E1の実機棚卸し・matched cutover計画 | 実機調査／移行の指示と対象範囲 | 未着手。source実装と実機設定は別 |
+| 2 | E2/E3の実機受け入れ | debt・backup/rollback・versionを確認し、変更範囲が明示される | 未着手。Controller対応版のactivationでは一つのauthorityを維持 |
+| 3 | Hの制作機能拡張 | 個別の利用要件とscope | 新しい参照画像/custom構成は保留 |
 
 4.2の実装と4.4の追加レビュー修正・README整理は受け入れ済みです。全体文書の採用commitはAI #23を参照します。親/子Issueは、受け入れた範囲と今後の境界を記録しており、openであることだけを根拠に完了済み実装をやり直しません。旧feature Issueの履歴・実機証拠も保持します。
 
@@ -258,7 +276,7 @@ Controller／外部facade／Studio gatewayのソースを4.6の対応PRで実装
 | Runtime | [#23](https://github.com/flamoris-jp/flamoris-ai-runtime/issues/23) | [Architecture](https://github.com/flamoris-jp/flamoris-ai-runtime/blob/main/docs/ARCHITECTURE.md) |
 | Hub | [#36](https://github.com/flamoris-jp/flamoris-mcp-hub/issues/36) | [Generation rollout](https://github.com/flamoris-jp/flamoris-mcp-hub/blob/main/docs/GENERATION_ROLLOUT.md) |
 | GPU Node Manager | [#11](https://github.com/flamoris-jp/flamoris-gpu-node-manager/issues/11) | [Architecture](https://github.com/flamoris-jp/flamoris-gpu-node-manager/blob/main/docs/ARCHITECTURE.md) |
-| Generation Controller | [#1](https://github.com/flamoris-jp/flamoris-generation-controller/issues/1) | [実装方針・inventory](https://github.com/flamoris-jp/flamoris-generation-controller/blob/b57140954c8bc8176d882a053df70f00fad2be31/docs/IMPLEMENTATION.md)。共通core／API／単一所有者と対応PRを実装。最終source acceptance／live cutover待ち |
+| Generation Controller | [#1](https://github.com/flamoris-jp/flamoris-generation-controller/issues/1) | [実装方針・inventory](https://github.com/flamoris-jp/flamoris-generation-controller/blob/b57140954c8bc8176d882a053df70f00fad2be31/docs/IMPLEMENTATION.md)。共通core／API／単一所有者と対応PRを実装。source acceptance完了（4.8）。live cutoverは別工程で未着手 |
 
 ## 8. 別スレッドでの再開・更新方法
 
@@ -275,7 +293,7 @@ ChatGPTの会話記憶だけで自動同期するものではありません。�
 
 新スレッドに渡す例：
 
-> `flamoris-jp/flamoris-ai` のcurrent mainにある `PROGRESS.md` と `AGENTS.md`、対象Issueを読んでください。既存ソース完了・実機未受け入れ・Controllerのopen実装PR・main受け入れ・実機未反映を区別し、今回お願いする作業は「対象工程と範囲をここに記入」です。完了後はPR/検証結果・次の作業を `PROGRESS.md` に反映してください。
+> `flamoris-jp/flamoris-ai` のcurrent mainにある `PROGRESS.md` と `AGENTS.md`、対象Issueを読んでください。既存ソース完了・実機未受け入れ・Controllerのmain受け入れ済みソース・実機未反映を区別し、今回お願いする作業は「対象工程と範囲をここに記入」です。完了後はPR/検証結果・次の作業を `PROGRESS.md` に反映してください。
 
 最初に渡すリンク：<https://github.com/flamoris-jp/flamoris-ai/blob/main/PROGRESS.md>
 
@@ -291,3 +309,4 @@ ChatGPTの会話記憶だけで自動同期するものではありません。�
 | 2026-10-05 | ユーザーの全件マージ指示でowner7PRと組織READMEをmain反映。マージ前CI／headとmerge tree一致を確認し、AI #23に受け入れcommit・残作業を集約 |
 | 2026-10-05 | Controller #4／AI #24の準備受け入れ後、明示されたController実装指示でcore／APIとGeneration #71／Studio #65の対応接続を実装・検証。open PRと固定head、単一所有者／service permission／残る実機切替を4.6へ記録 |
 | 2026-10-05 | Controller対応4PRを再レビュー。終了時の所有権、HTTP絶対期限、長いmodel IDの3件を修正し、11 testsとsource pinを更新。最新head・検証とレビュー記録を4.7へ追加 |
+| 2026-10-05 | 再レビュー・重点92 testsと最終CIを確認後、Controller #5／Generation #71／Studio #65をmainへマージ。全merge tree一致と受け入れcommit、残る実機工程を4.8へ記録 |

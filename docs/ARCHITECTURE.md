@@ -14,7 +14,7 @@ Architecture authority: [AI #18](https://github.com/flamoris-jp/flamoris-ai/issu
 | Studio raw Intelligence | Shared `flamoris_intelligence` provider adapters → approved providers |
 | Studio Agent Support | Agent JSON HTTP `/api/v1` → shared provider adapters → approved providers |
 
-External MCP adapters and internal callers share their owner's non-MCP contract. Intelligence/Agent source already implements this separation; the matched Controller #5 / Generation #71 / Studio #65 PRs now implement generation. The generation rows describe those open/unmerged source PRs, not an already deployed installation. The facade hosts both adapters around one Controller on its existing listener, adding no compulsory daemon or port.
+External MCP adapters and internal callers share their owner's non-MCP contract. Intelligence/Agent source already implements this separation; the matched Controller #5 / Generation #71 / Studio #65 PRs now implement generation. The generation rows describe the accepted main source (PROGRESS §4.8); live deployment remains pending. The facade hosts both adapters around one Controller on its existing listener, adding no compulsory daemon or port.
 
 Raw inference uses the provider contract directly. Agent supplies optional personality through its internal HTTP and separate external MCP surfaces.
 
@@ -22,7 +22,7 @@ Raw inference uses the provider contract directly. Agent supplies optional perso
 
 | Owner | Responsibility / status | Boundary |
 | --- | --- | --- |
-| Generation Controller | Implemented MCP-free retained generation domain; source PRs, live cutover pending | Reuse retained domain with one authority; inference kernel and host lifecycle remain independent |
+| Generation Controller | Implemented MCP-free retained generation domain; accepted in main, live cutover pending | Reuse retained domain with one authority; inference kernel and host lifecycle remain independent |
 | Generation MCP | External MCP tools/translation and co-hosted internal HTTP adapter | Retained domain is extracted into Controller; external MCP compatibility remains |
 | Intelligence MCP | Shared non-MCP provider adapters and optional external MCP translation | Agent owns durable personality/conversation state |
 | AI Agent | Optional personality, conversation/memory, principal/session and context policy | Raw inference and generation have their own independently authorized paths |
@@ -48,7 +48,7 @@ Internal POST `/api/v1/generation/{operation}` has strict bounded JSON requests,
 
 Both ingress paths contend for the same durable reservation. Disconnect/restart/timeout never authorizes resubmission; ambiguous provider acceptance or journal commit stays unknown/reserved. Lifetime lock exclusion is local to one output root, not a distributed scheduler/GPU lock, and cannot constrain old binaries that do not acquire it. Operational cutover must drain/reconcile and stop the previous matched authority, preserve/back up records and explicitly update Studio endpoint/token/empty namespace. No DB migration is introduced.
 
-The removed custom registry/versioning/v3/qualification/Runtime bridge is not copied. Reference-image/new-provider features remain separate. Source PR review/CI/merge and live cutover are recorded independently in PROGRESS §4.7; §4.6 preserves the initial implementation evidence.
+The removed custom registry/versioning/v3/qualification/Runtime bridge is not copied. Reference-image/new-provider features remain separate. PROGRESS §4.8 records source acceptance and pending live cutover; §4.7 preserves review/CI evidence and §4.6 the initial implementation.
 
 ## Three distinct names
 
@@ -82,10 +82,10 @@ Preserve identities, retained assets/inputs/conversations, provenance and uncert
 
 ## Acceptance and remaining work
 
-The [README source matrix](../README.md#implemented-source-boundaries) links accepted contracts. [PROGRESS.md](../PROGRESS.md) and the [review report](REVIEW_2026-10-05.md) retain source/test history and accepted follow-up fixes; [roadmap](ROADMAP.md) lists remaining work. Controller implementation and matched callers are in open source PRs; main acceptance remains pending, and live deployment, retained-data reconciliation and new reference-image features retain separate scopes.
+The [README source matrix](../README.md#implemented-source-boundaries) links accepted contracts. [PROGRESS.md](../PROGRESS.md) and the [review report](REVIEW_2026-10-05.md) retain source/test history and accepted follow-up fixes; [roadmap](ROADMAP.md) lists remaining work. Controller implementation and matched callers are accepted in main. Live deployment, retained-data reconciliation and new reference-image features retain separate scopes.
 
 ## 日本語
 
 MCPは外部入口、Agentは任意の人格、Runtimeは推論とExecuteFlow、ExecutionPlanはコンパイル済み表現です。ComfyWorkFlowはComfyUIが実行するグラフ・JSONです。
 
-Studioのraw IntelligenceとAgent内部の実行は共通provider adapterへ直接接続し、StudioのAgent SupportはAgent JSON HTTPを使います。GenerationもControllerを実装し、Studioの認証付きHTTPと外部MCPが同じ生成状態・予約を使うソースへ切り替えました。保存形式と基本/native生成の保護は保持します。実装PRは未マージで、実機受け入れは未着手です。
+Studioのraw IntelligenceとAgent内部の実行は共通provider adapterへ直接接続し、StudioのAgent SupportはAgent JSON HTTPを使います。GenerationもControllerを実装し、Studioの認証付きHTTPと外部MCPが同じ生成状態・予約を使うソースへ切り替えました。保存形式と基本/native生成の保護は保持します。対応PRはmain受け入れ済みで、実機受け入れは未着手です。

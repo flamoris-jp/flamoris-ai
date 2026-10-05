@@ -1,6 +1,6 @@
 # Controller実装のレビュー・修正記録
 
-日付：2026-10-05。対象はController #5、Generation #71、Studio #65、AI #25のopen PRです。ユーザーのレビュー・修正ループ指示に基づくソースレビューで、merge／実機受け入れとは区別します。[PROGRESS §4.7](../PROGRESS.md#47-controllerのレビュー修正ループ2026-10-05) が最新の引継ぎです。
+日付：2026-10-05。レビュー開始時の対象はController #5、Generation #71、Studio #65、AI #25のopen PRです。ユーザーのレビュー・修正ループ指示に基づくソースレビューで、merge／実機受け入れとは区別します。[PROGRESS §4.7](../PROGRESS.md#47-controllerのレビュー修正ループ2026-10-05) が修正・検証の固定記録、[§4.8](../PROGRESS.md#48-controllerの再レビューとソース受け入れ2026-10-05) が後続の再レビュー・main受け入れと最新の引継ぎです。
 
 ## 基準とレビュー範囲
 
@@ -34,4 +34,4 @@ coreのconstruction／ownership／shutdown、23 operationのstrict DTO、HTTP認
 
 両callerのcore依存を`b57140954c8bc8176d882a053df70f00fad2be31`へ揃えました。Generation Dockerの依存固定も同じcommitです。依存・active設計リンクは修正後のcoreを指し、初回実装の固定CI記録はPROGRESS §4.6に保持します。
 
-4PRは未マージで、実機も未変更です。source acceptance後のlive切替は、一つのowner、旧versionのdrain/reconcile、保存状態のbackup/rollback、明示されたendpoint／private token／空namespace設定を別scopeで確認します。新しい参照画像／custom機能、DB migration、provider／GPU lifecycle、data／grant／credential変更は追加していません。
+初回レビュー完了時は4PR未マージ・実機未変更でした。後続の明示マージ指示に基づくmain受け入れはPROGRESS §4.8を参照します。実機は未変更のままです。live切替は、一つのowner、旧versionのdrain/reconcile、保存状態のbackup/rollback、明示されたendpoint／private token／空namespace設定を別scopeで確認します。新しい参照画像／custom機能、DB migration、provider／GPU lifecycle、data／grant／credential変更は追加していません。
