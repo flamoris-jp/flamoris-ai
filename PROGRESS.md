@@ -109,7 +109,7 @@ Studioの元のbuiltin Imageは参照画像を受け付けません。古いcust
 | GPU Node Manager | [#12](https://github.com/flamoris-jp/flamoris-gpu-node-manager/pull/12)：独立host portと廃止済みGeneration consumerを区別 |
 | Intelligence | 現行source／103 testsを再確認。追加ソース変更なし |
 
-追加PRを自動マージせず、レビューできる状態で公開しています。最新headのCIとローカル検証の差は[レビュー記録](docs/REVIEW_2026-10-05.md#ci受け入れ記録)を参照。Controller／実機操作／新しいreference featureは再開していません。
+追加PRを自動マージせず、レビューできる状態で公開しています。6 owner workflowの最新head CIは全て成功。ローカル検証の差は[レビュー記録](docs/REVIEW_2026-10-05.md#ci受け入れ記録)を参照。Controller／実機操作／新しいreference featureは再開していません。
 
 ## 5. 詳細ロードマップ
 
