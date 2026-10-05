@@ -121,7 +121,9 @@ Studioの元のbuiltin Imageは参照画像を受け付けません。古いcust
 
 今回の文書PRで、[Controller実装方針](https://github.com/flamoris-jp/flamoris-generation-controller/blob/ba9f3856517b56dad509f757b73cdcdc00ed5b6e/docs/IMPLEMENTATION.md)にretained sourceのclass/module inventory、MCP/Studioに残す責務、単一state owner、未決定のDTO/auth/hosting、段階的な受け入れを記録します。Generation `02ce5e23f2c6cd311181169e36e58a0eb6eb6ff4`、Studio `deb0dd9f796e3f47b3eb35ed631ea9cacb18ebdd`を確認した準備基準で、将来のcode taskでは最新ソースを再照合します。
 
-[Controller #4](https://github.com/flamoris-jp/flamoris-generation-controller/pull/4) と対応するAI文書PRが今回の更新です。文書のレビュー・PR反映とmain受け入れを区別します。以前のcleanup受け入れは4.2／4.4のままです。具体的なコード実装はFの最小契約・状態所有者の決定に続くscopeとし、live作業や新しい参照画像を自動追加しません。
+[Controller #4](https://github.com/flamoris-jp/flamoris-generation-controller/pull/4) と [AI #24](https://github.com/flamoris-jp/flamoris-ai/pull/24) が今回の更新です。両PRは文書レビュー済み・未マージで、main受け入れとは区別します。以前のcleanup受け入れは4.2／4.4のままです。具体的なコード実装はFの最小契約・状態所有者の決定に続くscopeとし、live作業や新しい参照画像を自動追加しません。
+
+検証：変更したMarkdown 13文書、相対リンク50件・見出しanchor 7件、inventoryのソースpath 29件とdiff whitespaceを確認しました。runtime/live providerテストはこの文書更新では実行していません。
 
 ## 5. 詳細ロードマップ
 
