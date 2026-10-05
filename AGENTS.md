@@ -21,7 +21,7 @@ for scope and resumption.
 
 The documentation pass is complete. The subsequent explicit user instruction authorizes deletion-first implementation, tests, review/fix loops and merges for the internal Intelligence connections and obsolete generation subsystem. It does not authorize production deployment, restarts, DB/data/credential changes, paid inference or new Generation/reference-image features.
 
-The retained internal Intelligence contracts and bounded generation source are accepted in main. Follow-up review may remove residual code and stale instructions within those contracts. Do not repeat completed work or use superseded designs as implementation instructions. Generation Controller remains documentation-only; new Controller or generation/reference-image development requires a separate explicit instruction. Preserve bounded generation templates, generic provider recipes and retained-data protections.
+The retained internal Intelligence contracts, bounded generation source and follow-up review are accepted in main. Do not repeat completed work or use superseded designs as implementation instructions. On 2026-10-05 the user selected Controller implementation preparation, requesting README/AGENTS setup and the cross-repository implementation policy first. This supersedes the earlier blanket preparation hold. The current scope is documentation/source inventory/Issue alignment and reviewable PRs; Controller code, caller-source extraction and live cutover have not begun. Later code work follows a scoped implementation instruction. Preserve bounded generation templates, generic provider recipes and retained-data protections; new reference-image/custom features remain separate scopes.
 
 ## Canonical terminology
 
@@ -38,7 +38,7 @@ Agent is optional personality, conversation/memory, principal/session and contex
 
 AI Runtime remains model-adjacent inference with ExecuteFlow, compiled ExecutionPlan, supported control points, Jobs/Continuations and resource accounting. It is not a ComfyUI JSON builder or merely an outer loop over opaque APIs. ComfyUI executes its own graphs. Building JSON does not require Agent, AI Runtime, Hub or live GPU inference.
 
-Generation Controller is only a future generation-domain owner. No new Controller code, framework, endpoint or service is authorized now. GPU Node Manager retains host-wide runtime/GPU lifecycle authority. Its CLI/HTTP/MCP adapters may share one manager; an external MCP surface does not imply internal MCP dependencies.
+Generation Controller is the planned shared generation-domain owner for Studio and the external Generation MCP facade. Follow its [implementation plan](https://github.com/flamoris-jp/flamoris-generation-controller/blob/ba9f3856517b56dad509f757b73cdcdc00ed5b6e/docs/IMPLEMENTATION.md) for retained-code reuse, MCP-free contracts and one state authority. The current preparation does not select a port/service or implement code. Library reuse in separate frontend processes must not create competing JobStores; split MCP ingress/content from ordinary domain values and keep Studio authorization/product state. GPU Node Manager retains host-wide runtime/GPU lifecycle authority. Its CLI/HTTP/MCP adapters may share one manager; an external MCP surface does not imply internal MCP dependencies.
 
 ## Current implementation versus target
 

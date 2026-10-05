@@ -8,7 +8,7 @@
 
 このファイルは、ChatGPTの別スレッドや次の作業担当が、目的・現在地・残りの作業をまとめて確認する入口です。設計の基準は [ARCHITECTURE.md](docs/ARCHITECTURE.md)、担当Issueと従来の順序は [ROADMAP.md](docs/ROADMAP.md)。本書はその進捗と次の具体的な工程を記録します。
 
-**現在地：内部Intelligence接続の組み換えと旧Generation機構の削除に加え、全体レビューで見つけた残存コード・旧手順書・現行案内の修正までソース受け入れ完了。実機移行は未着手。Generation Controllerは未実装・保留です。**
+**現在地：内部Intelligence接続の組み換えと旧Generation機構の削除に加え、全体レビューで見つけた残存コード・旧手順書・現行案内の修正までソース受け入れ完了。実機移行は未着手。Generation Controllerは未実装ですが、今回の指示で実装準備の文書整備へ進みました。**
 
 全体の組み換えが実機まで完了した、またはGenerationの内部接続がすべて非MCPになったという意味ではありません。今のGenerationは基本/native生成・input・assetのMCP互換経路を残しています。
 
@@ -115,18 +115,26 @@ Studioの元のbuiltin Imageは参照画像を受け付けません。古いcust
 
 組織READMEの追補確認とAI文書整理では、完了したソース監査を繰り返さず、現行案内の記述だけを更新しました。開発ステータスの生成領域は変更せず、既存sync helperのoffline idempotence・日英リンク・相対／ownerリンク・見出し・diffを確認。受け入れ履歴、実機の互換／回復条件と保存データの保護は保持しています。
 
+### 4.5 Controller実装準備の再開（2026-10-05）
+
+ユーザーはControllerを共通の生成制御層として進める方針を選び、まずControllerのREADME・AGENTSとAI全体の実装方針の更新を指示しました。Fの一律保留を今回の文書整備へ変更します。Controllerコード、Generation/Studioソースの切り出しと実機cutoverはまだ行っていません。
+
+今回の文書PRで、[Controller実装方針](https://github.com/flamoris-jp/flamoris-generation-controller/blob/ba9f3856517b56dad509f757b73cdcdc00ed5b6e/docs/IMPLEMENTATION.md)にretained sourceのclass/module inventory、MCP/Studioに残す責務、単一state owner、未決定のDTO/auth/hosting、段階的な受け入れを記録します。Generation `02ce5e23f2c6cd311181169e36e58a0eb6eb6ff4`、Studio `deb0dd9f796e3f47b3eb35ed631ea9cacb18ebdd`を確認した準備基準で、将来のcode taskでは最新ソースを再照合します。
+
+[Controller #4](https://github.com/flamoris-jp/flamoris-generation-controller/pull/4) と対応するAI文書PRが今回の更新です。文書のレビュー・PR反映とmain受け入れを区別します。以前のcleanup受け入れは4.2／4.4のままです。具体的なコード実装はFの最小契約・状態所有者の決定に続くscopeとし、live作業や新しい参照画像を自動追加しません。
+
 ## 5. 詳細ロードマップ
 
 これは工程と依存関係の計画です。将来の工程を列挙したこと自体で、保留中の実装や実機作業が再開するわけではありません。予定日・port・service方式など未決定の事項は固定しません。
 
 | 工程 | 現在の状態 | 完了条件 / 主な依存 |
 | --- | --- | --- |
-| A. 設計・用語・担当整理 | 完了 | 外部/内部、任意Agent、3名称、状態所有者、Controller保留を文書とIssueに固定 |
+| A. 設計・用語・担当整理 | 完了 | 外部/内部、任意Agent、3名称、状態所有者を固定。Controllerの当時の保留は4.5で更新 |
 | B. 内部Intelligence接続 | 完了・main反映済み | shared adapter、Agent HTTP、Studio raw/Agentの両経路、保持する認可・送信同意・fenceを検証 |
 | C. 旧Generation機能と呼出し元の削除 | 完了・main反映済み | custom/v3/Runtime委譲と対応Studio/Hub/Runtimeを削除し、基本/native・保存データ・unknown予約を保持 |
 | D. ソース受け入れ・引継ぎ | 追加全体レビューを含め受け入れ完了。本書で共有入口を整備 | 最終PR CI、受け入れmerge commit、実装と実機の差、次作業と保留理由を一箇所から辿れる |
 | E. 実機の移行計画・受け入れ | 未着手・今回の認可範囲外 | 実状態の確認、既存debtのreconcile、backup/rollback、明示された範囲の設定切替と実測 |
-| F. Generation Controllerの具体設計 | 保留・具体契約は未決定 | ユーザーが再開した後、保持domainのinventory、最小非MCP契約と一つの状態所有者を設計 |
+| F. Generation Controllerの実装準備・具体設計 | 文書整備を再開。具体契約は未決定 | README/AGENTS、retained inventoryと実装方針を整備し、最小非MCP契約と一つの状態所有者を決定 |
 | G. Generation内部接続の最終組み換え | 未実装・F待ち | Controllerへの内部接続と外部MCP facadeを一つのdomain authorityに接続し、互換経路を解消 |
 | H. 制作機能の拡張 | 個別scope。新しい参照画像/custom構成は保留 | 利用目的、provider契約、実機受け入れを個別に定める。旧v3やmandatory Runtime bridgeを再作成しない |
 
@@ -167,15 +175,15 @@ Studioの元のbuiltin Imageは参照画像を受け付けません。古いcust
 
 完了条件：保持されたgeneration機能が実機で確認され、旧custom/v3が実行不能で、保存データとunknown予約が保持される。Generationの非MCP cutoverが済んだとは記録しない。
 
-### F. 将来のGeneration Controller設計
+### F. Generation Controller実装準備と具体設計
 
-現在は [Controller #1](https://github.com/flamoris-jp/flamoris-generation-controller/issues/1) の文書上の境界だけです。実装再開・具体契約の決定は保留しています。
+現在は [Controller #1](https://github.com/flamoris-jp/flamoris-generation-controller/issues/1) で、文書上の境界からretained sourceのinventory・実装方針へ進めています。Controllerのコードは未実装で、具体的なDTO・内部認証・hosting方式はまだ決定していません。
 
-再開が指示された場合の設計順序：
+2026-10-05の今回の指示は実装準備の文書整備です。[Controller実装方針](https://github.com/flamoris-jp/flamoris-generation-controller/blob/ba9f3856517b56dad509f757b73cdcdc00ed5b6e/docs/IMPLEMENTATION.md)に初期inventoryを記録しました。次の具体設計・実装scopeでは以下を確定します：
 
 1. 現在保持されたprovider adapter/capability、request/recipe、JobStore、Input/Asset、retention、provenanceと実際のcallerをinventoryする。削除したcustom/v3 subsystemは移植元にしない。
 2. Studioと外部MCP facadeが必要とする最小のrequest/result・job observation・scoped cancellation・input/asset契約を定める。認可、ID互換、bounds、unknown/no-replayも含める。
-3. library/service方式と既存状態の所有者を決める。具体endpoint・port・DB配置はcallerと運用を確認してから決め、先に新frameworkやschedulerを作らない。
+3. MCP-free Python domainと、一つのconstruction/lifecycle ownerを決める。MCP facadeと非MCP adapterの同居を先に検討し、独立network processが必要かをcallerから判断する。具体endpoint・port・DB配置を未実装の設定として先に固定しない。
 4. 二frontendが同じdomain authority・journal・reservationを使う方法と、既存ID/dataの互換・移行・rollbackを定める。ControllerとMCPに独立したJobStoreを作らない。
 5. provider契約テスト、二callerの同時admission/隔離、uncertain submit・restart・cancel・input/asset権限・bounded transferの受け入れ項目を決める。静的JSONと実GPU/provider qualificationを分ける。
 6. 設計をレビューし、具体的な実装Issueへ分割する。新しいComfyWorkFlow機能が必要なら制作上の要件から別に設計する。旧登録/版管理/合成を自動再作成しない。
@@ -184,7 +192,7 @@ Studioの元のbuiltin Imageは参照画像を受け付けません。古いcust
 
 ### G. Generation内部接続の最終組み換え
 
-Fの設計と実装再開が前提です。
+Fの最小契約・状態所有者の設計と、具体的なcode taskのscopeを前提にします。今回の文書準備では未実装です。
 
 1. reviewed契約に沿ったController/domain実装を作る。GPU lifecycle・Agent state・Runtime推論のauthorityを取り込まない。
 2. Generation MCPを外部tool/schema/transport・入力/結果変換のfacadeとして接続する。保持された外部toolとIDの互換は維持または明示的にversion化する。
@@ -204,10 +212,10 @@ Fの設計と実装再開が前提です。
 
 | 優先 | 次の候補 | 開始条件 | 現在 |
 | --- | --- | --- | --- |
-| 1 | E1の実機棚卸しと移行計画 | 実機調査/移行を再開する指示と対象範囲 | 未着手。現在の稼働状態はこの文書から判断しない |
-| 2 | E2/E3の設定切替と実機受け入れ | E1でdebt・backup/rollback・versionを確認し、変更範囲が明示される | 未着手 |
-| 3 | FのController具体設計 | Controller設計を再開する指示 | 保留。library/service・API・port・migration方式は未決定 |
-| 4 | GのController実装と内部Generation切替 | Fのreviewed契約と実装再開 | 未実装 |
+| 1 | FのController実装準備 | 2026-10-05のREADME/AGENTS・実装方針更新の指示 | 今回の文書scope。DTO/auth/hosting等は後続の具体設計で決定 |
+| 2 | GのController実装と内部Generation切替 | Fのreviewed契約と具体的なcode task | 未実装。core/lifecycle → 外部facade → Studio gatewayの順 |
+| 3 | E1の実機棚卸しと移行計画 | 実機調査/移行の指示と対象範囲 | 未着手。Fのoffline準備の前提にはしない |
+| 4 | E2/E3と将来Controllerの実機受け入れ | debt・backup/rollback・versionを確認し、変更範囲が明示される | 未着手。実activationでは一つのauthorityを維持 |
 | 5 | Hの制作機能拡張 | 個別の利用要件とscope | 新しい参照画像/custom構成は保留 |
 
 4.2の実装と4.4の追加レビュー修正・README整理は受け入れ済みです。全体文書の採用commitはAI #23を参照します。親/子Issueは、受け入れた範囲と今後の境界を記録しており、openであることだけを根拠に完了済み実装をやり直しません。旧feature Issueの履歴・実機証拠も保持します。
@@ -224,7 +232,7 @@ Fの設計と実装再開が前提です。
 | Runtime | [#23](https://github.com/flamoris-jp/flamoris-ai-runtime/issues/23) | [Architecture](https://github.com/flamoris-jp/flamoris-ai-runtime/blob/main/docs/ARCHITECTURE.md) |
 | Hub | [#36](https://github.com/flamoris-jp/flamoris-mcp-hub/issues/36) | [Generation rollout](https://github.com/flamoris-jp/flamoris-mcp-hub/blob/main/docs/GENERATION_ROLLOUT.md) |
 | GPU Node Manager | [#11](https://github.com/flamoris-jp/flamoris-gpu-node-manager/issues/11) | [Architecture](https://github.com/flamoris-jp/flamoris-gpu-node-manager/blob/main/docs/ARCHITECTURE.md) |
-| Generation Controller | [#1](https://github.com/flamoris-jp/flamoris-generation-controller/issues/1) | 将来の境界のみ。実装保留 |
+| Generation Controller | [#1](https://github.com/flamoris-jp/flamoris-generation-controller/issues/1) | [実装方針・inventory](https://github.com/flamoris-jp/flamoris-generation-controller/blob/ba9f3856517b56dad509f757b73cdcdc00ed5b6e/docs/IMPLEMENTATION.md)。文書準備を再開、具体契約/codeは未完了 |
 
 ## 8. 別スレッドでの再開・更新方法
 
@@ -241,7 +249,7 @@ ChatGPTの会話記憶だけで自動同期するものではありません。�
 
 新スレッドに渡す例：
 
-> `flamoris-jp/flamoris-ai` のcurrent mainにある `PROGRESS.md` と `AGENTS.md`、対象Issueを読んでください。ソース完了・実機未反映・Controller保留を区別し、今回お願いする作業は「対象工程と範囲をここに記入」です。完了後はPR/検証結果・次の作業を `PROGRESS.md` に反映してください。
+> `flamoris-jp/flamoris-ai` のcurrent mainにある `PROGRESS.md` と `AGENTS.md`、対象Issueを読んでください。既存ソース完了・実機未受け入れ・Controllerの文書準備と未実装を区別し、今回お願いする作業は「対象工程と範囲をここに記入」です。完了後はPR/検証結果・次の作業を `PROGRESS.md` に反映してください。
 
 最初に渡すリンク：<https://github.com/flamoris-jp/flamoris-ai/blob/main/PROGRESS.md>
 
