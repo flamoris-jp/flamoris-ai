@@ -6,15 +6,15 @@ Architecture authority: [AI #18](https://github.com/flamoris-jp/flamoris-ai/issu
 
 | Caller / capability | Current source contract |
 | --- | --- |
-| External generation client | MCP Hub → Generation MCP → co-located generation domain/providers |
+| External generation client | MCP Hub → Generation MCP facade → shared Controller → providers |
 | External Intelligence client | MCP Hub → Intelligence MCP facade → shared provider adapters |
 | External Agent client | Agent MCP facade → Agent state/execution contracts |
 | External GPU lifecycle client | GPU Manager MCP facade, optionally through Hub → GPU Node Manager |
-| Studio generation | Generation MCP compatibility route → generation domain/providers |
+| Studio generation | Authenticated Controller HTTP v1 → same Controller → providers |
 | Studio raw Intelligence | Shared `flamoris_intelligence` provider adapters → approved providers |
 | Studio Agent Support | Agent JSON HTTP `/api/v1` → shared provider adapters → approved providers |
 
-The target is for external MCP adapters and internal callers to share the owner's non-MCP contract. Intelligence/Agent source implements this separation. Generation retains its MCP compatibility boundary while Controller is unimplemented. Controller is the planned shared generation-domain owner. The 2026-10-05 user decision resumes implementation preparation through repository setup and policy documentation; code remains unimplemented. A replaceable interface does not prescribe an additional network service.
+External MCP adapters and internal callers share their owner's non-MCP contract. Intelligence/Agent source already implements this separation; the matched Controller #5 / Generation #71 / Studio #65 PRs now implement generation. The generation rows describe those open/unmerged source PRs, not an already deployed installation. The facade hosts both adapters around one Controller on its existing listener, adding no compulsory daemon or port.
 
 Raw inference uses the provider contract directly. Agent supplies optional personality through its internal HTTP and separate external MCP surfaces.
 
@@ -22,8 +22,8 @@ Raw inference uses the provider contract directly. Agent supplies optional perso
 
 | Owner | Responsibility / status | Boundary |
 | --- | --- | --- |
-| Generation Controller | Planned common non-MCP generation owner; documentation only, implementation preparation underway | Reuse retained domain with one authority; inference kernel and host lifecycle remain independent |
-| Generation MCP | Current bounded domain/providers plus external MCP tools/translation | Planned separation moves retained domain to Controller; external MCP compatibility remains |
+| Generation Controller | Implemented MCP-free retained generation domain; source PRs, live cutover pending | Reuse retained domain with one authority; inference kernel and host lifecycle remain independent |
+| Generation MCP | External MCP tools/translation and co-hosted internal HTTP adapter | Retained domain is extracted into Controller; external MCP compatibility remains |
 | Intelligence MCP | Shared non-MCP provider adapters and optional external MCP translation | Agent owns durable personality/conversation state |
 | AI Agent | Optional personality, conversation/memory, principal/session and context policy | Raw inference and generation have their own independently authorized paths |
 | AI Runtime | Model-adjacent inference, ExecuteFlow, compiled ExecutionPlan, Jobs/Continuations and resources | ComfyUI owns its graph execution; Agent owns durable personality state |
@@ -33,20 +33,22 @@ Raw inference uses the provider contract directly. Agent supplies optional perso
 
 ## Generation Controller implementation direction
 
-The current preparation is defined in [Controller #1](https://github.com/flamoris-jp/flamoris-generation-controller/issues/1) and the [implementation plan](https://github.com/flamoris-jp/flamoris-generation-controller/blob/ba9f3856517b56dad509f757b73cdcdc00ed5b6e/docs/IMPLEMENTATION.md). It changes the previous preparation hold, not the current source paths shown above.
+The implementation is coordinated in [Controller #1](https://github.com/flamoris-jp/flamoris-generation-controller/issues/1), [the retained-source inventory](https://github.com/flamoris-jp/flamoris-generation-controller/blob/640a5bd48c76e4bf736e9a3589c216123ccd18b3/docs/IMPLEMENTATION.md) and [HTTP contract](https://github.com/flamoris-jp/flamoris-generation-controller/blob/640a5bd48c76e4bf736e9a3589c216123ccd18b3/docs/API.md). The scoped 2026-10-05 code instruction supersedes preparation-only holds.
 
-| Concern | Implementation direction |
+| Concern | Implemented source decision |
 | --- | --- |
-| Core | Reuse retained generation recipes, model/capability metadata, provider adapters, jobs/results, managed inputs/staging, assets/transfer and retention in an MCP-free Python domain package |
-| Shared state | Select one runtime/construction/lifecycle owner for Studio and external MCP; importing a library or sharing storage does not make separate process-local reservations safe |
-| External facade | Keep tool names/annotations, wire validation, signed MCP ingress and SDK error/content mapping in Generation MCP |
-| Studio | Replace its MCP gateway with the same non-MCP contract; retain accounts/CSRF, ownership, opaque mappings, history/presets, request fences and browser publication guards |
-| Specification | Centralize generation constraints/profiles as appropriate; consumer DTO checks, browser limits and untrusted-result validation remain |
-| Compatibility | Preserve job/recipe/input/asset IDs, configured-provider semantics, journals/leases, provenance and unknown/no-replay behavior; explicitly review any unavoidable format/API change |
+| Core | `flamoris_generation_controller` owns retained recipes, model/capability metadata, provider adapters, jobs/results, managed inputs/uploads/staging, assets/transfer and retention; no MCP/Hub/Studio imports |
+| Shared state | One runtime/lifecycle in Generation MCP's host, used by both adapters. Output-root lifetime ownership lock is acquired before provider construction/recovery; duplicate processes fail before effects |
+| External facade | 23 retained tool names/annotations, signed MCP ingress, wire validation and SDK errors/binary mapping remain in Generation MCP |
+| Studio | Direct authenticated JSON/binary HTTP; retains accounts/CSRF, owner-scoped opaque mappings, history/presets, request fences and publication rechecks |
+| Specification | Controller validates retained generation constraints/profiles; Studio retains consumer DTO checks, browser limits and untrusted-result validation |
+| Compatibility | Schemas 1/4/5/6, job/recipe/input/asset IDs, provider/storage config, journals/leases/copy records, verified provenance and unknown/no-replay are unchanged |
 
-Resolve the minimum values/errors/trusted caller context, internal authentication and hosting before extraction. First evaluate co-hosting the facade and internal adapter around one core; a separate network process is a later design choice, not a prerequisite. The deleted custom registry/versioning/v3/qualification/Runtime bridge is not a migration source or a replacement feature request.
+Internal POST `/api/v1/generation/{operation}` has strict bounded JSON requests, direct object results, binary `assets.get` and constant safe error codes. A separate private operator `FLAMORIS_CONTROLLER_TOKEN` grants the trusted backend the bounded service surface; Studio uses the same service credential and continues all user authorization. Public JSON/identity headers cannot inject trusted context; external signed provenance is separate and is not an ownership grant. An unset internal credential disables internal effects while external MCP remains usable.
 
-Proceed through contract/hosting, core/lifecycle, external facade, then Studio integration and source acceptance. Offline contract/source work does not require earlier live deployment completion. Activating a new owner requires its own installed-state inventory, drain/reconcile, backup/rollback and operational scope. New reference-image/custom features remain separate.
+Both ingress paths contend for the same durable reservation. Disconnect/restart/timeout never authorizes resubmission; ambiguous provider acceptance or journal commit stays unknown/reserved. Lifetime lock exclusion is local to one output root, not a distributed scheduler/GPU lock, and cannot constrain old binaries that do not acquire it. Operational cutover must drain/reconcile and stop the previous matched authority, preserve/back up records and explicitly update Studio endpoint/token/empty namespace. No DB migration is introduced.
+
+The removed custom registry/versioning/v3/qualification/Runtime bridge is not copied. Reference-image/new-provider features remain separate. Source PR review/CI/merge and live cutover are recorded independently in PROGRESS §4.6.
 
 ## Three distinct names
 
@@ -74,16 +76,16 @@ Keep internal execution details behind narrow interfaces. The neutral `flamoris_
 
 ## State and safety
 
-Agent conversations, Runtime active Jobs and generation jobs are different authorities. Referencing work does not transfer its lifecycle or authorize access. A future shared generation boundary must not instantiate one independent JobStore/reservation per frontend.
+Agent conversations, Runtime active Jobs and generation jobs are different authorities. Referencing work does not transfer its lifecycle or authorize access. The shared generation boundary must not instantiate one independent JobStore/reservation per frontend.
 
 Preserve identities, retained assets/inputs/conversations, provenance and uncertain accepted work during later code changes. Source deletion is not persistent-data deletion. Retained paths keep scoped authentication/authorization, complete-context remote consent, bounded I/O/time/resources, safe staging, declared outputs, redacted errors and no hidden replay/fallback. Host readiness, provider availability, actual generation acceptance and caller authorization are separate checks.
 
 ## Acceptance and remaining work
 
-The [README source matrix](../README.md#implemented-source-boundaries) links accepted contracts. [PROGRESS.md](../PROGRESS.md) and the [review report](REVIEW_2026-10-05.md) retain source/test history and accepted follow-up fixes; [roadmap](ROADMAP.md) lists remaining work. Controller policy preparation is the current documentation task. Exact contracts, code and caller cutover remain pending; live deployment, retained-data reconciliation and new reference-image features retain separate scopes.
+The [README source matrix](../README.md#implemented-source-boundaries) links accepted contracts. [PROGRESS.md](../PROGRESS.md) and the [review report](REVIEW_2026-10-05.md) retain source/test history and accepted follow-up fixes; [roadmap](ROADMAP.md) lists remaining work. Controller implementation and matched callers are in open source PRs; main acceptance remains pending, and live deployment, retained-data reconciliation and new reference-image features retain separate scopes.
 
 ## 日本語
 
 MCPは外部入口、Agentは任意の人格、Runtimeは推論とExecuteFlow、ExecutionPlanはコンパイル済み表現です。ComfyWorkFlowはComfyUIが実行するグラフ・JSONです。
 
-Studioのraw IntelligenceとAgent内部の実行は共通provider adapterへ直接接続し、StudioのAgent SupportはAgent JSON HTTPを使います。GenerationにはMCP互換経路が残り、基本/native生成と保存データの保護を現行packageが担当します。Generation Controllerは文書のみで未実装ですが、README・AGENTSと実装方針の整備を開始しました。保持domainを共通化し、Studioと外部MCPが一つの生成状態を使う方針です。コード実装と実機受け入れは後続工程です。
+Studioのraw IntelligenceとAgent内部の実行は共通provider adapterへ直接接続し、StudioのAgent SupportはAgent JSON HTTPを使います。GenerationもControllerを実装し、Studioの認証付きHTTPと外部MCPが同じ生成状態・予約を使うソースへ切り替えました。保存形式と基本/native生成の保護は保持します。実装PRは未マージで、実機受け入れは未着手です。
