@@ -1,7 +1,9 @@
 # FLAMORIS AI アーキテクチャ組み換え：進捗と引継ぎ
 
-更新日：2026-10-05（JST）  
-対象：外部MCP・内部Intelligence・任意Agent・Generation・Runtimeの責務と接続の整理  
+更新日：2026-10-05（JST）
+
+対象：外部MCP・内部Intelligence・任意Agent・Generation・Runtimeの責務と接続の整理
+
 決定と受け入れ記録：[AI #18](https://github.com/flamoris-jp/flamoris-ai/issues/18)
 
 このファイルは、ChatGPTの別スレッドや次の作業担当が、目的・現在地・残りの作業をまとめて確認する入口です。設計の基準は [ARCHITECTURE.md](docs/ARCHITECTURE.md)、担当Issueと従来の順序は [ROADMAP.md](docs/ROADMAP.md)。本書はその進捗と次の具体的な工程を記録します。
