@@ -7,8 +7,8 @@ This is a target responsibility map, not deployment evidence. [Architecture](ARC
 | Repository | Target role |
 | --- | --- |
 | [Generation Controller](https://github.com/flamoris-jp/flamoris-generation-controller) | Future internal generation boundary; documentation only, no implementation now |
-| [Generation MCP](https://github.com/flamoris-jp/flamoris-generation-mcp) | External MCP adapter; its existing ComfyWorkFlow subsystem is a later removal candidate, not code to migrate into Controller |
-| [Intelligence MCP](https://github.com/flamoris-jp/flamoris-intelligence-mcp) | External intelligence facade, not Agent/Studio's internal provider gateway |
+| [Generation MCP](https://github.com/flamoris-jp/flamoris-generation-mcp) | External MCP adapter; retire added registry/composition/delegation without moving it into Controller; basic generation remains co-located pending future Controller work |
+| [Intelligence MCP](https://github.com/flamoris-jp/flamoris-intelligence-mcp) | External facade and home of a separate importable non-MCP provider-adapter package; not Agent/Studio's internal network gateway |
 | [MCP Hub](https://github.com/flamoris-jp/flamoris-mcp-hub) | External aggregation, namespaces, connections and routing |
 
 ```text
@@ -29,7 +29,11 @@ Studio raw inference -> internal runtime / API / vendor interface
 Studio Agent Support -> AI Agent -> internal execution interface
 ```
 
-Internal FLAMORIS calls do not use MCP/Hub. An ordinary API request need not use AI Runtime. Future inference-to-generation interaction is an optional internal capability, not a prerequisite for generation or Intelligence cleanup. Existing external Agent MCP compatibility is reviewed independently.
+Internal Intelligence/Agent source now uses non-MCP contracts: the shared neutral
+provider adapter and Agent JSON HTTP API. Generation retains an explicit MCP
+compatibility exception while Controller is unimplemented. An ordinary API request
+need not use AI Runtime. Future inference-to-generation interaction remains an
+optional capability. External Agent MCP is retained independently.
 
 ## Independent model boundaries
 
@@ -53,12 +57,12 @@ Modulating existing execution and triggering new work are distinct. Keep [sensor
 
 [GPU Node Manager](https://github.com/flamoris-jp/flamoris-gpu-node-manager) owns host-wide configured runtime/GPU lifecycle. CLI/HTTP/MCP may adapt one manager. Internal callers use non-MCP interfaces; external callers may use its MCP surface through Hub. No Controller, Runtime, Agent or Studio duplicate of the host state machine is introduced. Lifecycle readiness differs from per-ComfyWorkFlow qualification.
 
-[Studio](https://github.com/flamoris-jp/flamoris-studio) owns authenticated UI, drafts, account/session mappings and per-user access. The diagram describes future internal contracts, not an already migrated gateway. Asset/conversation IDs alone grant no authorization.
+[Studio](https://github.com/flamoris-jp/flamoris-studio) owns authenticated UI, drafts, account/session mappings and per-user access. Its Intelligence/Agent gateways implement the non-MCP source contracts; generation diagrams remain the future Controller target. Asset/conversation IDs alone grant no authorization. The [source matrix](../README.md#implemented-source-boundaries) links exact evidence without claiming deployed routes.
 
 Desktop products retain their own project/document/editing state. Logging, MCP foundations, diagnostics and generic security primitives remain with [FLAMORIS Commons](https://github.com/flamoris-jp/flamoris-commons) or dedicated packages, not an AI domain merely because several callers need them.
 
 ## 日本語
 
-ExecuteFlowはRuntimeの推論フロー、ExecutionPlanは既存のコンパイル済み表現、ComfyWorkFlowはComfyUI用グラフ・JSONです。MCPは外部入口、Agentは人格が必要な場合のみ。Intelligence整理を先行し、Controllerは未実装のままにします。Generation MCPの既存ComfyWorkFlowコードは後の削除対象で、移植や再実装を今進めません。
+ExecuteFlowはRuntimeの推論フロー、ExecutionPlanは既存のコンパイル済み表現、ComfyWorkFlowはComfyUI用グラフ・JSONです。MCPは外部入口、Agentは人格が必要な場合のみ。Intelligenceの内部接続を整備し、後付けのComfyWorkFlow登録・合成・Runtime委譲は削除します。基本生成を維持し、Controllerは未実装のまま、移植や再実装はしません。
 
 See the [organization map](https://github.com/flamoris-jp/.github) and [desktop ecosystem](https://github.com/flamoris-jp/flamoris-commons/blob/main/docs/desktop-ecosystem.md). Exact status, test results and live readiness remain with each owner.

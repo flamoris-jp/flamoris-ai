@@ -18,10 +18,19 @@ Historical files retain original terms, source references, safeguards and status
 
 Internal Agent -> Intelligence MCP and Studio -> MCP Hub/MCP routes are not the target. MCP is the external facade, Agent is optional personality and internal execution uses non-MCP boundaries.
 
-Use ExecuteFlow for Runtime inference flow, preserve the compiled ExecutionPlan representation, and use ComfyWorkFlow for ComfyUI graph/JSON. The current Generation MCP ComfyWorkFlow code is for later removal, not transfer to Controller or Runtime. Controller remains unimplemented; no automatic replacement is ordered. Old composition/bridge/parallel-work sequences do not override Intelligence-first sequencing.
+Use ExecuteFlow for Runtime inference flow, preserve the compiled ExecutionPlan
+representation, and use ComfyWorkFlow for ComfyUI graph/JSON. The added Generation
+MCP custom subsystem is retired, not transferred to Controller or Runtime. Original
+builtin/native recipes remain. Controller stays unimplemented; no automatic
+replacement is ordered. Old composition/bridge/parallel-work sequences do not
+override the correction.
 
 ## Evidence and authorization
 
 Retain valid authorization, immutable references, provenance, uncertain-submit protections, limits and real acceptance records. Deleting obsolete code is not deleting user data, source history or proof of completed work. Review unfinished Issue scope individually; do not mass-close or reopen completed work.
 
-The current authorization covers documentation review/fixes and requested documentation merges only. It does not start Work implementation, Generation cleanup, deployments or provider calls. Follow #18 for the next separately scoped work.
+The subsequent explicit instruction authorized deletion-first implementation,
+internal Intelligence connections, tests, review/fixes and source merges under #18.
+It does not authorize deployment, DB/data/grant/credential changes, provider calls
+or new Controller/reference-image development. The [source matrix](../README.md#implemented-source-boundaries)
+links exact acceptance without rewriting the historical records.

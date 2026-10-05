@@ -4,9 +4,9 @@ This repository coordinates FLAMORIS AI architecture and cross-repository work. 
 
 ## Authorization and sequencing
 
-The current pass covers documentation review, fixes and explicitly user-authorized documentation merges in Chat. It does not start Work implementation, code deletion, deployment, restarts, DB or credential changes, paid inference, or Generation/reference-image development. Documentation merge does not lift those holds.
+The documentation pass is complete. The subsequent explicit user instruction authorizes deletion-first implementation, tests, review/fix loops and merges for the internal Intelligence connections and obsolete generation subsystem. It does not authorize production deployment, restarts, DB/data/credential changes, paid inference or new Generation/reference-image features.
 
-The next implementation priority is Intelligence cleanup. Prepare a precise removal inventory and minimal retained execution contract before handing that work to Work. Generation Controller remains documentation-only. The existing Generation MCP ComfyWorkFlow subsystem is for later removal, not migration into Controller. Do not interpret this as authorization to recreate it elsewhere or erase retained data.
+Intelligence cleanup is the first priority. Inventory removals and implement the smallest functioning retained non-MCP contracts before deleting their previous routes. Generation Controller remains documentation-only. Remove the added Generation MCP registry/versioning/composition/Runtime-delegation subsystem without migrating or recreating it. Preserve original bounded generation templates, generic provider recipes and retained-data protections.
 
 ## Canonical terminology
 
