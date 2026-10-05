@@ -48,7 +48,44 @@ Internal POST `/api/v1/generation/{operation}` has strict bounded JSON requests,
 
 Both ingress paths contend for the same durable reservation. Disconnect/restart/timeout never authorizes resubmission; ambiguous provider acceptance or journal commit stays unknown/reserved. Lifetime lock exclusion is local to one output root, not a distributed scheduler/GPU lock, and cannot constrain old binaries that do not acquire it. Operational cutover must drain/reconcile and stop the previous matched authority, preserve/back up records and explicitly update Studio endpoint/token/empty namespace. No DB migration is introduced.
 
-The removed custom registry/versioning/v3/qualification/Runtime bridge is not copied. Reference-image/new-provider features remain separate. PROGRESS §4.8 records source acceptance and pending live cutover; §4.7 preserves review/CI evidence and §4.6 the initial implementation.
+The removed custom registry/versioning/v3/qualification/Runtime bridge is not copied. The table above describes the accepted §4.8 baseline. The subsequent bounded reference-image implementation below has its own accepted source scope; additional providers remain separate. PROGRESS §4.8 records the earlier source acceptance and pending live cutover; §4.7 preserves review/CI evidence and §4.6 the initial implementation.
+
+## Accepted pre-deployment feature source
+
+[PROGRESS §4.9](../PROGRESS.md#49-実機投入前の2機能2026-10-05main反映) records implementation, exact tested heads, merged PRs and merge-tree equality. Controller #7 / Generation #72 / Hub #39 / Agent #43 / Studio #66 are accepted in main after the explicit user merge instruction. They have not been deployed or accepted live.
+
+Generation adds `comfy.register/get` in the existing external facade namespace,
+making 25 tools with the matching Hub catalog. Controller owns immutable,
+digest-addressed schema-7 graph definitions in `comfy-definitions-v1`, bounded
+standard checkpoint txt2img/img2img validation and the existing managed input,
+lease and ComfyUI copy ledger. Init-image graphs consume a managed PNG/JPEG/WebP
+reference (8 MiB and bounded pixels), using a shared `COMFYUI_INPUT_ROOT`.
+Unknown provider acceptance retains the copy and reservation without replay.
+Static `validated` descriptors with `live_provider_verified:false` do not certify
+GPU execution. Arbitrary custom nodes, IPAdapter/ControlNet, old schemas 2/3 and
+v3/qualification/Runtime bridges are outside this contract. Studio Image keeps
+its builtin UI. Hub forwards opaque values and rejects mismatched catalogs
+before effects; it does not validate graph semantics.
+
+Studio Agent assistant keeps its logical conversation key, response and unsent
+question when switching the selected LLM. Opt-in Agent internal
+`POST /api/v1/sessions/continue` creates an immutable same-principal child session
+and revokes the source atomically, preserving the original personality snapshot
+and historical model provenance. The rolling context is at most 12 messages/
+64 KiB; transcripts remain stored. Existing authorization expiry/capacity and
+31-handoff limit apply. Target grants, current membership and complete-context
+remote consent are checked again. Inflight/unknown turns cannot be inherited.
+External Agent MCP and one-shot raw Intelligence remain unchanged.
+
+Studio persists metadata-only switch fences before dispatch. Uncertain switches
+block new questions; explicit confirmation uses the same request identity even
+after an availability failure. Publication locks and rechecks the current
+binding. Source migration Agent `005` and Studio Alembic `20261005_12` add the
+lineage/fence records; they have not been applied live. Retention preserves
+ancestors of retained children and downgrade refuses to erase populated switch
+fences. Deployment planning must pair Controller/Generation/25-tool Hub and
+Agent/Studio with their corresponding migrations while preserving data and
+unknown reservations.
 
 ## Three distinct names
 
@@ -82,7 +119,7 @@ Preserve identities, retained assets/inputs/conversations, provenance and uncert
 
 ## Acceptance and remaining work
 
-The [README source matrix](../README.md#implemented-source-boundaries) links accepted contracts. [PROGRESS.md](../PROGRESS.md) and the [review report](REVIEW_2026-10-05.md) retain source/test history and accepted follow-up fixes; [roadmap](ROADMAP.md) lists remaining work. Controller implementation and matched callers are accepted in main. Live deployment, retained-data reconciliation and new reference-image features retain separate scopes.
+The [README source matrix](../README.md#implemented-source-boundaries) links accepted contracts. [PROGRESS.md](../PROGRESS.md) and the [review report](REVIEW_2026-10-05.md) retain source/test history and accepted follow-up fixes; [roadmap](ROADMAP.md) lists remaining work. Controller implementation, matched callers and the two §4.9 feature sources are accepted in main. Live deployment and retained-data reconciliation remain separate scopes.
 
 ## 日本語
 

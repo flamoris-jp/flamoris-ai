@@ -23,6 +23,19 @@ The documentation pass is complete. The subsequent explicit user instruction aut
 
 The retained internal Intelligence contracts, bounded generation source and follow-up review are accepted in main. Do not repeat completed work or use superseded designs as implementation instructions. The subsequent 2026-10-05 instruction explicitly requests Controller implementation. It supersedes the documentation-only preparation scope and authorizes retained-domain extraction, matched Generation MCP/Studio callers, tests, review/fixes and reviewable PRs. Controller #4 and AI #24 are merged; Controller #5, Generation #71 and Studio #65 are merged after the subsequent explicit review/fix-and-merge instruction. PROGRESS §4.8 records tested heads, merge commits and tree equality. Keep main acceptance and pending live deployment distinct. Preserve bounded generation templates, generic provider recipes and retained-data protections; new reference-image/custom features remain separate scopes.
 
+## Pre-deployment feature scope
+
+The subsequent pre-deployment request authorizes bounded ComfyWorkFlow
+registration/reference-image generation and Studio Agent conversation model
+switching, initially implementation/tests/reviewable Draft PRs only. The subsequent
+explicit user merge instruction accepts Controller #7 / Generation #72 / Hub #39 /
+Agent #43 / Studio #66 in main. PROGRESS §4.9 records the exact tested heads,
+merge commits and tree equality. It supersedes the blanket feature hold for these
+two bounded requirements. Live deployment/migration/grant/credential changes
+remain outside this scope. Preserve the accepted §4.8 baseline and do not
+reintroduce retired custom/v3/Runtime bridge machinery. Future changes require
+their own scoped authorization; merge acceptance does not establish live readiness.
+
 ## Canonical terminology
 
 - `ExecuteFlow`: AI Runtime's inference dependency/data/control flow.
