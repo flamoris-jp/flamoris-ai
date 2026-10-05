@@ -8,7 +8,7 @@
 
 このファイルは、ChatGPTの別スレッドや次の作業担当が、目的・現在地・残りの作業をまとめて確認する入口です。設計の基準は [ARCHITECTURE.md](docs/ARCHITECTURE.md)、担当Issueと従来の順序は [ROADMAP.md](docs/ROADMAP.md)。本書はその進捗と次の具体的な工程を記録します。
 
-**現在地：cleanupとController共通生成処理・対応callerはmain受け入れ済み（4.8）。続く実機投入前の2件の依頼で、ChatGPT向けComfyWorkFlow登録／参照画像生成と、Studio Agentの会話を維持したLLM切替を実装・レビューしました（4.9）。今回の成果物はDraft PRで、mainへのマージ・実機反映はまだ行っていません。**
+**現在地：cleanupとController共通生成処理・対応callerはmain受け入れ済み（4.8）。実機投入前の2件、ChatGPT向けComfyWorkFlow登録／参照画像生成とStudio Agentの会話を維持したLLM切替も、最終CIを確認してmainへマージしました（4.9）。実機反映・migration適用・live推論は未着手です。**
 
 以下の新しいGeneration経路はmain受け入れ済みのソースです。稼働済み設定や実機切替の保証ではありません。実機導入、新しい参照画像/custom機能、data/grant/credential変更は別scopeです。
 
@@ -54,7 +54,7 @@ GPU Node Managerがhost-wideなruntime起動停止・GPU handoff・transition lo
 | 外部Intelligence MCP | 外部クライアント → Hub等の外部入口 → Intelligence MCP facade → shared adapter | 外部のtool/schema/transport・結果変換を維持する |
 | 外部Agent MCP | Agentの既存inbound MCP surfaceを保持 | 内部HTTPへの置換とは別の互換面。実際の外部登録・稼働状態は別途確認する |
 | Studio generation | main受け入れ済みのStudio → 認証付きController HTTP v1 → 一つのController → provider | Studioがuser ownership・request/publication fenceを保持。main反映済み、実機未切替 |
-| 外部Generation MCP | main受け入れ済みの外部client → Hub → Generation MCP facade → 同じController → provider | 23toolとsigned ingress／SDK変換を保持。Studioとは同じruntime／予約を利用 |
+| 外部Generation MCP | main受け入れ済みの外部client → Hub → Generation MCP facade → 同じController → provider | 保持23tool＋comfy.register/getの25tool。signed ingress／SDK変換を保持し、Studioとは同じruntime／予約を利用（4.9） |
 | Runtime | native推論・ExecuteFlow・ExecutionPlan・Job/Continuationを保持 | 必要なら将来、生成能力への任意の内部連携を別scopeで設計する |
 | GPU lifecycle | 既存RuntimeManagerと共通lock。CLI/HTTP/MCPは同じmanagerを利用する | 既存authorityを維持する |
 
@@ -186,11 +186,11 @@ Controller → Generation MCP → Studioの順にexpected head SHAを指定し�
 
 F/Gのソース作業は完了です。実機への反映、installed version、endpoint／private token／namespaceの変更、旧ownerのdrain/reconcile、provider／二account受け入れは未着手です。次の工程はE1の棚卸しとmatched cutover計画で、調査／移行対象が明示された場合に進めます。新しい参照画像/custom機能はHの別scopeです。
 
-### 4.9 実機投入前の2機能（2026-10-05、Draft PR）
+### 4.9 実機投入前の2機能（2026-10-05、main反映）
 
-ユーザーの「PROGRESS.mdを前提に、ChatGPTによるComfyWorkFlow登録と参照画像生成、LLM切替時の会話引継ぎ」という依頼に基づくソース実装です。対象は実装・テスト・レビュー可能なPRまで。今回のマージ、実機deploy／restart、migration適用、grant／credential変更やlive推論は行っていません。既存main受け入れ記録4.8はそのまま保持します。
+ユーザーの「PROGRESS.mdを前提に、ChatGPTによるComfyWorkFlow登録と参照画像生成、LLM切替時の会話引継ぎ」という依頼に基づくソース実装です。当初は実装・テスト・レビュー可能なDraft PRまで進め、続く「マージもお願い」の明示指示でmainへ反映しました。最新headとbase、全CI成功、競合なし・レビュー指摘なしを再確認し、検証済みheadを指定してsquash mergeしました。実機deploy／restart、migration適用、grant／credential変更やlive推論は行っていません。既存main受け入れ記録4.8はそのまま保持します。
 
-| 担当 | Draft PR | 検証対象head | 最終CI |
+| 担当 | merged PR | 検証対象head | 最終CI |
 | --- | --- | --- | --- |
 | Controller | [#7](https://github.com/flamoris-jp/flamoris-generation-controller/pull/7) | `69b05d0897a94f5d174335f8d849ca9e1f9488ac` | Python 3.11/3.12各291件、lint/format・build・installed MCP-free core成功 |
 | Generation MCP | [#72](https://github.com/flamoris-jp/flamoris-generation-mcp/pull/72) | `bdc043f75db4455b59c3c08f94fe71b7ae4bd967` | 195件、lint/format・wheel/sdist成功 |
@@ -199,6 +199,16 @@ F/Gのソース作業は完了です。実機への反映、installed version、
 | Studio | [#66](https://github.com/flamoris-jp/flamoris-studio/pull/66) | `87bb2ce2396ecb9347858432298be0e29b987c26` | PostgreSQL backend 376件、web 103件、TypeScript/Vite・container成功 |
 
 最終headの成功run：[generation-controller](https://github.com/flamoris-jp/flamoris-generation-controller/actions/runs/37305721265)、[generation-mcp](https://github.com/flamoris-jp/flamoris-generation-mcp/actions/runs/37305804278)、[ai-agent](https://github.com/flamoris-jp/flamoris-ai-agent/actions/runs/37304935183)、[studio](https://github.com/flamoris-jp/flamoris-studio/actions/runs/37304326508)、[mcp-hub](https://github.com/flamoris-jp/flamoris-mcp-hub/actions/runs/37305563302)。ログから上記件数を確認しました。これらはsynthetic image／fake providerとPostgreSQL／UIのソース検証で、実GPU・live APIの受け入れではありません。
+
+| 担当 | main受け入れcommit | 完全なmerge SHA |
+| --- | --- | --- |
+| generation-controller | [`8997cef`](https://github.com/flamoris-jp/flamoris-generation-controller/commit/8997cef0b575fec3657337dc97a9f90094279b13) | `8997cef0b575fec3657337dc97a9f90094279b13` |
+| generation-mcp | [`962090a`](https://github.com/flamoris-jp/flamoris-generation-mcp/commit/962090ab73ccbe44d29744f279e0eb7418f0a918) | `962090ab73ccbe44d29744f279e0eb7418f0a918` |
+| mcp-hub | [`a2aa33a`](https://github.com/flamoris-jp/flamoris-mcp-hub/commit/a2aa33adeb37f5fb43b1b5bf91ae8843f3080731) | `a2aa33adeb37f5fb43b1b5bf91ae8843f3080731` |
+| ai-agent | [`78e5b92`](https://github.com/flamoris-jp/flamoris-ai-agent/commit/78e5b92fe474f7b05d12c6cbbc5569dfbaa22c1e) | `78e5b92fe474f7b05d12c6cbbc5569dfbaa22c1e` |
+| studio | [`df8a2f0`](https://github.com/flamoris-jp/flamoris-studio/commit/df8a2f045554d05b62a176857aec0fc833c6bfaf) | `df8a2f045554d05b62a176857aec0fc833c6bfaf` |
+
+各merge treeと上記CI検証済みheadのtreeが一致し、main refもmerge SHAと一致することを確認しました。Generation package／Dockerは検証済みController artifact `69b05d0897a94f5d174335f8d849ca9e1f9488ac`のpinを維持します。受け入れ記録を含む文書は[AI #26](https://github.com/flamoris-jp/flamoris-ai/pull/26)のmerge commitを参照します。このrepoにはCI workflowがなく、変更6文書の相対リンク・見出し・文書整合を確認しました。
 
 **ComfyWorkFlowと参照画像：** 外部Generationに`comfy.register/get`を追加し、Hubの公開catalogを保持23tool＋2toolの25に整合しました。登録対象は標準checkpointを用いるbounded txt2img／img2imgのAPI graphです。参照画像はinit-imageとして受け取り、IPAdapter／ControlNet／任意custom nodeへの対応は含みません。新schema 7の不変・digest IDの定義を専用`comfy-definitions-v1`に保存し、`workflows.list`のdescriptorから選んで既存build/save/submitを利用します。旧schema 2/3、custom版管理、v3、qualification/Runtime bridgeは復活させません。
 
@@ -210,7 +220,7 @@ F/Gのソース作業は完了です。実機への反映、installed version、
 
 Agent migration `005`とStudio Alembic revision `20261005_12`はソースのみ追加しました。Agentのlineageをretentionで失わないよう子から削除し、Studio downgradeは保存済みfenceを黙って消しません。MCP schema export用の一時CI workflowは最終差分から削除済みです。
 
-次は上記Draft PRのレビュー／採用判断です。採用時はControllerの検証済みartifact → Generationと同じ25tool Hub catalog、Agentの対応migration/source → Studioの対応migration/sourceを組にします。live作業はE1以降で別途対象を定め、既存data・unknown予約のreconcileとrollback条件を確認します。新機能の実機受け入れ完了とはまだ記録しません。
+ソースの採用は完了です。次はE1の実機棚卸しとmatched cutover計画で、対象が明示された範囲で進めます。Controllerの検証済みartifact → Generationと同じ25tool Hub catalog、Agentの対応migration/source → Studioの対応migration/sourceを組にし、既存data・unknown予約のreconcileとrollback条件を確認します。新機能の実機受け入れ完了とはまだ記録しません。
 
 ## 5. 詳細ロードマップ
 
@@ -225,7 +235,7 @@ Agent migration `005`とStudio Alembic revision `20261005_12`はソースのみ�
 | E. 実機の移行計画・受け入れ | 未着手・今回の認可範囲外 | 実状態の確認、既存debtのreconcile、backup/rollback、明示された範囲の設定切替と実測 |
 | F. Generation Controllerの実装準備・具体設計 | 完了。具体契約／hosting／service permissionを4.6で固定 | README/AGENTS、retained inventoryと実装方針を整備し、最小非MCP契約と一つの状態所有者を決定 |
 | G. Generation内部接続の最終組み換え | 完了・main反映済み。最終head CI成功とmerge tree一致を4.8に記録 | Controllerへの内部接続と外部MCP facadeを一つのdomain authorityに接続し、互換経路を解消 |
-| H. 制作機能の拡張 | 参照画像／ComfyWorkFlowと会話内LLM切替を4.9のDraft PRに実装。採用・実機受け入れは未完了 | bounded profileで個別に検証。追加provider／複数段／任意custom構成は別scope |
+| H. 制作機能の拡張 | 参照画像／ComfyWorkFlowと会話内LLM切替を4.9でmain受け入れ。実機受け入れは未完了 | bounded profileで個別に検証。追加provider／複数段／任意custom構成は別scope |
 
 ### E1. 実機移行前の棚卸し
 
@@ -278,16 +288,15 @@ Controller／外部facade／Studio gatewayのソースを4.6で実装し、4.7�
 
 保持されたImage・Speech・Music、raw Intelligenceと任意Agent Supportをまず利用・検証できる状態にすることが優先です。既存の利用をController完成待ちにしません。
 
-参照画像／ComfyWorkFlowと会話内LLM切替は4.9に実装・検証・Draft PRを記録しています。複数段の生成、追加providerや推論から生成への連携は対象profileを絞った別scopeです。Agent・ExecuteFlow・GPU切替を単純なJSON構築の必須条件に戻しません。Irodori・YuE2・SheetSage2等は保持されたnative契約と各実機の受け入れ状況を個別に照合します。
+参照画像／ComfyWorkFlowと会話内LLM切替は4.9に実装・検証・main受け入れを記録しています。複数段の生成、追加providerや推論から生成への連携は対象profileを絞った別scopeです。Agent・ExecuteFlow・GPU切替を単純なJSON構築の必須条件に戻しません。Irodori・YuE2・SheetSage2等は保持されたnative契約と各実機の受け入れ状況を個別に照合します。
 
 ## 6. 次に着手する作業と未決定事項
 
 | 優先 | 次の候補 | 開始条件 | 現在 |
 | --- | --- | --- | --- |
-| 1 | 4.9のDraft PRレビュー／採用判断 | 機能範囲・検証結果の確認と今回のmerge指示 | 実装／レビュー修正済み、main未反映 |
-| 2 | E1の実機棚卸し・matched cutover計画 | 実機調査／移行の指示と対象範囲 | 未着手。source実装と実機設定は別 |
-| 3 | E2/E3の実機受け入れ | debt・backup/rollback・versionを確認し、変更範囲が明示される | 未着手。対応artifact／catalog／migrationを組にして一つのauthorityを維持 |
-| 4 | Hの追加制作機能 | 個別の利用要件とscope | 任意custom node・追加provider・複数段生成は別scope |
+| 1 | E1の実機棚卸し・matched cutover計画 | 実機調査／移行の指示と対象範囲 | 未着手。4.9のsourceはmain受け入れ済み、実機設定は別 |
+| 2 | E2/E3の実機受け入れ | debt・backup/rollback・versionを確認し、変更範囲が明示される | 未着手。対応artifact／catalog／migrationを組にして一つのauthorityを維持 |
+| 3 | Hの追加制作機能 | 個別の利用要件とscope | 任意custom node・追加provider・複数段生成は別scope |
 
 4.2の実装と4.4の追加レビュー修正・README整理は受け入れ済みです。全体文書の採用commitはAI #23を参照します。親/子Issueは、受け入れた範囲と今後の境界を記録しており、openであることだけを根拠に完了済み実装をやり直しません。旧feature Issueの履歴・実機証拠も保持します。
 
@@ -341,3 +350,4 @@ ChatGPTの会話記憶だけで自動同期するものではありません。�
 | 2026-10-05 | 再レビュー・重点92 testsと最終CIを確認後、Controller #5／Generation #71／Studio #65をmainへマージ。全merge tree一致と受け入れcommit、残る実機工程を4.8へ記録 |
 
 | 2026-10-05 | 実機投入前のComfyWorkFlow登録／参照画像と会話内LLM切替を実装・レビュー。Controller #7／Generation #72／Hub #39／Agent #43／Studio #66のDraft PR、最終CIと残る採用・実機工程を4.9へ記録。今回のmerge／live変更なし |
+| 2026-10-05 | 続く明示merge指示で実装5PRをmainへ反映。最新head／CI／レビュー状態を再確認し、全merge treeと検証済みsourceの一致を確認。AI #26へ受け入れcommitと残る実機棚卸し・migration／catalog整合を記録。live変更なし |

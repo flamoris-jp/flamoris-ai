@@ -15,6 +15,14 @@ External generation clients use MCP Hub → Generation MCP facade → Controller
 
 ComfyWorkFlow specifically means ComfyUI graph/API-format JSON. The generation provider adapter constructs the bounded builtin graphs; ComfyUI owns graph execution. Other providers consume their declared generation requests/recipes.
 
+The subsequent pre-deployment features are accepted in main (PROGRESS §4.9):
+Controller #7 / Generation #72 / Hub #39 add bounded checkpoint ComfyWorkFlow
+registration and managed init-image img2img with a matching 25-tool catalog.
+Agent #43 / Studio #66 preserve the assistant's conversation/personality during
+LLM switching through immutable internal session lineage and durable switch
+fences. These source changes do not establish live provider readiness or apply
+the corresponding migrations/deployment settings.
+
 ## Personality and inference
 
 [AI Agent](https://github.com/flamoris-jp/flamoris-ai-agent) owns optional personality, identity, conversation/memory, principal/session and context policy. Model selection is independent of personality identity. Ordinary inference and generation do not require Agent.

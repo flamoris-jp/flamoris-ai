@@ -12,7 +12,7 @@ remain distinct and require their applicable scoped authorization.
 
 The [README source matrix](../README.md#implemented-source-boundaries) links accepted internal Intelligence/Agent contracts and bounded generation. The [2026-10-05 review](REVIEW_2026-10-05.md) and PROGRESS §4.4 record accepted residual fixes and organization/coordination documentation. Their reviewed source acceptance is complete; Controller source acceptance is also complete; live acceptance remains pending.
 
-Controller #5 / Generation #71 / Studio #65 implement one generation authority, the external facade and Studio direct HTTP. Those PRs are merged; PROGRESS §4.8 records acceptance, §4.7 review/CI and §4.6 initial implementation evidence. The subsequent two-feature request implements bounded ComfyWorkFlow registration/init-image generation and Studio Agent model switching in Draft PRs (PROGRESS §4.9). These PRs are not merged. Production deployment, restarts, DB/data/credential changes and paid inference remain outside this source scope.
+Controller #5 / Generation #71 / Studio #65 implement one generation authority, the external facade and Studio direct HTTP. Those PRs are merged; PROGRESS §4.8 records acceptance, §4.7 review/CI and §4.6 initial implementation evidence. The subsequent two-feature request implements bounded ComfyWorkFlow registration/init-image generation and Studio Agent model switching. Controller #7 / Generation #72 / Hub #39 / Agent #43 / Studio #66 are also merged after explicit user authorization; PROGRESS §4.9 records their final CI and merge-tree equality. Production deployment, restarts, DB/data/credential changes and paid inference remain outside this source scope.
 
 ## Remaining phases
 
@@ -22,7 +22,7 @@ Controller #5 / Generation #71 / Studio #65 implement one generation authority, 
 | Intelligence/Agent live acceptance | Configure the accepted provider-library and Agent HTTP contracts; verify grants, complete-context consent, model identity and request fences | Pending operational work (PROGRESS E2) |
 | Generation live acceptance | Verify retained Image/Speech/Music providers, inputs/assets and unresolved-job protections through the matched Controller/internal HTTP and external MCP paths | Pending operational work (PROGRESS E3) |
 | Operational Generation cutover | Drain/reconcile old owner, deploy matched artifacts and explicitly configure Studio HTTP/service credential/empty namespace | Pending separately scoped live work (PROGRESS E/F/G) |
-| Pre-deployment features | Review bounded ComfyWorkFlow registration/init-image and conversation-preserving Agent model switching | Implemented/tested Draft PRs; adoption and live acceptance pending (PROGRESS §4.9/H) |
+| Pre-deployment features | Accept bounded ComfyWorkFlow registration/init-image and conversation-preserving Agent model switching on the selected live versions | Source accepted in main; live acceptance pending (PROGRESS §4.9/H) |
 | Further product extensions | Define custom nodes, additional provider or multi-step generation requirements individually | Separate scopes (PROGRESS H) |
 
 Controller source acceptance is complete (PROGRESS F/G and §4.8). Actual activation still requires state reconciliation and operational scope. Keep authorization, provenance, retained state and unknown/no-replay guarantees in each phase.

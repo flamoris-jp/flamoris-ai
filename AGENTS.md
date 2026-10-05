@@ -27,12 +27,14 @@ The retained internal Intelligence contracts, bounded generation source and foll
 
 The subsequent pre-deployment request authorizes bounded ComfyWorkFlow
 registration/reference-image generation and Studio Agent conversation model
-switching, implementation/tests/reviewable Draft PRs only. PROGRESS §4.9 records
-the proposed sources and exact CI heads. It supersedes the blanket feature hold
-for these two bounded requirements. Merges and live deployment/migration/grant/
-credential changes are not included; earlier cleanup merge authority does not
-extend to this feature scope. Preserve the accepted §4.8 baseline and do not
-reintroduce retired custom/v3/Runtime bridge machinery.
+switching, initially implementation/tests/reviewable Draft PRs only. The subsequent
+explicit user merge instruction accepts Controller #7 / Generation #72 / Hub #39 /
+Agent #43 / Studio #66 in main. PROGRESS §4.9 records the exact tested heads,
+merge commits and tree equality. It supersedes the blanket feature hold for these
+two bounded requirements. Live deployment/migration/grant/credential changes
+remain outside this scope. Preserve the accepted §4.8 baseline and do not
+reintroduce retired custom/v3/Runtime bridge machinery. Future changes require
+their own scoped authorization; merge acceptance does not establish live readiness.
 
 ## Canonical terminology
 

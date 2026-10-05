@@ -48,11 +48,11 @@ Internal POST `/api/v1/generation/{operation}` has strict bounded JSON requests,
 
 Both ingress paths contend for the same durable reservation. Disconnect/restart/timeout never authorizes resubmission; ambiguous provider acceptance or journal commit stays unknown/reserved. Lifetime lock exclusion is local to one output root, not a distributed scheduler/GPU lock, and cannot constrain old binaries that do not acquire it. Operational cutover must drain/reconcile and stop the previous matched authority, preserve/back up records and explicitly update Studio endpoint/token/empty namespace. No DB migration is introduced.
 
-The removed custom registry/versioning/v3/qualification/Runtime bridge is not copied. The table above describes the accepted §4.8 baseline. The subsequent bounded reference-image proposal below has its own scope; additional providers remain separate. PROGRESS §4.8 records source acceptance and pending live cutover; §4.7 preserves review/CI evidence and §4.6 the initial implementation.
+The removed custom registry/versioning/v3/qualification/Runtime bridge is not copied. The table above describes the accepted §4.8 baseline. The subsequent bounded reference-image implementation below has its own accepted source scope; additional providers remain separate. PROGRESS §4.8 records the earlier source acceptance and pending live cutover; §4.7 preserves review/CI evidence and §4.6 the initial implementation.
 
-## Proposed pre-deployment features
+## Accepted pre-deployment feature source
 
-[PROGRESS §4.9](../PROGRESS.md#49-実機投入前の2機能2026-10-05draft-pr) records the requested implementation, exact tested heads and Draft PRs. These proposals have not been merged or deployed.
+[PROGRESS §4.9](../PROGRESS.md#49-実機投入前の2機能2026-10-05main反映) records implementation, exact tested heads, merged PRs and merge-tree equality. Controller #7 / Generation #72 / Hub #39 / Agent #43 / Studio #66 are accepted in main after the explicit user merge instruction. They have not been deployed or accepted live.
 
 Generation adds `comfy.register/get` in the existing external facade namespace,
 making 25 tools with the matching Hub catalog. Controller owns immutable,
@@ -119,7 +119,7 @@ Preserve identities, retained assets/inputs/conversations, provenance and uncert
 
 ## Acceptance and remaining work
 
-The [README source matrix](../README.md#implemented-source-boundaries) links accepted contracts. [PROGRESS.md](../PROGRESS.md) and the [review report](REVIEW_2026-10-05.md) retain source/test history and accepted follow-up fixes; [roadmap](ROADMAP.md) lists remaining work. Controller implementation and matched callers are accepted in main. The two §4.9 features are implemented in Draft PRs, pending adoption. Live deployment and retained-data reconciliation remain separate scopes.
+The [README source matrix](../README.md#implemented-source-boundaries) links accepted contracts. [PROGRESS.md](../PROGRESS.md) and the [review report](REVIEW_2026-10-05.md) retain source/test history and accepted follow-up fixes; [roadmap](ROADMAP.md) lists remaining work. Controller implementation, matched callers and the two §4.9 feature sources are accepted in main. Live deployment and retained-data reconciliation remain separate scopes.
 
 ## 日本語
 

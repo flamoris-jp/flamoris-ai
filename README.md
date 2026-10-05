@@ -24,7 +24,7 @@ Read the [architecture](docs/ARCHITECTURE.md), [ecosystem map](docs/ai-ecosystem
 | Studio: raw Intelligence | Shared `flamoris_intelligence` provider adapters → approved providers |
 | Studio: Agent Support | Agent JSON HTTP `/api/v1` → shared provider adapters → approved providers |
 
-The generation rows describe the matched implementation in [Controller #5](https://github.com/flamoris-jp/flamoris-generation-controller/pull/5), [Generation #71](https://github.com/flamoris-jp/flamoris-generation-mcp/pull/71) and [Studio #65](https://github.com/flamoris-jp/flamoris-studio/pull/65), now merged and accepted in main (PROGRESS §4.8). Controller package `b57140954c8bc8176d882a053df70f00fad2be31` is pinned by both dependents. One runtime is hosted by the external facade; Studio calls authenticated POST `/api/v1/generation/{operation}` directly. Configuration/grants and live provider acceptance still determine usable features. External Agent MCP remains separate. See [implementation direction](docs/ARCHITECTURE.md#generation-controller-implementation-direction), [retained-source plan](https://github.com/flamoris-jp/flamoris-generation-controller/blob/b57140954c8bc8176d882a053df70f00fad2be31/docs/IMPLEMENTATION.md) and [API](https://github.com/flamoris-jp/flamoris-generation-controller/blob/b57140954c8bc8176d882a053df70f00fad2be31/docs/API.md).
+The generation rows describe the matched implementation initially accepted in [Controller #5](https://github.com/flamoris-jp/flamoris-generation-controller/pull/5), [Generation #71](https://github.com/flamoris-jp/flamoris-generation-mcp/pull/71) and [Studio #65](https://github.com/flamoris-jp/flamoris-studio/pull/65) (PROGRESS §4.8). The later §4.9 features are also accepted in main: Generation now pins Controller `69b05d0897a94f5d174335f8d849ca9e1f9488ac`, while Studio's retained contract tests use the earlier `b57140954c8bc8176d882a053df70f00fad2be31` artifact. One runtime is hosted by the external facade; Studio calls authenticated POST `/api/v1/generation/{operation}` directly. Configuration/grants and live provider acceptance still determine usable features. External Agent MCP remains separate. See [implementation direction](docs/ARCHITECTURE.md#generation-controller-implementation-direction), [retained-source plan](https://github.com/flamoris-jp/flamoris-generation-controller/blob/b57140954c8bc8176d882a053df70f00fad2be31/docs/IMPLEMENTATION.md) and [API](https://github.com/flamoris-jp/flamoris-generation-controller/blob/b57140954c8bc8176d882a053df70f00fad2be31/docs/API.md).
 
 ## Implemented source boundaries
 
@@ -36,6 +36,8 @@ The generation rows describe the matched implementation in [Controller #5](https
 | Bounded builtin/native generation, generic recipes and retained-data protections | [Generation #69](https://github.com/flamoris-jp/flamoris-generation-mcp/pull/69) |
 | Shared Controller, external facade and direct Studio HTTP (accepted in main) | [Controller #5](https://github.com/flamoris-jp/flamoris-generation-controller/pull/5), [Generation #71](https://github.com/flamoris-jp/flamoris-generation-mcp/pull/71), [Studio #65](https://github.com/flamoris-jp/flamoris-studio/pull/65) |
 | Native ExecuteFlow and compiled ExecutionPlan | [Runtime #25](https://github.com/flamoris-jp/flamoris-ai-runtime/pull/25) |
+| Bounded ComfyWorkFlow registration and managed init-image generation; matching 25-tool catalog | [Controller #7](https://github.com/flamoris-jp/flamoris-generation-controller/pull/7), [Generation #72](https://github.com/flamoris-jp/flamoris-generation-mcp/pull/72), [Hub #39](https://github.com/flamoris-jp/flamoris-mcp-hub/pull/39) |
+| Conversation-preserving Studio Agent LLM switching; immutable lineage and durable switch fences | [Agent #43](https://github.com/flamoris-jp/flamoris-ai-agent/pull/43), [Studio #66](https://github.com/flamoris-jp/flamoris-studio/pull/66) |
 | External catalog and namespaced routing | [Hub #37](https://github.com/flamoris-jp/flamoris-mcp-hub/pull/37) |
 
 The linked PRs and #18 record exact review/CI/merge evidence. Studio's contract
@@ -79,6 +81,8 @@ Follow the [repository policy](https://github.com/flamoris-jp/flamoris-commons/b
 MCPはChatGPT側の外部入口です。Studioのraw IntelligenceとAgent内部の実行は共通provider adapterへ直接接続し、StudioのAgent SupportはAgent JSON HTTPを使います。2026-10-05の実装指示で、Generation Controllerと対応するMCP・Studio接続を実装しました。Studioは認証付きHTTP、外部MCPは同じControllerへ接続します。対応PRはmainへマージ済みで、実機反映は別途必要です。AI Agentは人格が必要なときだけ使います。
 
 Runtimeの推論フローは `ExecuteFlow`、コンパイル済み内部表現は `ExecutionPlan`、ComfyUIのグラフ・JSONは `ComfyWorkFlow` と区別します。保持された生成機能と保存データの保護は既存ownerが担当します。ソース受け入れ・追加レビューPR・実機受け入れは [PROGRESS.md](PROGRESS.md) で個別に記録します。
+
+実機投入前の参照画像／ComfyWorkFlow登録（標準checkpoint img2img）とStudio Agentの会話内LLM切替もmain受け入れ済みです。対応migration・25tool catalog・設定の実機反映は未着手で、PROGRESS §4.9に検証と受け入れcommitを記録しています。
 
 ## FLAMORIS and license
 
