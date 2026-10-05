@@ -6,7 +6,7 @@ Architecture, responsibility boundaries and roadmap coordination for the AI-faci
 
 Start with [PROGRESS.md](PROGRESS.md) for the cross-thread handoff, detailed phases,
 accepted source baselines and next steps. It distinguishes completed source work,
-pending live acceptance and held Controller work; architecture remains defined below.
+pending live acceptance and Controller implementation preparation; architecture remains defined below.
 
 [Issue #18](https://github.com/flamoris-jp/flamoris-ai/issues/18) coordinates the architecture and accepted source boundaries. Deployment and live acceptance are recorded separately in PROGRESS.md.
 
@@ -24,7 +24,7 @@ Read the [architecture](docs/ARCHITECTURE.md), [ecosystem map](docs/ai-ecosystem
 | Studio: raw Intelligence | Shared `flamoris_intelligence` provider adapters → approved providers |
 | Studio: Agent Support | Agent JSON HTTP `/api/v1` → shared provider adapters → approved providers |
 
-These paths describe source contracts; actual configuration, grants and provider acceptance determine what is available on a running installation. External Agent MCP remains a separate supported facade. A future Controller would give Studio and the external generation adapter one common non-MCP domain contract. Its design and implementation are held; no endpoint or service is selected here.
+These paths describe source contracts; actual configuration, grants and provider acceptance determine what is available on a running installation. External Agent MCP remains a separate supported facade. Controller is now the planned common non-MCP generation owner for Studio and the external facade. The 2026-10-05 user decision begins repository setup and implementation-policy preparation; no Controller code, endpoint or service exists yet. See the [implementation direction](docs/ARCHITECTURE.md#generation-controller-implementation-direction) and [retained-source plan](https://github.com/flamoris-jp/flamoris-generation-controller/blob/ba9f3856517b56dad509f757b73cdcdc00ed5b6e/docs/IMPLEMENTATION.md).
 
 ## Implemented source boundaries
 
@@ -58,7 +58,7 @@ Use the specific names, not bare `Workflow`, in new FLAMORIS design prose. Exist
 
 | Repository | Responsibility / status |
 | --- | --- |
-| [Generation Controller](https://github.com/flamoris-jp/flamoris-generation-controller) | Future internal generation-domain boundary; documentation only, not an implementation task now |
+| [Generation Controller](https://github.com/flamoris-jp/flamoris-generation-controller) | Planned shared generation-domain owner; documentation only, implementation preparation underway |
 | [Generation MCP](https://github.com/flamoris-jp/flamoris-generation-mcp) | Current bounded generation domain/providers and external MCP adapter in one package |
 | [Intelligence MCP](https://github.com/flamoris-jp/flamoris-intelligence-mcp) | Shared non-MCP provider adapters and an optional external MCP facade |
 | [AI Agent](https://github.com/flamoris-jp/flamoris-ai-agent) | Optional personality, conversations, memory, principal/session and context policy |
@@ -75,7 +75,7 @@ Follow the [repository policy](https://github.com/flamoris-jp/flamoris-commons/b
 
 ## 日本語
 
-MCPはChatGPT側の外部入口です。Studioのraw IntelligenceとAgent内部の実行は共通provider adapterへ直接接続し、StudioのAgent SupportはAgent JSON HTTPを使います。StudioのGenerationにはMCP互換経路が残り、Generation Controllerは文書のみで未実装です。AI Agentは人格が必要なときだけ使います。
+MCPはChatGPT側の外部入口です。Studioのraw IntelligenceとAgent内部の実行は共通provider adapterへ直接接続し、StudioのAgent SupportはAgent JSON HTTPを使います。StudioのGenerationにはMCP互換経路が残ります。2026-10-05の指示でGeneration ControllerのREADME・AGENTSと実装方針の整備を開始しました。Controllerのソースと内部接続の切替はまだ未実装です。AI Agentは人格が必要なときだけ使います。
 
 Runtimeの推論フローは `ExecuteFlow`、コンパイル済み内部表現は `ExecutionPlan`、ComfyUIのグラフ・JSONは `ComfyWorkFlow` と区別します。保持された生成機能と保存データの保護は既存ownerが担当します。ソース受け入れ・追加レビューPR・実機受け入れは [PROGRESS.md](PROGRESS.md) で個別に記録します。
 

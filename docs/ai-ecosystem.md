@@ -6,12 +6,12 @@ This maps current responsibilities and explicitly marked future scope. [Architec
 
 | Repository | Responsibility / status |
 | --- | --- |
-| [Generation Controller](https://github.com/flamoris-jp/flamoris-generation-controller) | Future internal generation boundary; documentation only, no implementation now |
+| [Generation Controller](https://github.com/flamoris-jp/flamoris-generation-controller) | Planned shared generation boundary; documentation only, implementation preparation underway |
 | [Generation MCP](https://github.com/flamoris-jp/flamoris-generation-mcp) | Current bounded generation domain/providers, generic recipes, jobs, inputs and assets, with an external MCP adapter in the same package |
 | [Intelligence MCP](https://github.com/flamoris-jp/flamoris-intelligence-mcp) | External facade and home of a separate importable non-MCP provider-adapter package; not Agent/Studio's internal network gateway |
 | [MCP Hub](https://github.com/flamoris-jp/flamoris-mcp-hub) | External aggregation, namespaces, connections and routing |
 
-External generation clients such as ChatGPT use MCP Hub and Generation MCP. Studio generation currently uses the retained MCP compatibility route to the same generation domain. A future Controller would provide their common non-MCP contract; its concrete design and implementation are held.
+External generation clients such as ChatGPT use MCP Hub and Generation MCP. Studio generation currently uses the retained MCP compatibility route to the same generation domain. Controller is planned to provide their common non-MCP contract. Repository setup and the [implementation policy](https://github.com/flamoris-jp/flamoris-generation-controller/blob/ba9f3856517b56dad509f757b73cdcdc00ed5b6e/docs/IMPLEMENTATION.md) are now being prepared under the 2026-10-05 decision; code and caller cutover remain unimplemented.
 
 ComfyWorkFlow specifically means ComfyUI graph/API-format JSON. The generation provider adapter constructs the bounded builtin graphs; ComfyUI owns graph execution. Other providers consume their declared generation requests/recipes.
 
@@ -51,6 +51,6 @@ Desktop products retain their own project/document/editing state. Logging, MCP f
 
 ## 日本語
 
-ExecuteFlowはRuntimeの推論フロー、ExecutionPlanはコンパイル済み表現、ComfyWorkFlowはComfyUI用グラフ・JSONです。MCPは外部入口、Agentは人格が必要な場合のみ。内部Intelligence／Agentは共通provider adapterとAgent HTTPに接続します。保持された生成機能は現行Generation packageが担当し、StudioとのMCP互換経路が残ります。Controllerは文書のみで未実装、具体設計・実装は保留です。
+ExecuteFlowはRuntimeの推論フロー、ExecutionPlanはコンパイル済み表現、ComfyWorkFlowはComfyUI用グラフ・JSONです。MCPは外部入口、Agentは人格が必要な場合のみ。内部Intelligence／Agentは共通provider adapterとAgent HTTPに接続します。保持された生成機能は現行Generation packageが担当し、StudioとのMCP互換経路が残ります。Controllerは文書のみで未実装ですが、実装に向けたREADME・AGENTS・方針整備へ進みました。Studioと外部MCPが同じ生成状態を使う共通層を計画し、具体的なコード実装は後続工程です。
 
 See the [organization map](https://github.com/flamoris-jp/.github) and [desktop ecosystem](https://github.com/flamoris-jp/flamoris-commons/blob/main/docs/desktop-ecosystem.md). Exact status, test results and live readiness remain with each owner.

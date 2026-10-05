@@ -11,11 +11,11 @@ Current integration boundaries under [AI #18](https://github.com/flamoris-jp/fla
 | Agent Support | Agent JSON HTTP `/api/v1` → shared provider adapters → approved providers |
 
 Studio's raw Intelligence and Agent Support now use replaceable non-MCP gateways.
-Generation still uses the retained MCP compatibility route while its Controller
-target is deferred. Studio does not acquire provider graph internals, inference
+Generation still uses the retained MCP compatibility route while the Controller
+implementation policy is being prepared; no code cutover has occurred. Studio does not acquire provider graph internals, inference
 scheduling or host lifecycle. Ordinary generation and inference need no Agent.
 
-External access uses MCP Hub and the appropriate Generation / Intelligence MCP facade. External Agent MCP is also retained. Controller is a future common non-MCP generation contract; its concrete design and implementation remain held.
+External access uses MCP Hub and the appropriate Generation / Intelligence MCP facade. External Agent MCP is also retained. Controller is the planned common non-MCP generation owner; [repository setup and implementation-policy preparation](https://github.com/flamoris-jp/flamoris-generation-controller/blob/ba9f3856517b56dad509f757b73cdcdc00ed5b6e/docs/IMPLEMENTATION.md) have resumed, while code remains unimplemented.
 
 ## Terminology and scope
 
@@ -48,7 +48,9 @@ owning PostgreSQL suites test durable authorization and request fences.
 
 Concrete routes/configuration are defined and tested by the owning repositories. Keep uncertain outcomes unknown; do not silently replay, fallback or activate a GPU. Provider selection, grants and complete-context remote consent remain enforced through the existing contracts.
 
-Controller implementation, internal Generation cutover and reference-image expansion remain deferred. Live configuration/cutover and rollback are separate operational work; code acceptance does not prove a deployment changed.
+For the planned Controller integration, replace `GenerationGateway`'s upstream MCP transport rather than moving the MCP client into Controller. Shared domain constraints/profiles can reduce duplication in Speech/Music/Image contracts, while Studio retains browser DTOs, consumer limits and validation of untrusted results. Its local request/history records are owner-scoped fences/projections, not a second generation reservation authority.
+
+Controller policy preparation is underway. Exact non-MCP contracts, code and internal Generation cutover remain pending; reference-image expansion is a separate scope. Live configuration/cutover and rollback are separate operational work; code acceptance does not prove a deployment changed.
 
 ## Owning tasks
 
@@ -56,4 +58,4 @@ Agent [#38](https://github.com/flamoris-jp/flamoris-ai-agent/issues/38), Intelli
 
 ## 日本語
 
-通常生成、素の推論、人格つきAgent Supportは別経路です。raw IntelligenceとAgent内部は共通provider adapter、Agent SupportはAgent HTTP、Generationは現行のMCP互換経路を使います。ExecuteFlow・ExecutionPlan・ComfyWorkFlowはそれぞれの責務を区別します。Controllerや新しい参照画像の開発は保留、実機受け入れは未完了です。
+通常生成、素の推論、人格つきAgent Supportは別経路です。raw IntelligenceとAgent内部は共通provider adapter、Agent SupportはAgent HTTP、Generationは現行のMCP互換経路を使います。ExecuteFlow・ExecutionPlan・ComfyWorkFlowはそれぞれの責務を区別します。Controllerは実装準備の文書整備へ進みましたが、コードとGeneration内部接続の切替は未実装です。Studioの権限・履歴・ブラウザ境界は維持します。新しい参照画像は別scope、実機受け入れは未完了です。
