@@ -6,12 +6,12 @@ This maps current responsibilities and explicitly marked future scope. [Architec
 
 | Repository | Responsibility / status |
 | --- | --- |
-| [Generation Controller](https://github.com/flamoris-jp/flamoris-generation-controller) | Planned shared generation boundary; documentation only, implementation preparation underway |
-| [Generation MCP](https://github.com/flamoris-jp/flamoris-generation-mcp) | Current bounded generation domain/providers, generic recipes, jobs, inputs and assets, with an external MCP adapter in the same package |
+| [Generation Controller](https://github.com/flamoris-jp/flamoris-generation-controller) | MCP-free shared generation authority and HTTP adapter; accepted in main, live cutover pending |
+| [Generation MCP](https://github.com/flamoris-jp/flamoris-generation-mcp) | External tools/ingress/content facade hosting one Controller and its internal HTTP adapter in accepted main source |
 | [Intelligence MCP](https://github.com/flamoris-jp/flamoris-intelligence-mcp) | External facade and home of a separate importable non-MCP provider-adapter package; not Agent/Studio's internal network gateway |
 | [MCP Hub](https://github.com/flamoris-jp/flamoris-mcp-hub) | External aggregation, namespaces, connections and routing |
 
-External generation clients such as ChatGPT use MCP Hub and Generation MCP. Studio generation currently uses the retained MCP compatibility route to the same generation domain. Controller is planned to provide their common non-MCP contract. Repository setup and the [implementation policy](https://github.com/flamoris-jp/flamoris-generation-controller/blob/ba9f3856517b56dad509f757b73cdcdc00ed5b6e/docs/IMPLEMENTATION.md) are now being prepared under the 2026-10-05 decision; code and caller cutover remain unimplemented.
+External generation clients use MCP Hub → Generation MCP facade → Controller. Studio uses authenticated Controller HTTP directly; both adapters share one runtime/reservation. The matched [Controller #5](https://github.com/flamoris-jp/flamoris-generation-controller/pull/5), [Generation #71](https://github.com/flamoris-jp/flamoris-generation-mcp/pull/71) and [Studio #65](https://github.com/flamoris-jp/flamoris-studio/pull/65) source PRs are merged and accepted in main (PROGRESS §4.8). Their [implementation policy](https://github.com/flamoris-jp/flamoris-generation-controller/blob/b57140954c8bc8176d882a053df70f00fad2be31/docs/IMPLEMENTATION.md) and [API](https://github.com/flamoris-jp/flamoris-generation-controller/blob/b57140954c8bc8176d882a053df70f00fad2be31/docs/API.md) define hosting, service permission and state continuity. Live cutover remains pending.
 
 ComfyWorkFlow specifically means ComfyUI graph/API-format JSON. The generation provider adapter constructs the bounded builtin graphs; ComfyUI owns graph execution. Other providers consume their declared generation requests/recipes.
 
@@ -45,12 +45,12 @@ Modulating existing execution and triggering new work are distinct. Keep [sensor
 
 [GPU Node Manager](https://github.com/flamoris-jp/flamoris-gpu-node-manager) owns host-wide configured runtime/GPU lifecycle. CLI/HTTP/MCP may adapt one manager. Internal callers use non-MCP interfaces; external callers may use its MCP surface through Hub. No Controller, Runtime, Agent or Studio duplicate of the host state machine is introduced. Host readiness and acceptance of a selected generation provider are separate checks.
 
-[Studio](https://github.com/flamoris-jp/flamoris-studio) owns authenticated UI, drafts, account/session mappings and per-user access. Its Intelligence/Agent gateways implement the non-MCP contracts; Generation retains the explicit MCP compatibility route described above. Asset/conversation IDs alone grant no authorization. The [source matrix](../README.md#implemented-source-boundaries) links exact evidence without claiming deployed routes.
+[Studio](https://github.com/flamoris-jp/flamoris-studio) owns authenticated UI, drafts, account/session mappings and per-user access. Its Intelligence/Agent gateways implement non-MCP contracts; the accepted matched Generation source replaces upstream MCP with authenticated Controller HTTP. Asset/conversation IDs alone grant no authorization. The [source matrix](../README.md#implemented-source-boundaries) links exact evidence while distinguishing merged generation source from pending deployment.
 
 Desktop products retain their own project/document/editing state. Logging, MCP foundations, diagnostics and generic security primitives remain with [FLAMORIS Commons](https://github.com/flamoris-jp/flamoris-commons) or dedicated packages, not an AI domain merely because several callers need them.
 
 ## 日本語
 
-ExecuteFlowはRuntimeの推論フロー、ExecutionPlanはコンパイル済み表現、ComfyWorkFlowはComfyUI用グラフ・JSONです。MCPは外部入口、Agentは人格が必要な場合のみ。内部Intelligence／Agentは共通provider adapterとAgent HTTPに接続します。保持された生成機能は現行Generation packageが担当し、StudioとのMCP互換経路が残ります。Controllerは文書のみで未実装ですが、実装に向けたREADME・AGENTS・方針整備へ進みました。Studioと外部MCPが同じ生成状態を使う共通層を計画し、具体的なコード実装は後続工程です。
+ExecuteFlowはRuntimeの推論フロー、ExecutionPlanはコンパイル済み表現、ComfyWorkFlowはComfyUI用グラフ・JSONです。MCPは外部入口、Agentは人格が必要な場合のみ。内部Intelligence／Agentは共通provider adapterとAgent HTTPに接続します。保持された生成機能をControllerへ切り出し、Studioの認証付きHTTPと外部MCPが同じ生成状態を使うソースを実装しました。対応PRはmain受け入れ済みで、実機cutoverは別工程です。
 
 See the [organization map](https://github.com/flamoris-jp/.github) and [desktop ecosystem](https://github.com/flamoris-jp/flamoris-commons/blob/main/docs/desktop-ecosystem.md). Exact status, test results and live readiness remain with each owner.
