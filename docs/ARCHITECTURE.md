@@ -33,12 +33,12 @@ Raw inference uses the provider contract directly. Agent supplies optional perso
 
 ## Generation Controller implementation direction
 
-The implementation is coordinated in [Controller #1](https://github.com/flamoris-jp/flamoris-generation-controller/issues/1), [the retained-source inventory](https://github.com/flamoris-jp/flamoris-generation-controller/blob/640a5bd48c76e4bf736e9a3589c216123ccd18b3/docs/IMPLEMENTATION.md) and [HTTP contract](https://github.com/flamoris-jp/flamoris-generation-controller/blob/640a5bd48c76e4bf736e9a3589c216123ccd18b3/docs/API.md). The scoped 2026-10-05 code instruction supersedes preparation-only holds.
+The implementation is coordinated in [Controller #1](https://github.com/flamoris-jp/flamoris-generation-controller/issues/1), [the retained-source inventory](https://github.com/flamoris-jp/flamoris-generation-controller/blob/b57140954c8bc8176d882a053df70f00fad2be31/docs/IMPLEMENTATION.md) and [HTTP contract](https://github.com/flamoris-jp/flamoris-generation-controller/blob/b57140954c8bc8176d882a053df70f00fad2be31/docs/API.md). The scoped 2026-10-05 code instruction supersedes preparation-only holds.
 
 | Concern | Implemented source decision |
 | --- | --- |
 | Core | `flamoris_generation_controller` owns retained recipes, model/capability metadata, provider adapters, jobs/results, managed inputs/uploads/staging, assets/transfer and retention; no MCP/Hub/Studio imports |
-| Shared state | One runtime/lifecycle in Generation MCP's host, used by both adapters. Output-root lifetime ownership lock is acquired before provider construction/recovery; duplicate processes fail before effects |
+| Shared state | One runtime/lifecycle in Generation MCP's host, used by both adapters. Output-root lifetime ownership lock is acquired before provider construction/recovery; duplicate processes fail before effects. Shutdown drains admitted calls and closes providers before unlocking; cancelled close waiters do not cancel cleanup |
 | External facade | 23 retained tool names/annotations, signed MCP ingress, wire validation and SDK errors/binary mapping remain in Generation MCP |
 | Studio | Direct authenticated JSON/binary HTTP; retains accounts/CSRF, owner-scoped opaque mappings, history/presets, request fences and publication rechecks |
 | Specification | Controller validates retained generation constraints/profiles; Studio retains consumer DTO checks, browser limits and untrusted-result validation |
@@ -48,7 +48,7 @@ Internal POST `/api/v1/generation/{operation}` has strict bounded JSON requests,
 
 Both ingress paths contend for the same durable reservation. Disconnect/restart/timeout never authorizes resubmission; ambiguous provider acceptance or journal commit stays unknown/reserved. Lifetime lock exclusion is local to one output root, not a distributed scheduler/GPU lock, and cannot constrain old binaries that do not acquire it. Operational cutover must drain/reconcile and stop the previous matched authority, preserve/back up records and explicitly update Studio endpoint/token/empty namespace. No DB migration is introduced.
 
-The removed custom registry/versioning/v3/qualification/Runtime bridge is not copied. Reference-image/new-provider features remain separate. Source PR review/CI/merge and live cutover are recorded independently in PROGRESS §4.6.
+The removed custom registry/versioning/v3/qualification/Runtime bridge is not copied. Reference-image/new-provider features remain separate. Source PR review/CI/merge and live cutover are recorded independently in PROGRESS §4.7; §4.6 preserves the initial implementation evidence.
 
 ## Three distinct names
 

@@ -15,7 +15,7 @@ Generation now uses direct authenticated Controller HTTP in the matched open
 implementation PRs; live cutover has not occurred. Studio does not acquire provider graph internals, inference
 scheduling or host lifecycle. Ordinary generation and inference need no Agent.
 
-External access uses MCP Hub and the appropriate Generation / Intelligence MCP facade. External Agent MCP is also retained. Controller is the common non-MCP generation owner in the matched source; the [implemented retained-domain contract](https://github.com/flamoris-jp/flamoris-generation-controller/blob/640a5bd48c76e4bf736e9a3589c216123ccd18b3/docs/IMPLEMENTATION.md) defines the core/API and shared runtime. Source PR merge and live acceptance remain pending.
+External access uses MCP Hub and the appropriate Generation / Intelligence MCP facade. External Agent MCP is also retained. Controller is the common non-MCP generation owner in the matched source; the [implemented retained-domain contract](https://github.com/flamoris-jp/flamoris-generation-controller/blob/b57140954c8bc8176d882a053df70f00fad2be31/docs/IMPLEMENTATION.md) defines the core/API and shared runtime. Source PR merge and live acceptance remain pending.
 
 ## Terminology and scope
 

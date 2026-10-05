@@ -129,6 +129,8 @@ Studioの元のbuiltin Imageは参照画像を受け付けません。古いcust
 
 ### 4.6 Controller実装と対応するcallerソース（2026-10-05）
 
+この節は初回実装・検証の固定記録です。続くレビュー修正後の最新headと検証は4.7を参照します。
+
 続く「controllerの実装お願い」というユーザー指示で、文書準備からコード実装と対応caller接続へ進みました。抽出前にController #1へpackage／最小契約／service permission／同居hosting／一つのreservation ownerを記録し、最新mainのGeneration・Studioソースと保存形式を照合しました。
 
 | リポジトリ | 実装した内容 | open PR / 固定head |
@@ -147,6 +149,23 @@ Generation／Studio test extraはControllerの上記commitを正確にpinしま�
 ローカル検証：Controller 276件、MCP facade／ingress 194件、Studio PostgreSQL backend 362件に加えてmalformed response 3件、HTTP／実adapter接続32件、画面101件とTypeScript/Vite buildが成功。元のGeneration domain 444件を移動先込みで維持し、新しい単一所有者／認証／共有admissionを追加しました。core／facadeのlint/format・sdist/wheel build、MCP/Starletteなしのinstalled coreとinstalled MCP stdio／HTTP smokeが成功しています。実GPU／provider／本番DB／有料APIは使っていません。
 
 CI：上記の正確な最終headですべて成功。[Controller CI](https://github.com/flamoris-jp/flamoris-generation-controller/actions/runs/37264463332) はPython 3.11/3.12とMCP-free installed wheel、[Generation CI](https://github.com/flamoris-jp/flamoris-generation-mcp/actions/runs/37265896760) は194 tests・lint/format・installed stdio/HTTP・Docker、[Studio CI](https://github.com/flamoris-jp/flamoris-studio/actions/runs/37265651569) はPostgreSQL 17の365 tests・画面101 tests・build・production Dockerを確認しました。Generationの初回CIはdomain移動後のDocker smoke import残存とprivate lock directoryのtest cleanupで失敗し、follow-up headで修正済みです。AI文書にはCI workflowがなく、変更8文書の差分・相対リンク42件と見出し・実装との整合を確認しました。ソースのmergeと実機受け入れは未完了です。
+
+### 4.7 Controllerのレビュー・修正ループ（2026-10-05）
+
+ユーザーのレビュー・修正ループ指示に基づき、4つのopen PRの正確なhead、core／HTTP／MCP／Studioの責務・lifecycle・認証・保存形式・不確定処理と文書を再確認しました。[詳細レビュー記録](docs/CONTROLLER_REVIEW_2026-10-05.md) に再現・修正・検証を記録しています。
+
+3件を修正しました。終了時に実行中の呼び出しより先に所有権lockを解放する問題は、admitted callのdrainと一つのshield付きcleanup taskで解消。Studioのslow responseは、接続／headers／全streamの絶対期限とupload exchangeの期限で制限。モデル一覧に出る長いIDの取得拒否は、保持された1024 UTF-8 byteのmodel nameとkind prefixを受け付けるDTOで解消しました。新しい型名や保存形式への移行ではありません。
+
+| PR | レビュー修正後の固定head | 最終CI |
+| --- | --- | --- |
+| [Controller #5](https://github.com/flamoris-jp/flamoris-generation-controller/pull/5) | `b57140954c8bc8176d882a053df70f00fad2be31` | [Controller CI](https://github.com/flamoris-jp/flamoris-generation-controller/actions/runs/37287862226)：success |
+| [Generation #71](https://github.com/flamoris-jp/flamoris-generation-mcp/pull/71) | `a580b15fe9f29ec31d50558744d33858c309181a` | [Python CI](https://github.com/flamoris-jp/flamoris-generation-mcp/actions/runs/37288168566)：success |
+| [Studio #65](https://github.com/flamoris-jp/flamoris-studio/pull/65) | `e7c050c9f8067f7f976703ada139cdaf5301b7a8` | [Python Studio CI](https://github.com/flamoris-jp/flamoris-studio/actions/runs/37288175782)：success |
+| [AI #25](https://github.com/flamoris-jp/flamoris-ai/pull/25) | 本記録とレビュー文書を含むPR | CI workflowなし。文書・リンク・source整合を検証 |
+
+ローカルでController 280件、Generation 194件、Studio PostgreSQL 16で372件が成功。11件の境界／回帰テストを追加し、lint/format、3 packageのsdist/wheel、MCP/Starletteなしのinstalled core lifecycleとinstalled MCP stdio／HTTP smokeも成功しました。両dependentのcore pinは `b57140954c8bc8176d882a053df70f00fad2be31` へ揃えています。最新headのCIは全てsuccessで、StudioのPostgreSQL 17・画面101件・build・production Docker、Generationのinstalled wheelとDocker、ControllerのPython 3.11/3.12も確認しました。レビュー修正は完了し、merge／実機受け入れは未実施のまま区別します。
+
+AI側は変更9文書、相対リンク45件と見出し、固定source／CI記録、文書と実装の整合、diff whitespaceを確認しました。初回の受け入れ履歴と今回の修正結果を分け、親／担当Issueと4PRへ最新head・検証を記録します。
 
 ## 5. 詳細ロードマップ
 
@@ -202,11 +221,11 @@ CI：上記の正確な最終headですべて成功。[Controller CI](https://gi
 
 ### F. Generation Controller実装準備と具体設計
 
-完了。[Controller #1](https://github.com/flamoris-jp/flamoris-generation-controller/issues/1)、[実装inventory](https://github.com/flamoris-jp/flamoris-generation-controller/blob/640a5bd48c76e4bf736e9a3589c216123ccd18b3/docs/IMPLEMENTATION.md)と[API契約](https://github.com/flamoris-jp/flamoris-generation-controller/blob/640a5bd48c76e4bf736e9a3589c216123ccd18b3/docs/API.md)に、MCP-free package、同居runtime、local ownership lock、strict request/result/error、service permissionと保存形式の維持を定めました。元の未決定DTO／hosting工程を繰り返さず、変更が必要なら現行契約を基準にレビューします。
+完了。[Controller #1](https://github.com/flamoris-jp/flamoris-generation-controller/issues/1)、[実装inventory](https://github.com/flamoris-jp/flamoris-generation-controller/blob/b57140954c8bc8176d882a053df70f00fad2be31/docs/IMPLEMENTATION.md)と[API契約](https://github.com/flamoris-jp/flamoris-generation-controller/blob/b57140954c8bc8176d882a053df70f00fad2be31/docs/API.md)に、MCP-free package、同居runtime、local ownership lock、strict request/result/error、service permissionと保存形式の維持を定めました。元の未決定DTO／hosting工程を繰り返さず、変更が必要なら現行契約を基準にレビューします。
 
 ### G. Generation内部接続の最終組み換え
 
-Controller／外部facade／Studio gatewayのソースを4.6の対応PRで実装し、最終head CIはすべて成功しました。残るsource acceptanceは対象を明示したmergeです。PRが未マージの間はmain／installed versionへ反映済みとはしません。live cutoverはEの棚卸し、旧ownerのreconcile、backup/rollback、固定artifactと明示された設定変更に続きます。
+Controller／外部facade／Studio gatewayのソースを4.6の対応PRで実装し、4.7でレビュー修正しました。最新headのCIは4.7を参照します。残るsource acceptanceは対象を明示したmergeです。PRが未マージの間はmain／installed versionへ反映済みとはしません。live cutoverはEの棚卸し、旧ownerのreconcile、backup/rollback、固定artifactと明示された設定変更に続きます。
 
 実機ではStudioの旧MCP／Hub endpointから正確な `/api/v1/generation` baseへ変更し、hostの `FLAMORIS_CONTROLLER_TOKEN` と同じprivate `STUDIO_GENERATION_TOKEN`、空の `STUDIO_GENERATION_NAMESPACE` を設定します。これは旧endpointの自動fallbackではありません。old/new ownerを併走させず、既存unknown journalを消しません。
 
@@ -239,7 +258,7 @@ Controller／外部facade／Studio gatewayのソースを4.6の対応PRで実装
 | Runtime | [#23](https://github.com/flamoris-jp/flamoris-ai-runtime/issues/23) | [Architecture](https://github.com/flamoris-jp/flamoris-ai-runtime/blob/main/docs/ARCHITECTURE.md) |
 | Hub | [#36](https://github.com/flamoris-jp/flamoris-mcp-hub/issues/36) | [Generation rollout](https://github.com/flamoris-jp/flamoris-mcp-hub/blob/main/docs/GENERATION_ROLLOUT.md) |
 | GPU Node Manager | [#11](https://github.com/flamoris-jp/flamoris-gpu-node-manager/issues/11) | [Architecture](https://github.com/flamoris-jp/flamoris-gpu-node-manager/blob/main/docs/ARCHITECTURE.md) |
-| Generation Controller | [#1](https://github.com/flamoris-jp/flamoris-generation-controller/issues/1) | [実装方針・inventory](https://github.com/flamoris-jp/flamoris-generation-controller/blob/640a5bd48c76e4bf736e9a3589c216123ccd18b3/docs/IMPLEMENTATION.md)。共通core／API／単一所有者と対応PRを実装。最終source acceptance／live cutover待ち |
+| Generation Controller | [#1](https://github.com/flamoris-jp/flamoris-generation-controller/issues/1) | [実装方針・inventory](https://github.com/flamoris-jp/flamoris-generation-controller/blob/b57140954c8bc8176d882a053df70f00fad2be31/docs/IMPLEMENTATION.md)。共通core／API／単一所有者と対応PRを実装。最終source acceptance／live cutover待ち |
 
 ## 8. 別スレッドでの再開・更新方法
 
@@ -271,3 +290,4 @@ ChatGPTの会話記憶だけで自動同期するものではありません。�
 | 2026-10-05 | 組織 `.github` READMEを追補確認し、日英マップとAI現行案内から旧機構の説明・完了済み削除手順を整理。AI #23／組織 #28のopen PRと文書検証を記録 |
 | 2026-10-05 | ユーザーの全件マージ指示でowner7PRと組織READMEをmain反映。マージ前CI／headとmerge tree一致を確認し、AI #23に受け入れcommit・残作業を集約 |
 | 2026-10-05 | Controller #4／AI #24の準備受け入れ後、明示されたController実装指示でcore／APIとGeneration #71／Studio #65の対応接続を実装・検証。open PRと固定head、単一所有者／service permission／残る実機切替を4.6へ記録 |
+| 2026-10-05 | Controller対応4PRを再レビュー。終了時の所有権、HTTP絶対期限、長いmodel IDの3件を修正し、11 testsとsource pinを更新。最新head・検証とレビュー記録を4.7へ追加 |

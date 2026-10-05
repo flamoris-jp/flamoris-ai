@@ -12,7 +12,7 @@ remain distinct and require their applicable scoped authorization.
 
 The [README source matrix](../README.md#implemented-source-boundaries) links accepted internal Intelligence/Agent contracts and bounded generation. The [2026-10-05 review](REVIEW_2026-10-05.md) and PROGRESS §4.4 record accepted residual fixes and organization/coordination documentation. Their reviewed source acceptance is complete; live acceptance and open Controller source PRs remain separate.
 
-Controller #5 / Generation #71 / Studio #65 implement one generation authority, the external facade and Studio direct HTTP. Those PRs are open; review/CI/merge evidence is in PROGRESS §4.6. Production deployment, restarts, DB/data/credential changes, paid inference and new generation/reference-image features retain separate scopes.
+Controller #5 / Generation #71 / Studio #65 implement one generation authority, the external facade and Studio direct HTTP. Those PRs are open; latest review/CI/merge evidence is in PROGRESS §4.7, with initial implementation evidence retained in §4.6. Production deployment, restarts, DB/data/credential changes, paid inference and new generation/reference-image features retain separate scopes.
 
 ## Remaining phases
 
@@ -21,7 +21,7 @@ Controller #5 / Generation #71 / Studio #65 implement one generation authority, 
 | Live inventory and migration plan | Confirm installed versions, configuration, retained jobs/data, backup and rollback | Pending; resume only for an explicitly selected deployment scope (PROGRESS E1) |
 | Intelligence/Agent live acceptance | Configure the accepted provider-library and Agent HTTP contracts; verify grants, complete-context consent, model identity and request fences | Pending operational work (PROGRESS E2) |
 | Generation live acceptance | Verify retained Image/Speech/Music providers, inputs/assets and unresolved-job protections through the matched Controller/internal HTTP and external MCP paths | Pending operational work (PROGRESS E3) |
-| Controller source acceptance | Merge the matched, reviewed core/API and caller PRs at their passing heads; preserve the [retained-domain contract](https://github.com/flamoris-jp/flamoris-generation-controller/blob/640a5bd48c76e4bf736e9a3589c216123ccd18b3/docs/IMPLEMENTATION.md) and one state owner | Contract, implementation and final-head CI complete; source merge pending (PROGRESS F/G) |
+| Controller source acceptance | Merge the matched, reviewed core/API and caller PRs at their passing heads; preserve the [retained-domain contract](https://github.com/flamoris-jp/flamoris-generation-controller/blob/b57140954c8bc8176d882a053df70f00fad2be31/docs/IMPLEMENTATION.md) and one state owner | Contract, implementation and final-head CI complete; source merge pending (PROGRESS F/G) |
 | Operational Generation cutover | Drain/reconcile old owner, deploy matched artifacts and explicitly configure Studio HTTP/service credential/empty namespace | Pending separately scoped live work (PROGRESS E/F/G) |
 | Product extensions | Define reference-image, additional provider or multi-step generation requirements individually | Separate scopes; new reference-image/custom features remain held (PROGRESS H) |
 
