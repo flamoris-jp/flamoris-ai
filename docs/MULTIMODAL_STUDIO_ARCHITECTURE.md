@@ -21,7 +21,7 @@ External access uses MCP Hub and the appropriate Generation / Intelligence MCP f
 
 ComfyWorkFlow is a ComfyUI execution graph/API-format JSON. Its construction is not ExecuteFlow or compiled ExecutionPlan. Non-ComfyUI generation providers use their own declared request/recipe contracts; do not rename all media requests ComfyWorkFlow.
 
-Studio selects authorized generation metadata and supplies declared values. Provider adapters own graph construction and their declared request/recipe contracts. Image currently offers bounded builtin txt2img templates; reference-image generation is unavailable. Speech and Music use retained native contracts. Unsupported selections are explicitly unavailable. Concrete catalog and parameter support remain with the Studio and Generation owners.
+Studio selects authorized generation metadata and supplies declared values. Provider adapters own graph construction and their declared request/recipe contracts. Studio Image currently offers bounded builtin txt2img templates and has no reference-image editor. The external ChatGPT route separately supports accepted bounded checkpoint txt2img/img2img registration and managed initial images; see [Controller registration](https://github.com/flamoris-jp/flamoris-generation-controller/blob/main/docs/COMFY_REGISTRATION.md). Live reference-image execution remains unverified. Speech and Music use retained native contracts. Unsupported selections are explicitly unavailable. Concrete catalog and parameter support remain with the Studio and Generation owners.
 
 ExecuteFlow controls inference; ExecutionPlan remains Runtime's compiled representation. Future inference-to-generation interaction is an optional capability with its own scope.
 
@@ -50,7 +50,7 @@ Concrete routes/configuration are defined and tested by the owning repositories.
 
 Studio #65 replaces `GenerationGateway`'s upstream MCP transport with direct Controller HTTP. Controller owns domain constraints/profiles; Studio retains browser DTOs, consumer limits and validation of untrusted results. Its local request/history records are owner-scoped fences/projections, not a second generation reservation authority.
 
-The exact non-MCP contracts, core/API and matched callers are implemented in Controller #5, Generation #71 and Studio #65, with final-head CI successful. Source is accepted in main (PROGRESS §4.8); reference-image expansion and live configuration/cutover/rollback are separate scopes. Code acceptance does not prove a deployment changed.
+The exact non-MCP contracts, core/API and matched callers are implemented in Controller #5, Generation #71 and Studio #65, with final-head CI successful. Source is accepted in main (PROGRESS §4.8); the subsequent bounded checkpoint registration/reference-image profile is also accepted (PROGRESS §4.9), while arbitrary custom-node/model-family expansion and live configuration/cutover/rollback remain separate scopes. Code acceptance does not prove a deployment changed.
 
 ## Owning tasks
 
@@ -58,4 +58,4 @@ Agent [#38](https://github.com/flamoris-jp/flamoris-ai-agent/issues/38), Intelli
 
 ## 日本語
 
-通常生成、素の推論、人格つきAgent Supportは別経路です。raw IntelligenceとAgent内部は共通provider adapter、Agent SupportはAgent HTTP、GenerationはControllerの認証付きHTTPを使うソースへ変更しました。ExecuteFlow・ExecutionPlan・ComfyWorkFlowはそれぞれの責務を区別します。Controllerと対応する内部接続はmainへマージ済みです。Studioの権限・履歴・ブラウザ境界は維持します。新しい参照画像は別scope、実機受け入れは未完了です。
+通常生成、素の推論、人格つきAgent Supportは別経路です。raw IntelligenceとAgent内部は共通provider adapter、Agent SupportはAgent HTTP、GenerationはControllerの認証付きHTTPを使うソースへ変更しました。ExecuteFlow・ExecutionPlan・ComfyWorkFlowはそれぞれの責務を区別します。Controllerと対応する内部接続はmainへマージ済みです。Studioの権限・履歴・ブラウザ境界は維持します。外部ChatGPT向け限定checkpoint profileの登録・参照画像生成もmain受け入れ済みです。Studio Imageの参照画像editorは追加しておらず、実機受け入れは未完了です。
