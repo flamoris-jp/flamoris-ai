@@ -1,6 +1,21 @@
 # Contributor and AI-agent instructions
 
-This repository coordinates FLAMORIS AI architecture and cross-repository work. It is not a shared runtime implementation repository. Read README.md, docs/ARCHITECTURE.md, docs/ai-ecosystem.md, docs/ROADMAP.md and [AI #18](https://github.com/flamoris-jp/flamoris-ai/issues/18) before changing integration.
+This repository coordinates FLAMORIS AI architecture and cross-repository work. It is not a shared runtime implementation repository. Read the current-main [PROGRESS.md](PROGRESS.md), README.md, docs/ARCHITECTURE.md, docs/ai-ecosystem.md, docs/ROADMAP.md and [AI #18](https://github.com/flamoris-jp/flamoris-ai/issues/18) before changing integration.
+
+## Cross-thread handoff
+
+PROGRESS.md records the purpose, accepted source baselines, detailed future phases,
+holds and next tasks. Check the linked Issues/PRs and current source before resuming;
+an old conversation, an open Issue or a future roadmap entry is not evidence that
+completed implementation needs repeating or held work is authorized.
+
+After a material milestone or scope change, update PROGRESS.md with the date,
+actual status, PR/commit and checks, unresolved items and next action. Keep local
+drafts, open PRs, merged source and live acceptance distinct. Architecture changes
+belong in docs/ARCHITECTURE.md; detailed source/test inventories belong to the owning
+Issues. Verify live infrastructure through flamoris-server-manager when needed;
+do not infer it from repository documents. User instructions remain the authority
+for scope and resumption.
 
 ## Authorization and sequencing
 

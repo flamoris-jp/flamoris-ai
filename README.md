@@ -4,6 +4,10 @@ Architecture, responsibility boundaries and roadmap coordination for the AI-faci
 
 ## Current direction
 
+Start with [PROGRESS.md](PROGRESS.md) for the cross-thread handoff, detailed phases,
+accepted source baselines and next steps. It distinguishes completed source work,
+pending live acceptance and held Controller work; architecture remains defined below.
+
 [Issue #18](https://github.com/flamoris-jp/flamoris-ai/issues/18) defines the corrected target and records source acceptance. The cleanup removes obsolete internal MCP clients and the mistaken generation registry/composition/Runtime bridge, and implements the retained internal Intelligence connections. Source acceptance and deployed routes remain separate.
 
 **Intelligence cleanup comes first. Generation Controller remains unimplemented. Retire the added MCP-side ComfyWorkFlow registry, versioning, composition and Runtime delegation; do not transfer or recreate them in Controller.** Preserve the original bounded image-generation templates, generic provider recipes, jobs/assets/inputs and uncertain-request fences. Source retirement does not delete retained data or change a running installation.

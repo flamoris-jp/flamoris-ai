@@ -2,6 +2,11 @@
 
 Updated: 2026-10-05. Active authority: [AI #18](https://github.com/flamoris-jp/flamoris-ai/issues/18). [ARCHITECTURE.md](ARCHITECTURE.md) defines terminology and boundaries.
 
+The detailed phase checklists, accepted source/CI baselines, pending operational
+steps and cross-thread resumption/update rules are in [PROGRESS.md](../PROGRESS.md).
+This roadmap retains the responsibility/sequence map; future phases do not lift
+the Controller or live-operation holds.
+
 ## Current scope
 
 The documentation pass and deletion-first source implementation are recorded in
