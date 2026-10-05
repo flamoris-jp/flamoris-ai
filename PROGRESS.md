@@ -8,9 +8,11 @@
 
 このファイルは、ChatGPTの別スレッドや次の作業担当が、目的・現在地・残りの作業をまとめて確認する入口です。設計の基準は [ARCHITECTURE.md](docs/ARCHITECTURE.md)、担当Issueと従来の順序は [ROADMAP.md](docs/ROADMAP.md)。本書はその進捗と次の具体的な工程を記録します。
 
-**現在地：内部Intelligence接続の組み換えと、誤って追加したGenerationのcustom/v3/Runtime委譲の削除は、検証・レビュー修正・mainへのマージまで完了。実機移行は未着手。Generation Controllerは未実装・保留です。**
+**現在地：内部Intelligence接続の組み換えと旧Generation機構の削除に加え、全体レビューで見つけた残存コード・旧手順書・現行案内の修正までソース受け入れ完了。実機移行は未着手。Generation Controllerは未実装・保留です。**
 
 全体の組み換えが実機まで完了した、またはGenerationの内部接続がすべて非MCPになったという意味ではありません。今のGenerationは基本/native生成・input・assetのMCP互換経路を残しています。
+
+2026-10-05の追加全体レビューで、旧機構の手順書13本、未使用request field、Studio Imageの廃止済み参照／固定サイズ分岐と認可再確認の不足を発見・修正しました。**追加修正7PRと組織READMEはmain反映済み。全体の受け入れ記録は [AI #23](https://github.com/flamoris-jp/flamoris-ai/pull/23) です。** [リポジトリ別の全体レビューと残作業](docs/REVIEW_2026-10-05.md) に変更・検証・機能の可否を記録しています。最初のcleanupと追加レビューの受け入れ基準は4.2／4.4で個別に固定しています。
 
 ## 1. 作業の目的
 
@@ -23,7 +25,7 @@
 | Agentの役割 | 人格・会話・memory・principal/session・context policyが必要な場合だけ使う。通常推論・生成はAgentなしで使える |
 | 推論の実行 | 共通のprovider adapterを再利用し、StudioやAgentに同じ通信実装を複製しない。新しい中央gatewayサービスも作らない |
 | Runtimeの役割 | 推論、ExecuteFlow、コンパイル済みExecutionPlan、Job/Continuation/resource制御を維持する |
-| Generationの整理 | 後付けのcustom ComfyWorkFlow登録・版管理・合成・Runtime委譲を削除。同じものをControllerやRuntimeに移植・再作成しない |
+| Generationの整理 | 保持された基本/native生成・generic recipe・Job/Input/Assetの責務を明確にする。現行のMCP互換経路と将来の非MCP契約を区別する |
 | 状態の所有者 | 会話・生成Job/Input/Asset・GPU lifecycleごとに一つのauthorityを保つ。複数frontendが別々の予約や状態を作らない |
 | 既存の保護 | ユーザー分離、送信同意、上限、provenance、不確定処理の予約、保存済みデータを保持する |
 
@@ -94,6 +96,25 @@ Studioの元のbuiltin Imageは参照画像を受け付けません。古いcust
 
 詳細なinventoryと互換条件は [Generation retirement](https://github.com/flamoris-jp/flamoris-generation-mcp/blob/main/docs/LEGACY_RETIREMENT.md)、[Agent internal execution](https://github.com/flamoris-jp/flamoris-ai-agent/blob/main/docs/INTERNAL_EXECUTION.md)、[Studio cleanup](https://github.com/flamoris-jp/flamoris-studio/blob/main/docs/ARCHITECTURE_CLEANUP.md) にあります。
 
+### 4.4 追加の全体レビュー（2026-10-05、main反映）
+
+| リポジトリ | 追加修正 | 受け入れmerge commit |
+| --- | --- | --- |
+| Generation | [#70](https://github.com/flamoris-jp/flamoris-generation-mcp/pull/70)：旧runbook 9本とdefinition/evidence request seamを削除。native／data／unknown保護を保持 | [02ce5e2](https://github.com/flamoris-jp/flamoris-generation-mcp/commit/02ce5e23f2c6cd311181169e36e58a0eb6eb6ff4) |
+| Studio | [#64](https://github.com/flamoris-jp/flamoris-studio/pull/64)：旧runbook 4本と参照／固定サイズ実行分岐を削除。Imageの認可・設定再確認と異常応答のunknown保存を追加 | [deb0dd9](https://github.com/flamoris-jp/flamoris-studio/commit/deb0dd9f796e3f47b3eb35ed631ea9cacb18ebdd) |
+| Agent | [#41](https://github.com/flamoris-jp/flamoris-ai-agent/pull/41)：現行HTTP／shared direct executionへphase・運用文書を一致 | [4b8245a](https://github.com/flamoris-jp/flamoris-ai-agent/commit/4b8245a32d093d91ac737cb70cf5396050bd3bca) |
+| Controller | [#3](https://github.com/flamoris-jp/flamoris-generation-controller/pull/3)：削除済みscopeと将来の最小contractを区別 | [c29d5cf](https://github.com/flamoris-jp/flamoris-generation-controller/commit/c29d5cff565669c6e0c771e5923f211cdbd0b26f) |
+| Runtime | [#26](https://github.com/flamoris-jp/flamoris-ai-runtime/pull/26)：実装済みPhase Cと将来external facadeを区別 | [8227502](https://github.com/flamoris-jp/flamoris-ai-runtime/commit/8227502c77ac6cf13b1a412c984f429787b77963) |
+| Hub | [#38](https://github.com/flamoris-jp/flamoris-mcp-hub/pull/38)：Studio GenerationだけのMCP互換例外を明記 | [5b54c77](https://github.com/flamoris-jp/flamoris-mcp-hub/commit/5b54c77d3df97613723b53eb5ce1931c93833268) |
+| GPU Node Manager | [#12](https://github.com/flamoris-jp/flamoris-gpu-node-manager/pull/12)：独立host portと廃止済みGeneration consumerを区別 | [2f55fb7](https://github.com/flamoris-jp/flamoris-gpu-node-manager/commit/2f55fb74b986b7fa9c0eceb00cab2bd94187fdca) |
+| Intelligence | 現行source／103 testsを再確認。追加ソース変更なし | 追加PRなし。4.2の基準を維持 |
+| AI | [#23](https://github.com/flamoris-jp/flamoris-ai/pull/23)：レビュー記録に加え、README／AGENTS／現行設計から完了済み削除手順・旧機構の説明を整理。ROADMAPを残作業中心へ更新 | 本記録を含むPRのmerge commitを参照 |
+| 組織 `.github` | [#28](https://github.com/flamoris-jp/.github/pull/28)：組織READMEの日英責務マップを現行接続へ一致。曖昧なWorkflow説明・旧階層図を整理し、Controller未実装とGeneration互換経路を明記 | [94d40e8](https://github.com/flamoris-jp/.github/commit/94d40e8a4f5f5628591c1fddef9f7ae0303bb438) |
+
+2026-10-05の「全部マージ」指示に基づき、レビュー済みheadを指定してowner7PRと組織READMEをsquash mergeしました。各merge treeが検証済みheadと一致することも確認。AI #23に全体の受け入れ記録を集約しています。マージ前の6 owner workflowは正確なPR headで全て成功。ローカル検証との差は[レビュー記録](docs/REVIEW_2026-10-05.md#ci受け入れ記録)を参照。Controller／実機操作／新しいreference featureは再開していません。
+
+組織READMEの追補確認とAI文書整理では、完了したソース監査を繰り返さず、現行案内の記述だけを更新しました。開発ステータスの生成領域は変更せず、既存sync helperのoffline idempotence・日英リンク・相対／ownerリンク・見出し・diffを確認。受け入れ履歴、実機の互換／回復条件と保存データの保護は保持しています。
+
 ## 5. 詳細ロードマップ
 
 これは工程と依存関係の計画です。将来の工程を列挙したこと自体で、保留中の実装や実機作業が再開するわけではありません。予定日・port・service方式など未決定の事項は固定しません。
@@ -103,7 +124,7 @@ Studioの元のbuiltin Imageは参照画像を受け付けません。古いcust
 | A. 設計・用語・担当整理 | 完了 | 外部/内部、任意Agent、3名称、状態所有者、Controller保留を文書とIssueに固定 |
 | B. 内部Intelligence接続 | 完了・main反映済み | shared adapter、Agent HTTP、Studio raw/Agentの両経路、保持する認可・送信同意・fenceを検証 |
 | C. 旧Generation機能と呼出し元の削除 | 完了・main反映済み | custom/v3/Runtime委譲と対応Studio/Hub/Runtimeを削除し、基本/native・保存データ・unknown予約を保持 |
-| D. ソース受け入れ・引継ぎ | ソース受け入れ完了。本書で共有入口を整備 | 最終CI、PR/commit、実装と実機の差、次作業と保留理由を一箇所から辿れる |
+| D. ソース受け入れ・引継ぎ | 追加全体レビューを含め受け入れ完了。本書で共有入口を整備 | 最終PR CI、受け入れmerge commit、実装と実機の差、次作業と保留理由を一箇所から辿れる |
 | E. 実機の移行計画・受け入れ | 未着手・今回の認可範囲外 | 実状態の確認、既存debtのreconcile、backup/rollback、明示された範囲の設定切替と実測 |
 | F. Generation Controllerの具体設計 | 保留・具体契約は未決定 | ユーザーが再開した後、保持domainのinventory、最小非MCP契約と一つの状態所有者を設計 |
 | G. Generation内部接続の最終組み換え | 未実装・F待ち | Controllerへの内部接続と外部MCP facadeを一つのdomain authorityに接続し、互換経路を解消 |
@@ -189,7 +210,7 @@ Fの設計と実装再開が前提です。
 | 4 | GのController実装と内部Generation切替 | Fのreviewed契約と実装再開 | 未実装 |
 | 5 | Hの制作機能拡張 | 個別の利用要件とscope | 新しい参照画像/custom構成は保留 |
 
-今回受け入れたsource cleanupの未マージ実装PRはありません。親/子Issueは、受け入れた範囲と今後の境界を記録しており、openであることだけを根拠に完了済み実装をやり直しません。旧feature Issueの履歴・実機証拠も保持します。
+4.2の実装と4.4の追加レビュー修正・README整理は受け入れ済みです。全体文書の採用commitはAI #23を参照します。親/子Issueは、受け入れた範囲と今後の境界を記録しており、openであることだけを根拠に完了済み実装をやり直しません。旧feature Issueの履歴・実機証拠も保持します。
 
 ## 7. 担当Issueと読む文書
 
@@ -231,3 +252,6 @@ ChatGPTの会話記憶だけで自動同期するものではありません。�
 | 2026-10-04 | 外部MCP/内部契約、任意Agent、ExecuteFlow/ExecutionPlan/ComfyWorkFlowの区別、Controller未実装と旧custom subsystem削除の方向を整理 |
 | 2026-10-05 | 内部Intelligence接続と旧Generation subsystem削除の6実装PRをCI成功・main反映。全体文書AI #20と親/子Issueへ受け入れ記録を追加 |
 | 2026-10-05 | 本書をスレッド間共有の入口として追加。目的・詳細工程・固定した完了基準・今後の作業・再開/更新方法を集約 |
+| 2026-10-05 | 9リポジトリの全体レビュー。旧runbook 13本・残存source分岐・文書矛盾とStudio Imageの認可／異常応答を追加修正し、open PRと検証を本書／レビュー記録へ集約 |
+| 2026-10-05 | 組織 `.github` READMEを追補確認し、日英マップとAI現行案内から旧機構の説明・完了済み削除手順を整理。AI #23／組織 #28のopen PRと文書検証を記録 |
+| 2026-10-05 | ユーザーの全件マージ指示でowner7PRと組織READMEをmain反映。マージ前CI／headとmerge tree一致を確認し、AI #23に受け入れcommit・残作業を集約 |

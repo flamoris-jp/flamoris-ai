@@ -21,7 +21,7 @@ for scope and resumption.
 
 The documentation pass is complete. The subsequent explicit user instruction authorizes deletion-first implementation, tests, review/fix loops and merges for the internal Intelligence connections and obsolete generation subsystem. It does not authorize production deployment, restarts, DB/data/credential changes, paid inference or new Generation/reference-image features.
 
-Intelligence cleanup is the first priority. Inventory removals and implement the smallest functioning retained non-MCP contracts before deleting their previous routes. Generation Controller remains documentation-only. Remove the added Generation MCP registry/versioning/composition/Runtime-delegation subsystem without migrating or recreating it. Preserve original bounded generation templates, generic provider recipes and retained-data protections.
+The retained internal Intelligence contracts and bounded generation source are accepted in main. Follow-up review may remove residual code and stale instructions within those contracts. Do not repeat completed work or use superseded designs as implementation instructions. Generation Controller remains documentation-only; new Controller or generation/reference-image development requires a separate explicit instruction. Preserve bounded generation templates, generic provider recipes and retained-data protections.
 
 ## Canonical terminology
 
@@ -32,7 +32,7 @@ Intelligence cleanup is the first priority. Inventory removals and implement the
 
 ## Dependency boundaries
 
-Generation MCP and Intelligence MCP are external MCP adapters/facades. Internal Studio, Agent, Controller and Runtime calls use non-MCP interfaces. MCP Hub handles external catalog/routing/connections, not application orchestration or an internal service bus.
+MCP is the external adapter/facade boundary. Studio raw Intelligence and Agent execution use shared non-MCP provider adapters; Studio Agent Support uses Agent JSON HTTP. Studio generation still has an explicit MCP compatibility route while Controller is unimplemented. The future target is a common non-MCP generation contract. MCP Hub handles external catalog/routing/connections, not application orchestration or an internal service bus.
 
 Agent is optional personality, conversation/memory, principal/session and context policy. Raw inference and generation do not require Agent. Keep a narrow replaceable internal execution boundary; do not introduce a universal gateway service or duplicate provider adapters merely to remove MCP.
 
@@ -42,7 +42,7 @@ Generation Controller is only a future generation-domain owner. No new Controlle
 
 ## Current implementation versus target
 
-Current source/tests establish what exists; the latest explicit decision in #18 defines the target. Old internal MCP adapters are migration inputs, not permission to extend the rejected direction. Mark as-built contracts and future design separately. Historical guidance must not contradict active instructions without an explicit superseded label and link.
+Current source/tests establish what exists; the latest explicit decision in #18 defines the target. Mark as-built contracts, retained compatibility routes and future design separately. Historical guidance must carry an explicit superseded label and link when it differs from active instructions.
 
 Preserve user data, identities and evidence. Deleting obsolete source or tests is different from deleting persisted records. On retained paths preserve principal isolation, consent for the complete remotely sent context, immutable input/reference identity, bounded decoding/staging/transfer, safe errors/paths, provenance and uncertain-submit/no-replay behavior. Internal callers still require authorization. Removing a feature must not create a bypass or claim unavailable behavior succeeded.
 

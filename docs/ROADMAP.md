@@ -4,56 +4,39 @@ Updated: 2026-10-05. Active authority: [AI #18](https://github.com/flamoris-jp/f
 
 The detailed phase checklists, accepted source/CI baselines, pending operational
 steps and cross-thread resumption/update rules are in [PROGRESS.md](../PROGRESS.md).
-This roadmap retains the responsibility/sequence map; future phases do not lift
+This roadmap lists remaining work; future phases do not lift
 the Controller or live-operation holds.
 
 ## Current scope
 
-The documentation pass and deletion-first source implementation are recorded in
-the [README source matrix](../README.md#implemented-source-boundaries) and owning
-Issues/PRs. The internal Intelligence/Agent contracts and matching generation
-retirement are implemented there; exact review/CI/merge evidence remains with each
-owner. Production deployment, restarts, DB/data/credential changes, paid inference
-and new generation/reference-image development remain separate.
+The [README source matrix](../README.md#implemented-source-boundaries) links accepted internal Intelligence/Agent contracts and bounded generation. The [2026-10-05 review](REVIEW_2026-10-05.md) and PROGRESS §4.4 record accepted residual fixes and organization/coordination documentation. Their reviewed source acceptance is complete; live acceptance and future Controller work remain separate.
 
-**Intelligence first. Controller not yet. Retire the added MCP-side ComfyWorkFlow registry/composition/delegation; preserve basic generation, generic recipes and retained-data fences. No transfer or recreation.**
+Studio generation still uses the retained MCP compatibility route. Controller design/implementation remains held. Production deployment, restarts, DB/data/credential changes, paid inference and new generation/reference-image development require their own resumed scope.
 
-## Sequence
+## Remaining phases
 
-1. Documentation review/fix/merge is complete.
-2. Under Agent #38, Intelligence MCP #10 and Studio #62, inventory internal MCP-only configuration, discovery, dispatch and translation; identify retained callers, execution contracts and safeguards.
-3. Implement the smallest functioning non-MCP routes: Studio-to-Agent HTTP and direct shared provider adapters for Agent/raw Studio inference. Keep personality/conversations/principals, model provenance, complete-context consent and durable request fences. External MCP remains separate.
-4. Under Generation #67 and Runtime #23, retire added definition registration/versioning/composition/Runtime delegation and generation-specific lowering. Preserve native ExecuteFlow, original bounded generation templates, generic recipes and unresolved-job fences; update Studio/Hub callers and external catalogs. Controller remains unimplemented.
-5. Verify, independently review, fix and merge. Record exact source acceptance without claiming a live cutover. Production migration, configuration and recovery/rollback remain separate.
+| Phase | Remaining work | Current status / start condition |
+| --- | --- | --- |
+| Live inventory and migration plan | Confirm installed versions, configuration, retained jobs/data, backup and rollback | Pending; resume only for an explicitly selected deployment scope (PROGRESS E1) |
+| Intelligence/Agent live acceptance | Configure the accepted provider-library and Agent HTTP contracts; verify grants, complete-context consent, model identity and request fences | Pending operational work (PROGRESS E2) |
+| Generation live acceptance | Verify retained Image/Speech/Music providers, inputs/assets and unresolved-job protections through the current compatibility route | Pending operational work (PROGRESS E3) |
+| Controller contract | Review one minimal shared generation boundary and its state ownership | Held; library/service, API, port and migration form remain undecided (PROGRESS F) |
+| Internal Generation cutover | Implement the reviewed Controller contract and connect internal callers and the external MCP adapter to one domain authority | Unimplemented; depends on contract review and explicit resumption (PROGRESS G) |
+| Product extensions | Define reference-image, additional provider or multi-step generation requirements individually | Separate scopes; new reference-image/custom features remain held (PROGRESS H) |
 
-Deleting obsolete code is not permission to delete historical records or leave retained calls silently succeeding without execution. Do not introduce a fallback to the deprecated MCP route. Do not choose endpoints, ports, new repositories or a universal gateway framework in this roadmap.
+Existing use of retained generation and Intelligence does not depend on Controller completion. Keep authorization, provenance, retained state and unknown/no-replay guarantees in each phase.
 
-## Owning correction tasks
+## Owning coordination Issues
 
-| Repository | Issue | Scope / sequencing |
+| Repository | Issue | Responsibility / status |
 | --- | --- | --- |
 | AI Agent | [#38](https://github.com/flamoris-jp/flamoris-ai-agent/issues/38) | Optional personality, retained ExecutionClient, internal HTTP and direct execution adapters |
 | Intelligence MCP | [#10](https://github.com/flamoris-jp/flamoris-intelligence-mcp/issues/10) | External facade over reusable non-MCP provider adapters |
-| Studio | [#62](https://github.com/flamoris-jp/flamoris-studio/issues/62) | Direct raw inference and Agent HTTP; retired generation calls unavailable |
+| Studio | [#62](https://github.com/flamoris-jp/flamoris-studio/issues/62) | Implemented raw provider adapters and Agent HTTP; current Generation compatibility route |
 | AI Runtime | [#23](https://github.com/flamoris-jp/flamoris-ai-runtime/issues/23) | ExecuteFlow distinct from compiled ExecutionPlan and ComfyWorkFlow; no kernel redesign |
 | Generation Controller | [#1](https://github.com/flamoris-jp/flamoris-generation-controller/issues/1) | Future boundary documentation only; implementation held |
-| Generation MCP | [#67](https://github.com/flamoris-jp/flamoris-generation-mcp/issues/67) | Added registry/composition/delegation retirement; basic generation and state protections retained |
+| Generation MCP | [#67](https://github.com/flamoris-jp/flamoris-generation-mcp/issues/67) | Bounded builtin/native generation, generic recipes and retained-state protections |
 | MCP Hub | [#36](https://github.com/flamoris-jp/flamoris-mcp-hub/issues/36) | External routing audit; no internal service bus |
 | GPU Node Manager | [#11](https://github.com/flamoris-jp/flamoris-gpu-node-manager/issues/11) | Host lifecycle/qualification boundary audit only |
 
-These are linked correction Issues. Their PRs and recorded checks establish source completion; this table is not deployment evidence.
-
-## Existing tracker reconciliation
-
-| Existing trackers | Treatment |
-| --- | --- |
-| AI #1/#4/#5/#6/#7/#15/#17 | Preserve requirements/history; supersede internal-MCP diagrams and automatic parallel-work instructions |
-| Generation #19/#42/#30 | Retire the mistaken custom subsystem; preserve historical evidence and keep new reference-image expansion held |
-| Generation #25/#31 and #45-related work | Preserve provider/acceptance evidence; no new expansion, mandatory bridge or blanket extraction |
-| Agent #24/#35 and Intelligence #8 | Replace internal-MCP assumptions through the Intelligence-first tasks |
-| Studio #39/#56/#36/#21/#11/#3 | Preserve valid UI/authorization/result requirements; internal Intelligence/Agent cutover and old generation call retirement are recorded in #62; Controller rewiring remains deferred |
-| Hub #26/#28 and Runtime #19 | Hold conflicting rollout/bridge assumptions; audit separately |
-
-Retain history and links; do not mass-close, reopen completed work or erase evidence. Code cleanup Issues stay open until their actual scope is accepted. Independent native-model, personality, GPU lifecycle and model-research tasks are not invalidated or started by this pass.
-
-The [historical roadmap](LEGACY_DESIGN.md) is traceability, not active execution guidance. This file records sequencing rather than duplicating test counts, release status or live host facts.
+Owning PRs and recorded checks establish source completion; an open coordination Issue alone does not make completed implementation pending. Accepted correction sequences and tracker history remain in PROGRESS.md, the linked Issues/PRs and Git history. The [historical roadmap](LEGACY_DESIGN.md) is traceability. Independent native-model, personality, GPU lifecycle and model-research tasks retain their own scopes.
