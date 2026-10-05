@@ -10,7 +10,7 @@
 
 **現在地：cleanupとController共通生成処理・対応callerはmain受け入れ済み（4.8）。実機投入前の2件、ChatGPT向けComfyWorkFlow登録／参照画像生成とStudio Agentの会話を維持したLLM切替も、最終CIを確認してmainへマージしました（4.9）。実機反映・migration適用・live推論は未着手です。**
 
-以下の新しいGeneration経路はmain受け入れ済みのソースです。稼働済み設定や実機切替の保証ではありません。限定checkpoint profileの参照画像ソースは4.9で受け入れ済みです。実機導入、任意custom node・追加model familyなどの拡張、data/grant/credential変更は別scopeです。実機作業は翌日に延期し、本日は文書整合を行います。
+以下の新しいGeneration経路はmain受け入れ済みのソースです。稼働済み設定や実機切替の保証ではありません。限定checkpoint profileの参照画像ソースは4.9で受け入れ済みです。実機導入、任意custom node・追加model familyなどの拡張、data/grant/credential変更は別scopeです。実機作業は翌日に延期し、本日は文書整合を行いました（4.10）。
 
 2026-10-05の追加全体レビューで、旧機構の手順書13本、未使用request field、Studio Imageの廃止済み参照／固定サイズ分岐と認可再確認の不足を発見・修正しました。**追加修正7PRと組織READMEはmain反映済み。全体の受け入れ記録は [AI #23](https://github.com/flamoris-jp/flamoris-ai/pull/23) です。** [リポジトリ別の全体レビューと残作業](docs/REVIEW_2026-10-05.md) に変更・検証・機能の可否を記録しています。最初のcleanupと追加レビューの受け入れ基準は4.2／4.4で個別に固定しています。
 
@@ -234,7 +234,7 @@ Agent migration `005`とStudio Alembic revision `20261005_12`はソースのみ�
 | Repository | 文書PR | main受け入れcommit | CI |
 | --- | --- | --- | --- |
 | flamoris-ai-agent | [#44](https://github.com/flamoris-jp/flamoris-ai-agent/pull/44) | `d5dd2e0a922e08e3054a71defb7f79b40d754a28` | [CI](https://github.com/flamoris-jp/flamoris-ai-agent/actions/runs/37312666002) 成功 |
-| flamoris-ai-runtime | [#27](https://github.com/flamoris-jp/flamoris-ai-runtime/pull/27) | 受け入れ待ち | [C++ contract and qualification](https://github.com/flamoris-jp/flamoris-ai-runtime/actions/runs/37312674102) 確認中 |
+| flamoris-ai-runtime | [#27](https://github.com/flamoris-jp/flamoris-ai-runtime/pull/27) | `e2f4ff709246922674d99344e02c8ce364f9e8f2` | [C++ contract and qualification](https://github.com/flamoris-jp/flamoris-ai-runtime/actions/runs/37312674102) 成功 |
 | flamoris-generation-controller | [#8](https://github.com/flamoris-jp/flamoris-generation-controller/pull/8) | `2e85caac885a84a851d92a7864e7b94c4f95ad86` | [Controller CI](https://github.com/flamoris-jp/flamoris-generation-controller/actions/runs/37312595986) 成功 |
 | flamoris-generation-mcp | [#73](https://github.com/flamoris-jp/flamoris-generation-mcp/pull/73) | `0ee424599f4a7d7d81453b59921fc9cbe9d64062` | [Python CI](https://github.com/flamoris-jp/flamoris-generation-mcp/actions/runs/37312680673) 成功 |
 | flamoris-studio | [#67](https://github.com/flamoris-jp/flamoris-studio/pull/67) | `d03028df892f7b1dc658534d22abaffcc34a5134` | [Python Studio CI](https://github.com/flamoris-jp/flamoris-studio/actions/runs/37312685723) 成功 |
@@ -242,7 +242,9 @@ Agent migration `005`とStudio Alembic revision `20261005_12`はソースのみ�
 | flamoris-intelligence-mcp | [#13](https://github.com/flamoris-jp/flamoris-intelligence-mcp/pull/13) | `405507b20258c9fd1313b7be519c85bb7f01b4ba` | [CI](https://github.com/flamoris-jp/flamoris-intelligence-mcp/actions/runs/37312702394) 成功 |
 | .github | [#29](https://github.com/flamoris-jp/.github/pull/29) | `693b7c53eafccf29dedd61dbd3d039e6bfa54324` | CI workflowなし（文書検証） |
 
-検証：変更対象の相対／既知ownerのcurrent-mainファイルリンク174件、見出し参照2件、Markdown table／空白を確認しました。各PRの変更ファイルがMarkdownだけであること、head／baseとレビュー状態を照合しました。merge後は受け入れtreeとレビュー済みheadのtree、main refの一致を確認します。実機情報の取得、deploy／restart、DB／grant／credential変更、GPU／有料provider callは行っていません。
+上記owner文書8PRはmainへ反映済みです。全体文書とこの受け入れ記録は [AI #27](https://github.com/flamoris-jp/flamoris-ai/pull/27) にまとめました。AIと組織READMEにはCI workflowがなく、文書検証で確認しています。
+
+検証：変更対象の相対／既知ownerのcurrent-mainファイルリンク174件、見出し参照2件、Markdown table／空白を確認しました。各PRの変更ファイルがMarkdownだけであること、head／baseとレビュー状態を照合しました。owner8PRはmerge後の受け入れtreeとレビュー済みheadのtree、main refの一致も確認済みです。実機情報の取得、deploy／restart、DB／grant／credential変更、GPU／有料provider callは行っていません。
 
 次は翌日のE1棚卸しとmatched cutover計画です。Controller／Generation／Hubの対応catalogとschema、Agent／Studioの対応migration、既存data／unknown予約／rollback条件を組にして確認し、実機受け入れはその結果を別途記録します。
 
@@ -374,3 +376,4 @@ ChatGPTの会話記憶だけで自動同期するものではありません。�
 | 2026-10-05 | 再レビュー・重点92 testsと最終CIを確認後、Controller #5／Generation #71／Studio #65をmainへマージ。全merge tree一致と受け入れcommit、残る実機工程を4.8へ記録 |
 | 2026-10-05 | 実機投入前のComfyWorkFlow登録／参照画像と会話内LLM切替を実装・レビュー。Controller #7／Generation #72／Hub #39／Agent #43／Studio #66のDraft PR、最終CIと残る採用・実機工程を4.9へ記録。今回のmerge／live変更なし |
 | 2026-10-05 | 続く明示merge指示で実装5PRをmainへ反映。最新head／CI／レビュー状態を再確認し、全merge treeと検証済みsourceの一致を確認。AI #26へ受け入れcommitと残る実機棚卸し・migration／catalog整合を記録。live変更なし |
+| 2026-10-05 | 実機を翌日へ延期。10repoの現行文書を照合し、9repoの37文書をソース受け入れ／25tool／会話内LLM切替／migration順序に整合。文書PRと検証・受け入れcommitを4.10／AI #27へ記録 |
