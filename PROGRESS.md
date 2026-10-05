@@ -12,6 +12,8 @@
 
 全体の組み換えが実機まで完了した、またはGenerationの内部接続がすべて非MCPになったという意味ではありません。今のGenerationは基本/native生成・input・assetのMCP互換経路を残しています。
 
+2026-10-05の追加全体レビューで、旧機構の手順書13本、未使用request field、Studio Imageの廃止済み参照／固定サイズ分岐と認可再確認の不足を発見・修正しました。**追加修正はopen PRで、まだmain未反映です。** [リポジトリ別の全体レビューと残作業](docs/REVIEW_2026-10-05.md) に変更・検証・機能の可否・PRを記録しています。前回のcleanup完了と、今回の追加PR受け入れは別です。
+
 ## 1. 作業の目的
 
 制作側が必要な知能・生成機能を使えるように、各リポジトリの責務と接続を整理します。MV制作などの利用に戻れる基盤を作り、単純な推論や生成のために不要な人格・中継・実行エンジンを必須にしないことが目的です。
@@ -93,6 +95,21 @@ Studioの5件の接続テストは、実際のGateway → Agent HTTP app → Age
 Studioの元のbuiltin Imageは参照画像を受け付けません。古いcustom/v3選択は、利用者が対応builtinを明示的に選び直すまで実行不可です。既存input/upload/assetと未確定executionの削除防止は残っています。**「旧v3を削除済み」と「参照画像が新構成で使える」は別で、後者は未実装・保留です。**
 
 詳細なinventoryと互換条件は [Generation retirement](https://github.com/flamoris-jp/flamoris-generation-mcp/blob/main/docs/LEGACY_RETIREMENT.md)、[Agent internal execution](https://github.com/flamoris-jp/flamoris-ai-agent/blob/main/docs/INTERNAL_EXECUTION.md)、[Studio cleanup](https://github.com/flamoris-jp/flamoris-studio/blob/main/docs/ARCHITECTURE_CLEANUP.md) にあります。
+
+### 4.4 追加の全体レビュー（2026-10-05、open PR）
+
+| リポジトリ | 追加修正 |
+| --- | --- |
+| Generation | [#70](https://github.com/flamoris-jp/flamoris-generation-mcp/pull/70)：旧runbook 9本とdefinition/evidence request seamを削除。native／data／unknown保護を保持 |
+| Studio | [#64](https://github.com/flamoris-jp/flamoris-studio/pull/64)：旧runbook 4本と参照／固定サイズ実行分岐を削除。Imageの認可・設定再確認と異常応答のunknown保存を追加 |
+| Agent | [#41](https://github.com/flamoris-jp/flamoris-ai-agent/pull/41)：現行HTTP／shared direct executionへphase・運用文書を一致 |
+| Controller | [#3](https://github.com/flamoris-jp/flamoris-generation-controller/pull/3)：削除済みscopeと将来の最小contractを区別 |
+| Runtime | [#26](https://github.com/flamoris-jp/flamoris-ai-runtime/pull/26)：実装済みPhase Cと将来external facadeを区別 |
+| Hub | [#38](https://github.com/flamoris-jp/flamoris-mcp-hub/pull/38)：Studio GenerationだけのMCP互換例外を明記 |
+| GPU Node Manager | [#12](https://github.com/flamoris-jp/flamoris-gpu-node-manager/pull/12)：独立host portと廃止済みGeneration consumerを区別 |
+| Intelligence | 現行source／103 testsを再確認。追加ソース変更なし |
+
+追加PRを自動マージせず、レビューできる状態で公開しています。最新headのCIとローカル検証の差は[レビュー記録](docs/REVIEW_2026-10-05.md#ci受け入れ記録)を参照。Controller／実機操作／新しいreference featureは再開していません。
 
 ## 5. 詳細ロードマップ
 
@@ -231,3 +248,4 @@ ChatGPTの会話記憶だけで自動同期するものではありません。�
 | 2026-10-04 | 外部MCP/内部契約、任意Agent、ExecuteFlow/ExecutionPlan/ComfyWorkFlowの区別、Controller未実装と旧custom subsystem削除の方向を整理 |
 | 2026-10-05 | 内部Intelligence接続と旧Generation subsystem削除の6実装PRをCI成功・main反映。全体文書AI #20と親/子Issueへ受け入れ記録を追加 |
 | 2026-10-05 | 本書をスレッド間共有の入口として追加。目的・詳細工程・固定した完了基準・今後の作業・再開/更新方法を集約 |
+| 2026-10-05 | 9リポジトリの全体レビュー。旧runbook 13本・残存source分岐・文書矛盾とStudio Imageの認可／異常応答を追加修正し、open PRと検証を本書／レビュー記録へ集約 |

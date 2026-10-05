@@ -21,7 +21,7 @@ for scope and resumption.
 
 The documentation pass is complete. The subsequent explicit user instruction authorizes deletion-first implementation, tests, review/fix loops and merges for the internal Intelligence connections and obsolete generation subsystem. It does not authorize production deployment, restarts, DB/data/credential changes, paid inference or new Generation/reference-image features.
 
-Intelligence cleanup is the first priority. Inventory removals and implement the smallest functioning retained non-MCP contracts before deleting their previous routes. Generation Controller remains documentation-only. Remove the added Generation MCP registry/versioning/composition/Runtime-delegation subsystem without migrating or recreating it. Preserve original bounded generation templates, generic provider recipes and retained-data protections.
+The Intelligence-first cleanup and matched custom generation retirement are implemented in main. Verify current source before repeating any inventory or implementation; follow-up review may remove residual code and stale instructions within the existing retained contracts. Generation Controller remains documentation-only. Remove the added Generation MCP registry/versioning/composition/Runtime-delegation subsystem without migrating or recreating it. Preserve original bounded generation templates, generic provider recipes and retained-data protections.
 
 ## Canonical terminology
 

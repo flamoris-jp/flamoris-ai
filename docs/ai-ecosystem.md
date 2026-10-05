@@ -7,7 +7,7 @@ This is a target responsibility map, not deployment evidence. [Architecture](ARC
 | Repository | Target role |
 | --- | --- |
 | [Generation Controller](https://github.com/flamoris-jp/flamoris-generation-controller) | Future internal generation boundary; documentation only, no implementation now |
-| [Generation MCP](https://github.com/flamoris-jp/flamoris-generation-mcp) | External MCP adapter; retire added registry/composition/delegation without moving it into Controller; basic generation remains co-located pending future Controller work |
+| [Generation MCP](https://github.com/flamoris-jp/flamoris-generation-mcp) | External MCP adapter; added registry/composition/delegation retired without moving it into Controller; basic generation remains co-located pending future Controller work |
 | [Intelligence MCP](https://github.com/flamoris-jp/flamoris-intelligence-mcp) | External facade and home of a separate importable non-MCP provider-adapter package; not Agent/Studio's internal network gateway |
 | [MCP Hub](https://github.com/flamoris-jp/flamoris-mcp-hub) | External aggregation, namespaces, connections and routing |
 
@@ -63,6 +63,6 @@ Desktop products retain their own project/document/editing state. Logging, MCP f
 
 ## 日本語
 
-ExecuteFlowはRuntimeの推論フロー、ExecutionPlanは既存のコンパイル済み表現、ComfyWorkFlowはComfyUI用グラフ・JSONです。MCPは外部入口、Agentは人格が必要な場合のみ。Intelligenceの内部接続を整備し、後付けのComfyWorkFlow登録・合成・Runtime委譲は削除します。基本生成を維持し、Controllerは未実装のまま、移植や再実装はしません。
+ExecuteFlowはRuntimeの推論フロー、ExecutionPlanは既存のコンパイル済み表現、ComfyWorkFlowはComfyUI用グラフ・JSONです。MCPは外部入口、Agentは人格が必要な場合のみ。Intelligenceの内部接続を整備し、後付けのComfyWorkFlow登録・合成・Runtime委譲を削除しました。基本生成を維持し、Controllerは未実装のまま、移植や再実装はしません。
 
 See the [organization map](https://github.com/flamoris-jp/.github) and [desktop ecosystem](https://github.com/flamoris-jp/flamoris-commons/blob/main/docs/desktop-ecosystem.md). Exact status, test results and live readiness remain with each owner.

@@ -16,9 +16,12 @@ retirement are implemented there; exact review/CI/merge evidence remains with ea
 owner. Production deployment, restarts, DB/data/credential changes, paid inference
 and new generation/reference-image development remain separate.
 
-**Intelligence first. Controller not yet. Retire the added MCP-side ComfyWorkFlow registry/composition/delegation; preserve basic generation, generic recipes and retained-data fences. No transfer or recreation.**
+**Internal Intelligence/Agent cleanup and custom generation retirement are implemented. Controller remains held; basic generation, generic recipes and retained-data fences remain. No transfer or recreation.**
 
-## Sequence
+## Accepted implementation sequence
+
+The following source sequence is complete. Current follow-up review and remaining
+operational/Controller work are recorded separately in PROGRESS.md.
 
 1. Documentation review/fix/merge is complete.
 2. Under Agent #38, Intelligence MCP #10 and Studio #62, inventory internal MCP-only configuration, discovery, dispatch and translation; identify retained callers, execution contracts and safeguards.

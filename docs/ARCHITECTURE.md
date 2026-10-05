@@ -1,6 +1,6 @@
 # FLAMORIS AI architecture
 
-Decision: [AI #18](https://github.com/flamoris-jp/flamoris-ai/issues/18), 2026-10-04. The documentation pass is complete; the next explicit instruction authorizes deletion-first implementation and connection correction. This document distinguishes the architecture and source acceptance from deployed routes.
+Decision: [AI #18](https://github.com/flamoris-jp/flamoris-ai/issues/18), 2026-10-04. The documentation pass, deletion-first implementation and internal connection correction are accepted in main; the 2026-10-05 follow-up audit addresses residual code and stale instructions. This document distinguishes the architecture and source acceptance from deployed routes.
 
 ## External adapters and internal owners
 
@@ -72,7 +72,9 @@ Agent conversations, Runtime active Jobs and generation jobs are different autho
 
 Preserve identities, retained assets/inputs/conversations, provenance and uncertain accepted work during later code changes. Source deletion is not persistent-data deletion. Retained paths keep scoped authentication/authorization, complete-context remote consent, bounded I/O/time/resources, safe staging, declared outputs, redacted errors and no hidden replay/fallback. Lifecycle READY is not proof that a particular ComfyWorkFlow is qualified.
 
-## Sequencing
+## Accepted cleanup sequence
+
+This sequence is implemented; it does not order the work again.
 
 1. The documentation PRs are reviewed, corrected and merged.
 2. Inventory internal MCP clients and obsolete generation additions; retain independent state and safety contracts.
@@ -90,4 +92,4 @@ Controller/reference-image work remain explicit.
 
 MCPは外部入口、Agentは任意の人格、Runtimeは推論とExecuteFlow、既存ExecutionPlanはコンパイル済み表現です。ComfyWorkFlowはComfyUI用グラフ・JSONであり、Runtimeへ移しません。
 
-Intelligence整備を先行し、Studio・Agentの内部MCP依存を直接接続へ置き換えます。Generationの後付け登録・合成・Runtime委譲を削除し、基本生成と保存済みデータの保護は維持します。Generation Controllerは未実装のままで、同じ仕組みの移植や再作成はしません。実機移行は別工程です。
+Studio・Agentの内部MCP依存を直接接続へ置き換えました。Generationの後付け登録・合成・Runtime委譲を削除し、基本生成と保存済みデータの保護は維持します。Generation Controllerは未実装のままで、同じ仕組みの移植や再作成はしません。実機移行は別工程です。
