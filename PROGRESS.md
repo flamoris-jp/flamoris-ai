@@ -25,7 +25,7 @@
 | Agentの役割 | 人格・会話・memory・principal/session・context policyが必要な場合だけ使う。通常推論・生成はAgentなしで使える |
 | 推論の実行 | 共通のprovider adapterを再利用し、StudioやAgentに同じ通信実装を複製しない。新しい中央gatewayサービスも作らない |
 | Runtimeの役割 | 推論、ExecuteFlow、コンパイル済みExecutionPlan、Job/Continuation/resource制御を維持する |
-| Generationの整理 | 後付けのcustom ComfyWorkFlow登録・版管理・合成・Runtime委譲を削除。同じものをControllerやRuntimeに移植・再作成しない |
+| Generationの整理 | 保持された基本/native生成・generic recipe・Job/Input/Assetの責務を明確にする。現行のMCP互換経路と将来の非MCP契約を区別する |
 | 状態の所有者 | 会話・生成Job/Input/Asset・GPU lifecycleごとに一つのauthorityを保つ。複数frontendが別々の予約や状態を作らない |
 | 既存の保護 | ユーザー分離、送信同意、上限、provenance、不確定処理の予約、保存済みデータを保持する |
 
@@ -108,8 +108,12 @@ Studioの元のbuiltin Imageは参照画像を受け付けません。古いcust
 | Hub | [#38](https://github.com/flamoris-jp/flamoris-mcp-hub/pull/38)：Studio GenerationだけのMCP互換例外を明記 |
 | GPU Node Manager | [#12](https://github.com/flamoris-jp/flamoris-gpu-node-manager/pull/12)：独立host portと廃止済みGeneration consumerを区別 |
 | Intelligence | 現行source／103 testsを再確認。追加ソース変更なし |
+| AI | [#23](https://github.com/flamoris-jp/flamoris-ai/pull/23)：レビュー記録に加え、README／AGENTS／現行設計から完了済み削除手順・旧機構の説明を整理。ROADMAPを残作業中心へ更新 |
+| 組織 `.github` | [#28](https://github.com/flamoris-jp/.github/pull/28)：組織READMEの日英責務マップを現行接続へ一致。曖昧なWorkflow説明・旧階層図を整理し、Controller未実装とGeneration互換経路を明記 |
 
 追加PRを自動マージせず、レビューできる状態で公開しています。6 owner workflowの最新head CIは全て成功。ローカル検証の差は[レビュー記録](docs/REVIEW_2026-10-05.md#ci受け入れ記録)を参照。Controller／実機操作／新しいreference featureは再開していません。
+
+組織READMEの追補確認とAI文書整理では、完了したソース監査を繰り返さず、現行案内の記述だけを更新しました。開発ステータスの生成領域は変更せず、既存sync helperのoffline idempotence・日英リンク・相対／ownerリンク・見出し・diffを確認。受け入れ履歴、実機の互換／回復条件と保存データの保護は保持しています。
 
 ## 5. 詳細ロードマップ
 
@@ -206,7 +210,7 @@ Fの設計と実装再開が前提です。
 | 4 | GのController実装と内部Generation切替 | Fのreviewed契約と実装再開 | 未実装 |
 | 5 | Hの制作機能拡張 | 個別の利用要件とscope | 新しい参照画像/custom構成は保留 |
 
-今回受け入れたsource cleanupの未マージ実装PRはありません。親/子Issueは、受け入れた範囲と今後の境界を記録しており、openであることだけを根拠に完了済み実装をやり直しません。旧feature Issueの履歴・実機証拠も保持します。
+4.2でmain反映した実装PRは全て受け入れ済みです。4.4の追加レビュー修正・README整理はopen PRで、まだmain未反映です。親/子Issueは、受け入れた範囲と今後の境界を記録しており、openであることだけを根拠に完了済み実装をやり直しません。旧feature Issueの履歴・実機証拠も保持します。
 
 ## 7. 担当Issueと読む文書
 
@@ -249,3 +253,4 @@ ChatGPTの会話記憶だけで自動同期するものではありません。�
 | 2026-10-05 | 内部Intelligence接続と旧Generation subsystem削除の6実装PRをCI成功・main反映。全体文書AI #20と親/子Issueへ受け入れ記録を追加 |
 | 2026-10-05 | 本書をスレッド間共有の入口として追加。目的・詳細工程・固定した完了基準・今後の作業・再開/更新方法を集約 |
 | 2026-10-05 | 9リポジトリの全体レビュー。旧runbook 13本・残存source分岐・文書矛盾とStudio Imageの認可／異常応答を追加修正し、open PRと検証を本書／レビュー記録へ集約 |
+| 2026-10-05 | 組織 `.github` READMEを追補確認し、日英マップとAI現行案内から旧機構の説明・完了済み削除手順を整理。AI #23／組織 #28のopen PRと文書検証を記録 |
