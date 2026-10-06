@@ -1,6 +1,6 @@
 # FLAMORIS AI アーキテクチャ組み換え：進捗と引継ぎ
 
-更新日：2026-10-05（JST）
+更新日：2026-10-06（JST）
 
 対象：外部MCP・内部Intelligence・任意Agent・Generation・Runtimeの責務と接続の整理
 
@@ -8,9 +8,9 @@
 
 このファイルは、ChatGPTの別スレッドや次の作業担当が、目的・現在地・残りの作業をまとめて確認する入口です。設計の基準は [ARCHITECTURE.md](docs/ARCHITECTURE.md)、担当Issueと従来の順序は [ROADMAP.md](docs/ROADMAP.md)。本書はその進捗と次の具体的な工程を記録します。
 
-**現在地：cleanupとController共通生成処理・対応callerはmain受け入れ済み（4.8）。実機投入前の2件、ChatGPT向けComfyWorkFlow登録／参照画像生成とStudio Agentの会話を維持したLLM切替も、最終CIを確認してmainへマージしました（4.9）。実機反映・migration適用・live推論は未着手です。**
+**現在地：cleanupとController共通生成処理・対応callerはmain受け入れ済み（4.8）。実機投入前の2件、ChatGPT向けComfyWorkFlow登録／参照画像生成とStudio Agentの会話を維持したLLM切替も、最終CIを確認してmainへマージしました（4.9）。2026-10-06に実機リリース準備とAgent DB 004/005の適用まで進みました（4.11）。アプリ／GPU Node Managerの切替、Studio migration、人格import／追加grant、live推論・会話継続は未完了です。**
 
-以下の新しいGeneration経路はmain受け入れ済みのソースです。稼働済み設定や実機切替の保証ではありません。限定checkpoint profileの参照画像ソースは4.9で受け入れ済みです。実機導入、任意custom node・追加model familyなどの拡張、data/grant/credential変更は別scopeです。実機作業は翌日に延期し、本日は文書整合を行いました（4.10）。
+以下の新しいGeneration経路はmain受け入れ済みのソースです。稼働済み設定や実機切替の保証ではありません。限定checkpoint profileの参照画像ソースは4.9で受け入れ済みです。実機導入は2026-10-06の明示されたリリース作業として開始しました（4.11）。任意custom node・追加model familyなどの拡張や未承認のremote／有料APIは別scopeです。2026-10-05は実機作業を翌日に延期し、文書整合を行いました（4.10）。
 
 2026-10-05の追加全体レビューで、旧機構の手順書13本、未使用request field、Studio Imageの廃止済み参照／固定サイズ分岐と認可再確認の不足を発見・修正しました。**追加修正7PRと組織READMEはmain反映済み。全体の受け入れ記録は [AI #23](https://github.com/flamoris-jp/flamoris-ai/pull/23) です。** [リポジトリ別の全体レビューと残作業](docs/REVIEW_2026-10-05.md) に変更・検証・機能の可否を記録しています。最初のcleanupと追加レビューの受け入れ基準は4.2／4.4で個別に固定しています。
 
@@ -248,6 +248,23 @@ Agent migration `005`とStudio Alembic revision `20261005_12`はソースのみ�
 
 次は翌日のE1棚卸しとmatched cutover計画です。Controller／Generation／Hubの対応catalogとschema、Agent／Studioの対応migration、既存data／unknown予約／rollback条件を組にして確認し、実機受け入れはその結果を別途記録します。
 
+### 4.11 実機リリースの中断点（2026-10-06 JST）
+
+ユーザーの明示された実機更新指示に基づき、固定成果物の準備・バックアップ・Agent DB migrationまで進めました。23:42のoperator-pasted SSH結果を最後の確認点として、就寝のため切替前に中断しています。以下はその時点の証拠であり、将来の稼働状態の保証ではありません。private配置・設定・証拠ファイルと再開点はInternalのdated maintenance記録に置き、公開文書には秘密値・private topology・個人の会話内容を記載しません。
+
+| 工程 | 2026-10-06の確認範囲 |
+| --- | --- |
+| 固定成果物 | Generation `0ee424599f4a7d7d81453b59921fc9cbe9d64062`、Intelligence `405507b20258c9fd1313b7be519c85bb7f01b4ba`、Agent `d5dd2e0a922e08e3054a71defb7f79b40d754a28`、Studio `d03028df892f7b1dc658534d22abaffcc34a5134`、Hub `e74f2cfa45e5ea57ec0996c6d7a6e83c5c4b4aee`の候補5イメージをビルド済み。切替未実施 |
+| rollback準備 | システム／DB／既存設定・生成データと旧イメージを退避。旧Studio・HubのアーカイブはOCI indexから26参照blobのchecksum、稼働構成とlayersを照合。再保存せず既存アーカイブを受け入れ |
+| 内部HTTP準備 | 既存proxyの旧MCP経路を保持して内部API経路を追加・reload。Controller秘密の生成側と転送ファイルの一致、受け渡し先の0600保護を確認。アプリrecreateと実API到達性の確認は未実施 |
+| Agent DB復元検証 | 保存済みcustom-format dumpを専用検証DBへ同じrolesで復元。保護対象の内容・件数、既存table所有者・app権限を比較。004→005を検証DBで試適用し、既存内容と権限を保持。検証DBは削除済み |
+| Agent DB本番 | `004_assistant_settings` → `005_model_continuations`を適用済み。元の`0.1`／002／003を保持。保護対象の内容・件数が適用前後で一致。retention timerは元のactive/waiting・enabledへ復帰 |
+| 未実施 | Studio `20261005_12`、人格DB import、model/personality追加grant、Agent direct/registry/default設定、Studio/Hub設定とcatalog更新、GPU Node Managerと5アプリの切替、実GPU推論・会話継続・参照画像の実機受け入れ |
+
+保存／読込経路の検証と実推論は別工程です。既存のprovider pin、保存状態、unknown予約、persona／conversation／grant identityを維持します。AI Runtimeの独立リリースは今回の必須依存に追加していません。
+
+再開時は新しいlive状態を確認し、Internalの完了記録と適用版を照合します。候補イメージの再ビルド、完了済みbackup・復元検証・Agent 004/005適用を最初から繰り返しません。次はStudio migrationと設定準備、Agentの設定／人格／grant、Managerとアプリの固定成果物切替、その後の認証・catalog・local推論・会話継続を進めます。未完了のアプリ切替を「実機更新完了」と扱わないでください。
+
 ## 5. 詳細ロードマップ
 
 これは工程と依存関係の計画です。将来の工程を列挙したこと自体で、保留中の実装や実機作業が再開するわけではありません。予定日・port・service方式など未決定の事項は固定しません。
@@ -258,7 +275,7 @@ Agent migration `005`とStudio Alembic revision `20261005_12`はソースのみ�
 | B. 内部Intelligence接続 | 完了・main反映済み | shared adapter、Agent HTTP、Studio raw/Agentの両経路、保持する認可・送信同意・fenceを検証 |
 | C. 旧Generation機能と呼出し元の削除 | 完了・main反映済み | custom/v3/Runtime委譲と対応Studio/Hub/Runtimeを削除し、基本/native・保存データ・unknown予約を保持 |
 | D. ソース受け入れ・引継ぎ | 追加全体レビューを含め受け入れ完了。本書で共有入口を整備 | 最終PR CI、受け入れmerge commit、実装と実機の差、次作業と保留理由を一箇所から辿れる |
-| E. 実機の移行計画・受け入れ | 未着手・今回の認可範囲外 | 実状態の確認、既存debtのreconcile、backup/rollback、明示された範囲の設定切替と実測 |
+| E. 実機の移行計画・受け入れ | 2026-10-06に明示再開。準備とAgent DB 004/005完了、切替前で中断（4.11） | 実状態の確認、既存debtのreconcile、backup/rollback、明示された範囲の設定切替と実測 |
 | F. Generation Controllerの実装準備・具体設計 | 完了。具体契約／hosting／service permissionを4.6で固定 | README/AGENTS、retained inventoryと実装方針を整備し、最小非MCP契約と一つの状態所有者を決定 |
 | G. Generation内部接続の最終組み換え | 完了・main反映済み。最終head CI成功とmerge tree一致を4.8に記録 | Controllerへの内部接続と外部MCP facadeを一つのdomain authorityに接続し、互換経路を解消 |
 | H. 制作機能の拡張 | 参照画像／ComfyWorkFlowと会話内LLM切替を4.9でmain受け入れ。実機受け入れは未完了 | bounded profileで個別に検証。追加provider／複数段／任意custom構成は別scope |
@@ -306,7 +323,7 @@ Agent migration `005`とStudio Alembic revision `20261005_12`はソースのみ�
 
 ### G. Generation内部接続の最終組み換え
 
-Controller／外部facade／Studio gatewayのソースを4.6で実装し、4.7でレビュー修正、4.8で再レビューしてmain受け入れしました。最終headのCIは4.7、merge commitと検証済みtreeの一致は4.8を参照します。installed versionと実機設定は未変更です。live cutoverはEの棚卸し、旧ownerのreconcile、backup/rollback、固定artifactと明示された設定変更に続きます。
+Controller／外部facade／Studio gatewayのソースを4.6で実装し、4.7でレビュー修正、4.8で再レビューしてmain受け入れしました。最終headのCIは4.7、merge commitと検証済みtreeの一致は4.8を参照します。アプリのinstalled version切替は未実施です。2026-10-06のAPI準備とAgent DB適用は4.11を参照します。live cutoverはEの棚卸し、旧ownerのreconcile、backup/rollback、固定artifactと明示された設定変更に続きます。
 
 実機ではStudioの旧MCP／Hub endpointから正確な `/api/v1/generation` baseへ変更し、hostの `FLAMORIS_CONTROLLER_TOKEN` と同じprivate `STUDIO_GENERATION_TOKEN`、空の `STUDIO_GENERATION_NAMESPACE` を設定します。これは旧endpointの自動fallbackではありません。old/new ownerを併走させず、既存unknown journalを消しません。
 
@@ -320,8 +337,8 @@ Controller／外部facade／Studio gatewayのソースを4.6で実装し、4.7�
 
 | 優先 | 次の候補 | 開始条件 | 現在 |
 | --- | --- | --- | --- |
-| 1 | E1の実機棚卸し・matched cutover計画 | 実機調査／移行の指示と対象範囲 | 未着手。4.9のsourceはmain受け入れ済み、実機設定は別 |
-| 2 | E2/E3の実機受け入れ | debt・backup/rollback・versionを確認し、変更範囲が明示される | 未着手。対応artifact／catalog／migrationを組にして一つのauthorityを維持 |
+| 1 | E1の実機棚卸し・matched cutover計画 | 実機調査／移行の指示と対象範囲 | 2026-10-06に開始。固定artifact・backup・Agent DB適用を確認（4.11）。停止／切替直前のbusy・request状態は再確認 |
+| 2 | E2/E3の実機受け入れ | debt・backup/rollback・versionを確認し、変更範囲が明示される | 一部準備とAgent 004/005は完了。Studio migration・persona/grant・設定／アプリ切替とlive検証が残る（4.11） |
 | 3 | Hの追加制作機能 | 個別の利用要件とscope | 任意custom node・追加provider・複数段生成は別scope |
 
 4.2の実装と4.4の追加レビュー修正・README整理は受け入れ済みです。全体文書の採用commitはAI #23を参照します。親/子Issueは、受け入れた範囲と今後の境界を記録しており、openであることだけを根拠に完了済み実装をやり直しません。旧feature Issueの履歴・実機証拠も保持します。
@@ -377,3 +394,4 @@ ChatGPTの会話記憶だけで自動同期するものではありません。�
 | 2026-10-05 | 実機投入前のComfyWorkFlow登録／参照画像と会話内LLM切替を実装・レビュー。Controller #7／Generation #72／Hub #39／Agent #43／Studio #66のDraft PR、最終CIと残る採用・実機工程を4.9へ記録。今回のmerge／live変更なし |
 | 2026-10-05 | 続く明示merge指示で実装5PRをmainへ反映。最新head／CI／レビュー状態を再確認し、全merge treeと検証済みsourceの一致を確認。AI #26へ受け入れcommitと残る実機棚卸し・migration／catalog整合を記録。live変更なし |
 | 2026-10-05 | 実機を翌日へ延期。10repoの現行文書を照合し、9repoの37文書をソース受け入れ／25tool／会話内LLM切替／migration順序に整合。文書PRと検証・受け入れcommitを4.10／AI #27へ記録 |
+| 2026-10-06 | 明示された実機リリースを再開。固定5候補・rollback／内部API準備、Agent DB復元・004/005試適用と本番適用、保護対象の保持・retention timer復帰を確認。アプリ／Manager切替前で中断し、残工程を4.11へ記録 |
