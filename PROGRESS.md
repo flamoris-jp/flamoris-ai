@@ -1,6 +1,6 @@
 # FLAMORIS AI アーキテクチャ組み換え：進捗と引継ぎ
 
-更新日：2026-10-07（JST）
+更新日：2026-10-08（JST）
 
 対象：外部MCP・内部Intelligence・任意Agent・Generation・Runtimeの責務と接続の整理
 
@@ -8,7 +8,7 @@
 
 このファイルは、ChatGPTの別スレッドや次の作業担当が、目的・現在地・残りの作業をまとめて確認する入口です。設計の基準は [ARCHITECTURE.md](docs/ARCHITECTURE.md)、担当Issueと従来の順序は [ROADMAP.md](docs/ROADMAP.md)。本書はその進捗と次の具体的な工程を記録します。
 
-**現在地：cleanupとController・対応caller、bounded ComfyWorkFlow／参照画像と会話内LLM切替のソースはmain受け入れ済み（4.8／4.9）。2026-10-07 22:15 JSTまでにDB migration、人格import・承認済みlocal権限、GPU Node Managerと5アプリの切替、Studio gatewayのTLS／認証API経路を確認しました（4.12）。基本Imageとbounded schema7参照画像の実推論・PNG取得も確認しました（4.13／4.14）。GPU handoff／VRAM観測とAgent directモデル解決も確認しました（4.15）。外部Intelligence alias補正と単発local LLM実推論も確認しました（4.16）。同モデルのAgent会話継続・履歴参照も確認しました（4.17）。異なるモデルへの切替、OpenAI API設定／実推論、ログイン後UIは残っています。**
+**現在地：cleanupとController・対応caller、bounded ComfyWorkFlow／参照画像と会話内LLM切替のソースはmain受け入れ済み（4.8／4.9）。2026-10-07 22:15 JSTまでにDB migration、人格import・承認済みlocal権限、GPU Node Managerと5アプリの切替、Studio gatewayのTLS／認証API経路を確認しました（4.12）。基本Imageとbounded schema7参照画像の実推論・PNG取得も確認しました（4.13／4.14）。GPU handoff／VRAM観測とAgent directモデル解決も確認しました（4.15）。外部Intelligence alias補正と単発local LLM実推論も確認しました（4.16）。同モデルのAgent会話継続・履歴参照も確認しました（4.17）。2026-10-08に選択済みSolの設定／認証／モデル権限とStudio gateway経由のOpenAI実推論、local→Solの会話継続・履歴参照・旧session失効を確認しました（4.18）。ログイン後UIの受け入れは残っています。**
 
 以下の新しいGeneration経路はmain受け入れ済みのソースです。稼働済み設定や実機切替の保証ではありません。限定checkpoint profileの参照画像ソースは4.9で受け入れ済みです。実機導入は2026-10-06の明示されたリリース作業として開始しました（4.11）。任意custom node・追加model familyなどの拡張や未承認のremote／有料APIは別scopeです。2026-10-05は実機作業を翌日に延期し、文書整合を行いました（4.10）。
 
@@ -333,6 +333,16 @@ Studioの実AgentGatewayから新規local sessionを作り、承認済みgpt-oss
 
 これはAgentのturn／principal lineageとbackend gatewayの受け入れです。ログイン後のStudio UI／UI thread、異なるモデルへの切替、OpenAI APIのキー・モデル・権限設定／認証／実推論は未確認です。remote対応の実装済みソースと、local-onlyでの実機確認を区別します。
 
+### 4.18 OpenAI設定と異モデルのAgent会話継続 — 2026-10-08
+
+operatorの保存結果により、選択済みgpt-6.1-sol／OpenAIをAgentのdefaultに設定し、既存local optionと承認済み2組のモデル権限を保持したことを08:18 JSTに確認しました。固定Agent image・direct execution・DB人格・private mount・既存DB内容／権限と周辺サービスを保持。build／migration／推論／GPU切替はこの設定反映では行っていません。キー認証・モデルreadinessと実推論を区別します。
+
+続く08:31 JSTの受け入れでは、Studioの実AgentGatewayから新規local sessionでgpt-oss-20b／llamacppへ1回送信し、complete-context remote consentを明示してgpt-6.1-sol／OpenAIのimmutable child sessionへ継続しました。後続質問には合言葉を含めず、今回のlocal履歴からOpenAIが同じ文字列を返すことを確認。両応答のprovider／model provenance、旧sessionのadmission失効、終了後Agent／Generation idleと稼働container設定保持も確認しました。合計2推論、OpenAI submissionは1回、新規principal sessionとturn conversationは各2件。既存会話は使用せず、設定変更・build・migration・GPU activation・automatic replayなし。
+
+これはStudio backend gatewayとAgent turn／principal lineageの受け入れです。ログイン後browserのaccount mapping／CSRF／Studio-owned conversation key／model selector／answer publicationは未確認です。raw Intelligence UIや別のremote provider、2accountの全認可テスト、追加native profileの品質をこの結果で確認済みとはしません。次はログイン後UIを確認し、完了済みcutover・推論を再送しません。
+
+証拠はoperatorのroot専用verification resultと秘密を伏せた成功JSONです。詳細receiptと固定script／SHA256はprivate Internalのdated maintenance記録に保持。実行scriptはGitHub固定バイトと照合し、offline8 testsで送信回数・再送禁止・provenance拒否・mount比較を確認しました。文書反映は[AI #28](https://github.com/flamoris-jp/flamoris-ai/pull/28)で追跡します。本節は選択済みreleaseの時点別受け入れであり、別releaseや将来のruntime healthの保証ではありません。
+
 ## 5. 詳細ロードマップ
 
 これは工程と依存関係の計画です。将来の工程を列挙したこと自体で、保留中の実装や実機作業が再開するわけではありません。予定日・port・service方式など未決定の事項は固定しません。
@@ -343,10 +353,10 @@ Studioの実AgentGatewayから新規local sessionを作り、承認済みgpt-oss
 | B. 内部Intelligence接続 | 完了・main反映済み | shared adapter、Agent HTTP、Studio raw/Agentの両経路、保持する認可・送信同意・fenceを検証 |
 | C. 旧Generation機能と呼出し元の削除 | 完了・main反映済み | custom/v3/Runtime委譲と対応Studio/Hub/Runtimeを削除し、基本/native・保存データ・unknown予約を保持 |
 | D. ソース受け入れ・引継ぎ | 追加全体レビューを含め受け入れ完了。本書で共有入口を整備 | 最終PR CI、受け入れmerge commit、実装と実機の差、次作業と保留理由を一箇所から辿れる |
-| E. 実機の移行計画・受け入れ | DB・人格／権限・Manager／5アプリ切替とgateway確認済み。UI／実推論等の受け入れが残る（4.12） | 実状態の確認、既存debtのreconcile、backup/rollback、明示された範囲の設定切替と実測 |
+| E. 実機の移行計画・受け入れ | DB・人格／権限・Manager／5アプリ切替とgateway確認済み。Image／schema7／local・OpenAI実推論／異モデルAgent継続も確認。ログイン後UI等が残る（4.12–4.18） | 実状態の確認、既存debtのreconcile、backup/rollback、明示された範囲の設定切替と実測 |
 | F. Generation Controllerの実装準備・具体設計 | 完了。具体契約／hosting／service permissionを4.6で固定 | README/AGENTS、retained inventoryと実装方針を整備し、最小非MCP契約と一つの状態所有者を決定 |
 | G. Generation内部接続の最終組み換え | 完了・main反映済み。最終head CI成功とmerge tree一致を4.8に記録 | Controllerへの内部接続と外部MCP facadeを一つのdomain authorityに接続し、互換経路を解消 |
-| H. 制作機能の拡張 | 参照画像／ComfyWorkFlowと会話内LLM切替を4.9でmain受け入れ。実機受け入れは未完了 | bounded profileで個別に検証。追加provider／複数段／任意custom構成は別scope |
+| H. 制作機能の拡張 | 参照画像／ComfyWorkFlowと会話内LLM切替を4.9でmain受け入れ。backend実機実行は4.14／4.18で確認、ログイン後UIは残る | bounded profileで個別に検証。追加provider／複数段／任意custom構成は別scope |
 
 ### E1. 実機移行前の棚卸し
 
@@ -406,7 +416,7 @@ Controller／外部facade／Studio gatewayのソースを4.6で実装し、4.7�
 | 優先 | 次の候補 | 開始条件 | 現在 |
 | --- | --- | --- | --- |
 | 1 | E1の実機棚卸し・matched cutover計画 | 実機調査／移行の指示と対象範囲 | 2026-10-06に開始。固定artifact・backup・Agent DB適用を確認（4.11）。停止／切替直前のbusy・request状態は再確認 |
-| 2 | E2/E3の実機受け入れ | debt・backup/rollback・versionを確認し、変更範囲が明示される | DB・persona/grant・Manager／アプリ切替とgateway確認済み。基本Imageとschema7実行済み。GPU handoffと外部Intelligenceのlocal実推論も確認。同モデルAgent会話継続も確認。異モデル切替／OpenAI API／ログイン後UIが残る（4.17） |
+| 2 | E2/E3の実機受け入れ | debt・backup/rollback・versionを確認し、変更範囲が明示される | DB・persona/grant・Manager／アプリ切替とgateway確認済み。基本Imageとschema7実行済み。GPU handoffと外部Intelligenceのlocal実推論も確認。同モデルAgent会話継続も確認。OpenAI設定とlocal→Solの異モデル継続／実推論を確認。ログイン後UI等が残る（4.18） |
 | 3 | Hの追加制作機能 | 個別の利用要件とscope | 任意custom node・追加provider・複数段生成は別scope |
 
 4.2の実装と4.4の追加レビュー修正・README整理は受け入れ済みです。全体文書の採用commitはAI #23を参照します。親/子Issueは、受け入れた範囲と今後の境界を記録しており、openであることだけを根拠に完了済み実装をやり直しません。旧feature Issueの履歴・実機証拠も保持します。
@@ -469,3 +479,4 @@ ChatGPTの会話記憶だけで自動同期するものではありません。�
 | 2026-10-07 | 正規Managerの画像→LLM handoff、owned process解放／VRAM観測、Agent directモデル解決を確認。外部Intelligence alias不一致と残る実推論／会話／UIを4.15へ記録 |
 | 2026-10-07 | 外部Intelligence aliasを既存上限・固定imageのまま補正し、単発local実推論と予約解放を確認。Agent会話継続／異モデル切替／OpenAI API／UIの未確認範囲を4.16へ記録 |
 | 2026-10-07 | Studio gatewayのlocal会話継続・合言葉の履歴参照・旧session失効を確認。Docker Mountsの順序差による検査停止を読み取りだけで確定し、推論を再送せず4.17へ記録 |
+| 2026-10-08 | 選択済みOpenAI Solの設定／認証／2組の権限とlocal保持を確認。Studio gatewayでlocal→Solの異モデル継続・合言葉履歴参照・旧session失効を実測、2推論のうちOpenAI1回。ログイン後UIは未確認（4.18）。進捗文書はAI #28で追跡 |
