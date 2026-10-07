@@ -8,7 +8,7 @@
 
 このファイルは、ChatGPTの別スレッドや次の作業担当が、目的・現在地・残りの作業をまとめて確認する入口です。設計の基準は [ARCHITECTURE.md](docs/ARCHITECTURE.md)、担当Issueと従来の順序は [ROADMAP.md](docs/ROADMAP.md)。本書はその進捗と次の具体的な工程を記録します。
 
-**現在地：cleanupとController・対応caller、bounded ComfyWorkFlow／参照画像と会話内LLM切替のソースはmain受け入れ済み（4.8／4.9）。2026-10-07 22:15 JSTまでにDB migration、人格import・承認済みlocal権限、GPU Node Managerと5アプリの切替、Studio gatewayのTLS／認証API経路を確認しました（4.12）。基本Imageとbounded schema7参照画像の実推論・PNG取得も確認しました（4.13／4.14）。GPU handoff／VRAM観測とAgent directモデル解決も確認しました（4.15）。外部Intelligence alias補正と単発local LLM実推論も確認しました（4.16）。Agent会話継続、異なるモデルへの切替、ログイン後UIは残っています。**
+**現在地：cleanupとController・対応caller、bounded ComfyWorkFlow／参照画像と会話内LLM切替のソースはmain受け入れ済み（4.8／4.9）。2026-10-07 22:15 JSTまでにDB migration、人格import・承認済みlocal権限、GPU Node Managerと5アプリの切替、Studio gatewayのTLS／認証API経路を確認しました（4.12）。基本Imageとbounded schema7参照画像の実推論・PNG取得も確認しました（4.13／4.14）。GPU handoff／VRAM観測とAgent directモデル解決も確認しました（4.15）。外部Intelligence alias補正と単発local LLM実推論も確認しました（4.16）。同モデルのAgent会話継続・履歴参照も確認しました（4.17）。異なるモデルへの切替、OpenAI API設定／実推論、ログイン後UIは残っています。**
 
 以下の新しいGeneration経路はmain受け入れ済みのソースです。稼働済み設定や実機切替の保証ではありません。限定checkpoint profileの参照画像ソースは4.9で受け入れ済みです。実機導入は2026-10-06の明示されたリリース作業として開始しました（4.11）。任意custom node・追加model familyなどの拡張や未承認のremote／有料APIは別scopeです。2026-10-05は実機作業を翌日に延期し、文書整合を行いました（4.10）。
 
@@ -323,7 +323,15 @@ GPU Node Managerの正規MCP経路で、画像runtimeのREADY、遷移なし・�
 
 外部MCP facadeから承認済みlocal gpt-oss-20b／llamacppへ1回の短い推論を送り、固定応答・finish_reason=stopを確認しました。上限512 tokens／60秒、応答1274 ms、provider報告usageはinput99／output79／total178です。実行後の予約解放とサービス空き状態、LLM READY／他runtime OFF、各コンテナ・設定保持を確認しました。初回のdownloadは提示hashに末尾改行差があり実行前STOP。固定GitHubバイトからhashを訂正して成功したもので、推論の再送ではありません。
 
-この確認ではAgent会話を作成していません。次は既存会話を使わない新規local sessionで、Studio Agent gateway経由の履歴参照と同モデルのsession continuationを確認します。異モデル切替、OpenAI APIの設定・認証・実推論、ログイン後UIは未確認です。未承認のremote／有料APIをこの確認のために追加しません。
+この確認ではAgent会話を作成していません。後続4.17で、既存会話を使わない新規local sessionからStudio Agent gateway経由の履歴参照と同モデルのsession continuationを確認しました。異モデル切替、OpenAI APIの設定・認証・実推論、ログイン後UIは未確認です。未承認のremote／有料APIをこの確認のために追加しません。
+
+### 4.17 同モデルのAgent会話継続 — 2026-10-07
+
+Studioの実AgentGatewayから新規local sessionを作り、承認済みgpt-oss-20b／llamacppで2回の短い発言を実行しました。同モデルのimmutable child sessionへのcontinuation、旧sessionのadmission失効、前のconversationを参照した履歴の継続を確認しました。後続質問にはランダムな合言葉を含めず、応答に元の合言葉があることを確認しました。既存会話は指定せず、remote consentはfalseです。
+
+最初のpreflight停止は、Docker HealthcheckのないHubにhealthyを要求した検査側の誤りでした。続くpostflight停止はDocker Mounts配列の順序差を設定変更とした検査側の誤りでした。保存済み応答と現在状態を読み取り、Mountsの内容・件数・権限が同一であること、他のコンテナ設定と識別子が保持されていること、Agent／Generationが空き状態であることを照合して23:42 JSTに記録を確定しました。推論・session・continuationは再送していません。
+
+これはAgentのturn／principal lineageとbackend gatewayの受け入れです。ログイン後のStudio UI／UI thread、異なるモデルへの切替、OpenAI APIのキー・モデル・権限設定／認証／実推論は未確認です。remote対応の実装済みソースと、local-onlyでの実機確認を区別します。
 
 ## 5. 詳細ロードマップ
 
@@ -398,7 +406,7 @@ Controller／外部facade／Studio gatewayのソースを4.6で実装し、4.7�
 | 優先 | 次の候補 | 開始条件 | 現在 |
 | --- | --- | --- | --- |
 | 1 | E1の実機棚卸し・matched cutover計画 | 実機調査／移行の指示と対象範囲 | 2026-10-06に開始。固定artifact・backup・Agent DB適用を確認（4.11）。停止／切替直前のbusy・request状態は再確認 |
-| 2 | E2/E3の実機受け入れ | debt・backup/rollback・versionを確認し、変更範囲が明示される | DB・persona/grant・Manager／アプリ切替とgateway確認済み。基本Imageとschema7実行済み。GPU handoffと外部Intelligenceのlocal実推論も確認。Agent会話継続／異モデル切替／ログイン後UIが残る（4.15／4.16） |
+| 2 | E2/E3の実機受け入れ | debt・backup/rollback・versionを確認し、変更範囲が明示される | DB・persona/grant・Manager／アプリ切替とgateway確認済み。基本Imageとschema7実行済み。GPU handoffと外部Intelligenceのlocal実推論も確認。同モデルAgent会話継続も確認。異モデル切替／OpenAI API／ログイン後UIが残る（4.17） |
 | 3 | Hの追加制作機能 | 個別の利用要件とscope | 任意custom node・追加provider・複数段生成は別scope |
 
 4.2の実装と4.4の追加レビュー修正・README整理は受け入れ済みです。全体文書の採用commitはAI #23を参照します。親/子Issueは、受け入れた範囲と今後の境界を記録しており、openであることだけを根拠に完了済み実装をやり直しません。旧feature Issueの履歴・実機証拠も保持します。
@@ -460,3 +468,4 @@ ChatGPTの会話記憶だけで自動同期するものではありません。�
 | 2026-10-07 | bounded checkpoint img2imgの登録・管理参照・schema7実行・PNG取得を確認。参照snapshotだけ完了後に削除し既存データを保持。残るGPU／LLM／UI受け入れを4.14へ記録 |
 | 2026-10-07 | 正規Managerの画像→LLM handoff、owned process解放／VRAM観測、Agent directモデル解決を確認。外部Intelligence alias不一致と残る実推論／会話／UIを4.15へ記録 |
 | 2026-10-07 | 外部Intelligence aliasを既存上限・固定imageのまま補正し、単発local実推論と予約解放を確認。Agent会話継続／異モデル切替／OpenAI API／UIの未確認範囲を4.16へ記録 |
+| 2026-10-07 | Studio gatewayのlocal会話継続・合言葉の履歴参照・旧session失効を確認。Docker Mountsの順序差による検査停止を読み取りだけで確定し、推論を再送せず4.17へ記録 |
