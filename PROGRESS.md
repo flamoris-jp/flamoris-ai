@@ -8,7 +8,7 @@
 
 このファイルは、ChatGPTの別スレッドや次の作業担当が、目的・現在地・残りの作業をまとめて確認する入口です。設計の基準は [ARCHITECTURE.md](docs/ARCHITECTURE.md)、担当Issueと従来の順序は [ROADMAP.md](docs/ROADMAP.md)。本書はその進捗と次の具体的な工程を記録します。
 
-**現在地：cleanupとController共通生成処理・対応callerはmain受け入れ済み（4.8）。実機投入前の2件、ChatGPT向けComfyWorkFlow登録／参照画像生成とStudio Agentの会話を維持したLLM切替も、最終CIを確認してmainへマージしました（4.9）。2026-10-06に実機リリース準備とAgent DB 004/005、2026-10-07にStudio DB 20261005_12の適用まで進みました（4.11）。アプリ／GPU Node Managerの切替、人格import／追加grant、live推論・会話継続は未完了です。**
+**現在地：cleanupとController・対応caller、bounded ComfyWorkFlow／参照画像と会話内LLM切替のソースはmain受け入れ済み（4.8／4.9）。2026-10-07 22:15 JSTまでにDB migration、人格import・承認済みlocal権限、GPU Node Managerと5アプリの切替、Studio gatewayのTLS／認証API経路を確認しました（4.12）。ログイン後UI、実GPU推論、会話継続、異なるモデルへの切替、schema7参照画像実行の実機受け入れは残っています。**
 
 以下の新しいGeneration経路はmain受け入れ済みのソースです。稼働済み設定や実機切替の保証ではありません。限定checkpoint profileの参照画像ソースは4.9で受け入れ済みです。実機導入は2026-10-06の明示されたリリース作業として開始しました（4.11）。任意custom node・追加model familyなどの拡張や未承認のremote／有料APIは別scopeです。2026-10-05は実機作業を翌日に延期し、文書整合を行いました（4.10）。
 
@@ -53,7 +53,7 @@ GPU Node Managerがhost-wideなruntime起動停止・GPU handoff・transition lo
 | Studio Agent Support | Studio `AgentGateway` → Agent JSON HTTP `/api/v1` → Agentのapproved execution client → shared adapter | Agentがprincipal・人格・会話・モデル/送信同意を所有する |
 | 外部Intelligence MCP | 外部クライアント → Hub等の外部入口 → Intelligence MCP facade → shared adapter | 外部のtool/schema/transport・結果変換を維持する |
 | 外部Agent MCP | Agentの既存inbound MCP surfaceを保持 | 内部HTTPへの置換とは別の互換面。実際の外部登録・稼働状態は別途確認する |
-| Studio generation | main受け入れ済みのStudio → 認証付きController HTTP v1 → 一つのController → provider | Studioがuser ownership・request/publication fenceを保持。main反映済み、実機未切替 |
+| Studio generation | main受け入れ済みのStudio → 認証付きController HTTP v1 → 一つのController → provider | Studioがuser ownership・request/publication fenceを保持。main反映済み。2026-10-07にgateway経路確認、実生成は未確認（4.12） |
 | 外部Generation MCP | main受け入れ済みの外部client → Hub → Generation MCP facade → 同じController → provider | 保持23tool＋comfy.register/getの25tool。signed ingress／SDK変換を保持し、Studioとは同じruntime／予約を利用（4.9） |
 | Runtime | native推論・ExecuteFlow・ExecutionPlan・Job/Continuationを保持 | 必要なら将来、生成能力への任意の内部連携を別scopeで設計する |
 | GPU lifecycle | 既存RuntimeManagerと共通lock。CLI/HTTP/MCPは同じmanagerを利用する | 既存authorityを維持する |
@@ -272,7 +272,28 @@ Agent migration `005`とStudio Alembic revision `20261005_12`はソースのみ�
 
 初回はmigrationジョブのAlembic設定読取PermissionErrorで停止し、旧DB版と新テーブル未作成を確認後、当該一時ジョブだけroot userで再開しました。常駐アプリのuser、イメージ、設定は変更していません。ユーザー指示により既存の日次backupを前提とし、追加backupとStudio dumpの復元試験は実施していません。Agentの前日復元検証と004/005を繰り返していません。
 
-旧Studio／Hubの同一コンテナ継続稼働を確認。人格import・追加grant・設定切替・アプリ／GPU Node Manager切替、実GPU推論・会話継続などの実機受け入れは未完了です。
+旧Studio／Hubの同一コンテナ継続稼働を確認。この19:05時点では人格import・追加grant・アプリ切替は未完了でした。後続の切替結果と現在の残作業は4.12を参照します。
+
+### 4.12. 2026-10-07の固定成果物切替と経路確認
+
+operator-pasted SSH結果により、GPU Node ManagerとGeneration／Intelligence／Agent／Hub／Studioの切替を22:15 JSTまでに確認しました。準備済み人格をDBへimportし、既存の承認された2組のprincipalにlocalモデル・人格権限を設定しました。既存identity、人格のordered content、grant、会話、生成物を保持しています。
+
+| 対象 | 固定source | 確認した範囲 |
+| --- | --- | --- |
+| GPU Node Manager core | `2f55fb74b986b7fa9c0eceb00cab2bd94187fdca` | core 1.0.0、既存native service・共通lock・privilege境界保持 |
+| Generation | `0ee424599f4a7d7d81453b59921fc9cbe9d64062` | Controller内部API認証、output-root単一authority、managed input readiness、25tool、既存内容/inode保持 |
+| Intelligence | `405507b20258c9fd1313b7be519c85bb7f01b4ba` | 起動と外部MCP 6tool。provider readiness／実推論は未確認 |
+| Agent | `d5dd2e0a922e08e3054a71defb7f79b40d754a28` | direct execution、DB context、settings、API認証／Host／Origin guards、内部9操作・外部8tool、localモデル権限 |
+| Hub | `e74f2cfa45e5ea57ec0996c6d7a6e83c5c4b4aee` | Generation直結とHubの25toolの名前・schema・annotationがfresh connectionで一致 |
+| Studio | `d03028df892f7b1dc658534d22abaffcc34a5134` | runtime UID、DB role／revision、Generation／Agent gatewayのTLS・認証API、localモデル権限、Webと未認証asset拒否 |
+
+Studioの元候補は非root runtimeからソースを読めず起動に失敗しました。旧image／envへのrollbackを検証し、固定候補から読込modeだけを補正した派生imageを作成。42件のmode変更以外はアプリ内容・ownership・runtime設定を保持し、runtime UIDで隔離factory初期化を確認しました。採用imageは `sha256:e6376961a3f07f9e66ca3d5ae9acd9de44b33c89b5af4a317b8a906c497d23e8`。常駐userをrootへ変更せず、DB migrationを繰り返していません。
+
+Studio切替では既存envのinode／owner／mode／ACL、tokenとbindings、保護対象DB内容・権限、既存thumbnail、周辺サービスを保持。gatewayから実TLS経路でreadinessと権限を確認しました。Hub catalogは件数だけでなく25toolのschema／annotationも一致しています。
+
+この工程ではsession／conversationを作成せず、実推論は行っていません。ログイン後UI、最小local GPU推論、会話継続、異なるモデルへのhandoff、bounded schema7の参照画像実行を次に個別確認します。承認済みlocalモデルは1つのため異モデルhandoffは現構成で検証できるかを確認し、未承認モデル追加で埋めません。raw Intelligenceの接続は未設定。remote／有料API、任意custom node、追加providerの受け入れは含みません。
+
+本記録の更新は[AI #28](https://github.com/flamoris-jp/flamoris-ai/pull/28)で進行中で、main反映とは区別します。
 
 ## 5. 詳細ロードマップ
 
@@ -284,7 +305,7 @@ Agent migration `005`とStudio Alembic revision `20261005_12`はソースのみ�
 | B. 内部Intelligence接続 | 完了・main反映済み | shared adapter、Agent HTTP、Studio raw/Agentの両経路、保持する認可・送信同意・fenceを検証 |
 | C. 旧Generation機能と呼出し元の削除 | 完了・main反映済み | custom/v3/Runtime委譲と対応Studio/Hub/Runtimeを削除し、基本/native・保存データ・unknown予約を保持 |
 | D. ソース受け入れ・引継ぎ | 追加全体レビューを含め受け入れ完了。本書で共有入口を整備 | 最終PR CI、受け入れmerge commit、実装と実機の差、次作業と保留理由を一箇所から辿れる |
-| E. 実機の移行計画・受け入れ | 2026-10-07に続行。準備・Agent DB 004/005・Studio DB 20261005_12完了、アプリ切替未実施（4.11） | 実状態の確認、既存debtのreconcile、backup/rollback、明示された範囲の設定切替と実測 |
+| E. 実機の移行計画・受け入れ | DB・人格／権限・Manager／5アプリ切替とgateway確認済み。UI／実推論等の受け入れが残る（4.12） | 実状態の確認、既存debtのreconcile、backup/rollback、明示された範囲の設定切替と実測 |
 | F. Generation Controllerの実装準備・具体設計 | 完了。具体契約／hosting／service permissionを4.6で固定 | README/AGENTS、retained inventoryと実装方針を整備し、最小非MCP契約と一つの状態所有者を決定 |
 | G. Generation内部接続の最終組み換え | 完了・main反映済み。最終head CI成功とmerge tree一致を4.8に記録 | Controllerへの内部接続と外部MCP facadeを一つのdomain authorityに接続し、互換経路を解消 |
 | H. 制作機能の拡張 | 参照画像／ComfyWorkFlowと会話内LLM切替を4.9でmain受け入れ。実機受け入れは未完了 | bounded profileで個別に検証。追加provider／複数段／任意custom構成は別scope |
@@ -332,7 +353,7 @@ Agent migration `005`とStudio Alembic revision `20261005_12`はソースのみ�
 
 ### G. Generation内部接続の最終組み換え
 
-Controller／外部facade／Studio gatewayのソースを4.6で実装し、4.7でレビュー修正、4.8で再レビューしてmain受け入れしました。最終headのCIは4.7、merge commitと検証済みtreeの一致は4.8を参照します。アプリのinstalled version切替は未実施です。2026-10-06のAPI準備とAgent DB適用は4.11を参照します。live cutoverはEの棚卸し、旧ownerのreconcile、backup/rollback、固定artifactと明示された設定変更に続きます。
+Controller／外部facade／Studio gatewayのソースを4.6で実装し、4.7でレビュー修正、4.8で再レビューしてmain受け入れしました。最終headのCIは4.7、merge commitと検証済みtreeの一致は4.8を参照します。固定成果物のinstalled version切替とgateway確認は4.12、前段のAPI準備とDB適用は4.11を参照します。live cutoverはEの棚卸し、旧ownerのreconcile、backup/rollback、固定artifactと明示された設定変更に続きます。
 
 実機ではStudioの旧MCP／Hub endpointから正確な `/api/v1/generation` baseへ変更し、hostの `FLAMORIS_CONTROLLER_TOKEN` と同じprivate `STUDIO_GENERATION_TOKEN`、空の `STUDIO_GENERATION_NAMESPACE` を設定します。これは旧endpointの自動fallbackではありません。old/new ownerを併走させず、既存unknown journalを消しません。
 
@@ -347,7 +368,7 @@ Controller／外部facade／Studio gatewayのソースを4.6で実装し、4.7�
 | 優先 | 次の候補 | 開始条件 | 現在 |
 | --- | --- | --- | --- |
 | 1 | E1の実機棚卸し・matched cutover計画 | 実機調査／移行の指示と対象範囲 | 2026-10-06に開始。固定artifact・backup・Agent DB適用を確認（4.11）。停止／切替直前のbusy・request状態は再確認 |
-| 2 | E2/E3の実機受け入れ | debt・backup/rollback・versionを確認し、変更範囲が明示される | 一部準備・Agent 004/005・Studio migrationは完了。persona/grant・設定／アプリ切替とlive検証が残る（4.11） |
+| 2 | E2/E3の実機受け入れ | debt・backup/rollback・versionを確認し、変更範囲が明示される | DB・persona/grant・Manager／アプリ切替とgateway確認済み。ログイン後UI／実推論／会話継続／schema7実行が残る（4.12） |
 | 3 | Hの追加制作機能 | 個別の利用要件とscope | 任意custom node・追加provider・複数段生成は別scope |
 
 4.2の実装と4.4の追加レビュー修正・README整理は受け入れ済みです。全体文書の採用commitはAI #23を参照します。親/子Issueは、受け入れた範囲と今後の境界を記録しており、openであることだけを根拠に完了済み実装をやり直しません。旧feature Issueの履歴・実機証拠も保持します。
@@ -364,7 +385,7 @@ Controller／外部facade／Studio gatewayのソースを4.6で実装し、4.7�
 | Runtime | [#23](https://github.com/flamoris-jp/flamoris-ai-runtime/issues/23) | [Architecture](https://github.com/flamoris-jp/flamoris-ai-runtime/blob/main/docs/ARCHITECTURE.md) |
 | Hub | [#36](https://github.com/flamoris-jp/flamoris-mcp-hub/issues/36) | [Generation rollout](https://github.com/flamoris-jp/flamoris-mcp-hub/blob/main/docs/GENERATION_ROLLOUT.md) |
 | GPU Node Manager | [#11](https://github.com/flamoris-jp/flamoris-gpu-node-manager/issues/11) | [Architecture](https://github.com/flamoris-jp/flamoris-gpu-node-manager/blob/main/docs/ARCHITECTURE.md) |
-| Generation Controller | [#1](https://github.com/flamoris-jp/flamoris-generation-controller/issues/1) | [実装方針・inventory](https://github.com/flamoris-jp/flamoris-generation-controller/blob/b57140954c8bc8176d882a053df70f00fad2be31/docs/IMPLEMENTATION.md)。共通core／API／単一所有者と対応PRを実装。source acceptance完了（4.8）。live cutoverは別工程で未着手 |
+| Generation Controller | [#1](https://github.com/flamoris-jp/flamoris-generation-controller/issues/1) | [実装方針・inventory](https://github.com/flamoris-jp/flamoris-generation-controller/blob/b57140954c8bc8176d882a053df70f00fad2be31/docs/IMPLEMENTATION.md)。共通core／API／単一所有者と対応PRを実装。source acceptance完了（4.8）。固定成果物cutoverとgateway確認は4.12、実生成受け入れは未完了 |
 | 参照画像／ComfyWorkFlow | [Controller #6](https://github.com/flamoris-jp/flamoris-generation-controller/issues/6) | Controller #7・Generation #72・Hub #39。bounded登録／init-image、25tool、未確定submit保護（4.9） |
 | 会話内LLM切替 | [Agent #42](https://github.com/flamoris-jp/flamoris-ai-agent/issues/42) | Agent #43・Studio #66。同じconversation、immutable lineage、durable switch fence（4.9） |
 
@@ -404,3 +425,4 @@ ChatGPTの会話記憶だけで自動同期するものではありません。�
 | 2026-10-05 | 続く明示merge指示で実装5PRをmainへ反映。最新head／CI／レビュー状態を再確認し、全merge treeと検証済みsourceの一致を確認。AI #26へ受け入れcommitと残る実機棚卸し・migration／catalog整合を記録。live変更なし |
 | 2026-10-05 | 実機を翌日へ延期。10repoの現行文書を照合し、9repoの37文書をソース受け入れ／25tool／会話内LLM切替／migration順序に整合。文書PRと検証・受け入れcommitを4.10／AI #27へ記録 |
 | 2026-10-06 | 明示された実機リリースを再開。固定5候補・rollback／内部API準備、Agent DB復元・004/005試適用と本番適用、保護対象の保持・retention timer復帰を確認。アプリ／Manager切替前で中断し、残工程を4.11へ記録 |
+| 2026-10-07 | DB・人格／権限・GPU Node Managerと5アプリ切替を確認。Studio起動時のソース読込権限を補正し、既存データ・設定・権限を保持。gateway TLS／API確認と未実施のUI／推論／会話／schema7受け入れを4.12へ記録 |
