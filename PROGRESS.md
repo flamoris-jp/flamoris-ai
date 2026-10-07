@@ -184,7 +184,7 @@ Controller → Generation MCP → Studioの順にexpected head SHAを指定し�
 
 両dependentとDockerのcore pinは、CIで検証した`b57140954c8bc8176d882a053df70f00fad2be31`を維持します。マージ後も同じsource artifactを導入でき、履歴上のsquash commitへ依存を再指定する必要はありません。Controller #1のソースscopeを受け入れ、運用工程は本書Eと親AI #18へ引き継ぎます。既存Issue履歴・旧cleanup証拠は保持します。
 
-F/Gのソース作業は完了です。実機への反映、installed version、endpoint／private token／namespaceの変更、旧ownerのdrain/reconcile、provider／二account受け入れは未着手です。次の工程はE1の棚卸しとmatched cutover計画で、調査／移行対象が明示された場合に進めます。新しい参照画像/custom機能はHの別scopeです。
+F/Gのソース作業は完了です。この節の受け入れ時点では実機作業は未着手でした。後続の明示リリース指示に基づく固定成果物切替・gateway経路確認と、残るprovider／UI等の受け入れは4.12を参照します。任意custom構成の拡張は別scopeです。
 
 ### 4.9 実機投入前の2機能（2026-10-05、main反映）
 
