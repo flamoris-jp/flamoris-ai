@@ -8,7 +8,7 @@
 
 このファイルは、ChatGPTの別スレッドや次の作業担当が、目的・現在地・残りの作業をまとめて確認する入口です。設計の基準は [ARCHITECTURE.md](docs/ARCHITECTURE.md)、担当Issueと従来の順序は [ROADMAP.md](docs/ROADMAP.md)。本書はその進捗と次の具体的な工程を記録します。
 
-**現在地：cleanupとController・対応caller、bounded ComfyWorkFlow／参照画像と会話内LLM切替のソースはmain受け入れ済み（4.8／4.9）。2026-10-07 22:15 JSTまでにDB migration、人格import・承認済みlocal権限、GPU Node Managerと5アプリの切替、Studio gatewayのTLS／認証API経路を確認しました（4.12）。基本Imageとbounded schema7参照画像の実推論・PNG取得も確認しました（4.13／4.14）。ログイン後UI、GPU handoff／telemetry、LLM推論・会話継続、異なるモデルへの切替の実機受け入れは残っています。**
+**現在地：cleanupとController・対応caller、bounded ComfyWorkFlow／参照画像と会話内LLM切替のソースはmain受け入れ済み（4.8／4.9）。2026-10-07 22:15 JSTまでにDB migration、人格import・承認済みlocal権限、GPU Node Managerと5アプリの切替、Studio gatewayのTLS／認証API経路を確認しました（4.12）。基本Imageとbounded schema7参照画像の実推論・PNG取得も確認しました（4.13／4.14）。GPU handoff／VRAM観測とAgent directモデル解決も確認しました（4.15）。外部Intelligence alias補正、LLM推論・会話継続、異なるモデルへの切替、ログイン後UIは残っています。**
 
 以下の新しいGeneration経路はmain受け入れ済みのソースです。稼働済み設定や実機切替の保証ではありません。限定checkpoint profileの参照画像ソースは4.9で受け入れ済みです。実機導入は2026-10-06の明示されたリリース作業として開始しました（4.11）。任意custom node・追加model familyなどの拡張や未承認のremote／有料APIは別scopeです。2026-10-05は実機作業を翌日に延期し、文書整合を行いました（4.10）。
 
@@ -309,6 +309,14 @@ GPU Node Managerの正規MCP経路で、画像runtimeのREADY、遷移なし・�
 
 これは512×512・4 stepsのbounded img2img実行確認です。IPAdapter／ControlNet／任意custom node、画質、Studio Imageの参照画像UI・ギャラリー登録は確認範囲に含みません。GPU handoff／telemetry、local LLM推論・会話継続、異なるモデルへのhandoff、ログイン後UIは残っています。
 
+### 4.15. 2026-10-07のGPU handoffとAgentモデル解決
+
+22:56 JSTのoperator結果により、正規Manager MCPから画像runtime→local LLM runtimeを1回だけ切り替え、LLM READY／healthy、他runtime OFF、遷移なし・異常なしを確認しました。旧画像runtimeのowned process解放、新LLM processとVRAM使用量を記録しています。GPUメモリが途中で完全に0だったとは記録しません。
+
+最初のreadiness検査は公開model IDとproviderのserved aliasを混同して停止しました。起動停止を再送せず、固定Agentソースと実機default／registryの公開ID→承認済みproviderモデルmappingを照合し、direct adapterによる正確なモデル解決に成功しました。この修正は検査側で、AgentやLLMの設定変更は行っていません。
+
+外部Intelligence facadeには公開IDをserved aliasとして使う設定が残っていることも判明しました。公開IDと既存上限を保ったalias補正を次に行います。Agent経路のモデル解決を外部facadeの成功と同一視しません。LLM実推論・会話継続、異なるモデルへの切替、ログイン後UIはまだ未確認です。
+
 ## 5. 詳細ロードマップ
 
 これは工程と依存関係の計画です。将来の工程を列挙したこと自体で、保留中の実装や実機作業が再開するわけではありません。予定日・port・service方式など未決定の事項は固定しません。
@@ -442,3 +450,4 @@ ChatGPTの会話記憶だけで自動同期するものではありません。�
 | 2026-10-07 | DB・人格／権限・GPU Node Managerと5アプリ切替を確認。Studio起動時のソース読込権限を補正し、既存データ・設定・権限を保持。gateway TLS／API確認と未実施のUI／推論／会話／schema7受け入れを4.12へ記録 |
 | 2026-10-07 | 外部Hubからbuiltin Imageを1回実行し、completed・PNG取得とController空き状態を確認。基本実行と未確認のschema7／LLM／UI／GPU handoffを4.13で区別 |
 | 2026-10-07 | bounded checkpoint img2imgの登録・管理参照・schema7実行・PNG取得を確認。参照snapshotだけ完了後に削除し既存データを保持。残るGPU／LLM／UI受け入れを4.14へ記録 |
+| 2026-10-07 | 正規Managerの画像→LLM handoff、owned process解放／VRAM観測、Agent directモデル解決を確認。外部Intelligence alias不一致と残る実推論／会話／UIを4.15へ記録 |
