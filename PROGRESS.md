@@ -8,7 +8,7 @@
 
 このファイルは、ChatGPTの別スレッドや次の作業担当が、目的・現在地・残りの作業をまとめて確認する入口です。設計の基準は [ARCHITECTURE.md](docs/ARCHITECTURE.md)、担当Issueと従来の順序は [ROADMAP.md](docs/ROADMAP.md)。本書はその進捗と次の具体的な工程を記録します。
 
-**現在地：cleanupとController・対応caller、bounded ComfyWorkFlow／参照画像と会話内LLM切替のソースはmain受け入れ済み（4.8／4.9）。2026-10-07 22:15 JSTまでにDB migration、人格import・承認済みlocal権限、GPU Node Managerと5アプリの切替、Studio gatewayのTLS／認証API経路を確認しました（4.12）。基本Imageとbounded schema7参照画像の実推論・PNG取得も確認しました（4.13／4.14）。GPU handoff／VRAM観測とAgent directモデル解決も確認しました（4.15）。外部Intelligence alias補正、LLM推論・会話継続、異なるモデルへの切替、ログイン後UIは残っています。**
+**現在地：cleanupとController・対応caller、bounded ComfyWorkFlow／参照画像と会話内LLM切替のソースはmain受け入れ済み（4.8／4.9）。2026-10-07 22:15 JSTまでにDB migration、人格import・承認済みlocal権限、GPU Node Managerと5アプリの切替、Studio gatewayのTLS／認証API経路を確認しました（4.12）。基本Imageとbounded schema7参照画像の実推論・PNG取得も確認しました（4.13／4.14）。GPU handoff／VRAM観測とAgent directモデル解決も確認しました（4.15）。外部Intelligence alias補正と単発local LLM実推論も確認しました（4.16）。Agent会話継続、異なるモデルへの切替、ログイン後UIは残っています。**
 
 以下の新しいGeneration経路はmain受け入れ済みのソースです。稼働済み設定や実機切替の保証ではありません。限定checkpoint profileの参照画像ソースは4.9で受け入れ済みです。実機導入は2026-10-06の明示されたリリース作業として開始しました（4.11）。任意custom node・追加model familyなどの拡張や未承認のremote／有料APIは別scopeです。2026-10-05は実機作業を翌日に延期し、文書整合を行いました（4.10）。
 
@@ -317,6 +317,14 @@ GPU Node Managerの正規MCP経路で、画像runtimeのREADY、遷移なし・�
 
 外部Intelligence facadeには公開IDをserved aliasとして使う設定が残っていることも判明しました。公開IDと既存上限を保ったalias補正を次に行います。Agent経路のモデル解決を外部facadeの成功と同一視しません。LLM実推論・会話継続、異なるモデルへの切替、ログイン後UIはまだ未確認です。
 
+### 4.16 外部Intelligence alias補正とlocal実推論 — 2026-10-07
+
+公開model IDと既存の上限を保ち、外部Intelligenceのprovider aliasだけを補正しました。同じ固定image、6tool契約、正確なモデル解決、provider readinessと他サービスの保持を確認しました。
+
+外部MCP facadeから承認済みlocal gpt-oss-20b／llamacppへ1回の短い推論を送り、固定応答・finish_reason=stopを確認しました。上限512 tokens／60秒、応答1274 ms、provider報告usageはinput99／output79／total178です。実行後の予約解放とサービス空き状態、LLM READY／他runtime OFF、各コンテナ・設定保持を確認しました。初回のdownloadは提示hashに末尾改行差があり実行前STOP。固定GitHubバイトからhashを訂正して成功したもので、推論の再送ではありません。
+
+この確認ではAgent会話を作成していません。次は既存会話を使わない新規local sessionで、Studio Agent gateway経由の履歴参照と同モデルのsession continuationを確認します。異モデル切替、OpenAI APIの設定・認証・実推論、ログイン後UIは未確認です。未承認のremote／有料APIをこの確認のために追加しません。
+
 ## 5. 詳細ロードマップ
 
 これは工程と依存関係の計画です。将来の工程を列挙したこと自体で、保留中の実装や実機作業が再開するわけではありません。予定日・port・service方式など未決定の事項は固定しません。
@@ -390,7 +398,7 @@ Controller／外部facade／Studio gatewayのソースを4.6で実装し、4.7�
 | 優先 | 次の候補 | 開始条件 | 現在 |
 | --- | --- | --- | --- |
 | 1 | E1の実機棚卸し・matched cutover計画 | 実機調査／移行の指示と対象範囲 | 2026-10-06に開始。固定artifact・backup・Agent DB適用を確認（4.11）。停止／切替直前のbusy・request状態は再確認 |
-| 2 | E2/E3の実機受け入れ | debt・backup/rollback・versionを確認し、変更範囲が明示される | DB・persona/grant・Manager／アプリ切替とgateway確認済み。基本Imageとschema7実行済み。ログイン後UI／GPU handoff／LLM推論・会話継続が残る（4.14） |
+| 2 | E2/E3の実機受け入れ | debt・backup/rollback・versionを確認し、変更範囲が明示される | DB・persona/grant・Manager／アプリ切替とgateway確認済み。基本Imageとschema7実行済み。GPU handoffと外部Intelligenceのlocal実推論も確認。Agent会話継続／異モデル切替／ログイン後UIが残る（4.15／4.16） |
 | 3 | Hの追加制作機能 | 個別の利用要件とscope | 任意custom node・追加provider・複数段生成は別scope |
 
 4.2の実装と4.4の追加レビュー修正・README整理は受け入れ済みです。全体文書の採用commitはAI #23を参照します。親/子Issueは、受け入れた範囲と今後の境界を記録しており、openであることだけを根拠に完了済み実装をやり直しません。旧feature Issueの履歴・実機証拠も保持します。
@@ -407,7 +415,7 @@ Controller／外部facade／Studio gatewayのソースを4.6で実装し、4.7�
 | Runtime | [#23](https://github.com/flamoris-jp/flamoris-ai-runtime/issues/23) | [Architecture](https://github.com/flamoris-jp/flamoris-ai-runtime/blob/main/docs/ARCHITECTURE.md) |
 | Hub | [#36](https://github.com/flamoris-jp/flamoris-mcp-hub/issues/36) | [Generation rollout](https://github.com/flamoris-jp/flamoris-mcp-hub/blob/main/docs/GENERATION_ROLLOUT.md) |
 | GPU Node Manager | [#11](https://github.com/flamoris-jp/flamoris-gpu-node-manager/issues/11) | [Architecture](https://github.com/flamoris-jp/flamoris-gpu-node-manager/blob/main/docs/ARCHITECTURE.md) |
-| Generation Controller | [#1](https://github.com/flamoris-jp/flamoris-generation-controller/issues/1) | [実装方針・inventory](https://github.com/flamoris-jp/flamoris-generation-controller/blob/b57140954c8bc8176d882a053df70f00fad2be31/docs/IMPLEMENTATION.md)。共通core／API／単一所有者と対応PRを実装。source acceptance完了（4.8）。固定成果物cutoverとgateway確認は4.12、実生成受け入れは未完了 |
+| Generation Controller | [#1](https://github.com/flamoris-jp/flamoris-generation-controller/issues/1) | [実装方針・inventory](https://github.com/flamoris-jp/flamoris-generation-controller/blob/b57140954c8bc8176d882a053df70f00fad2be31/docs/IMPLEMENTATION.md)。共通core／API／単一所有者と対応PRを実装。source acceptance完了（4.8）。固定成果物cutoverとgateway確認は4.12、基本画像とbounded schema7参照画像の実生成受け入れも確認（4.13／4.14） |
 | 参照画像／ComfyWorkFlow | [Controller #6](https://github.com/flamoris-jp/flamoris-generation-controller/issues/6) | Controller #7・Generation #72・Hub #39。bounded登録／init-image、25tool、未確定submit保護（4.9） |
 | 会話内LLM切替 | [Agent #42](https://github.com/flamoris-jp/flamoris-ai-agent/issues/42) | Agent #43・Studio #66。同じconversation、immutable lineage、durable switch fence（4.9） |
 
@@ -451,3 +459,4 @@ ChatGPTの会話記憶だけで自動同期するものではありません。�
 | 2026-10-07 | 外部Hubからbuiltin Imageを1回実行し、completed・PNG取得とController空き状態を確認。基本実行と未確認のschema7／LLM／UI／GPU handoffを4.13で区別 |
 | 2026-10-07 | bounded checkpoint img2imgの登録・管理参照・schema7実行・PNG取得を確認。参照snapshotだけ完了後に削除し既存データを保持。残るGPU／LLM／UI受け入れを4.14へ記録 |
 | 2026-10-07 | 正規Managerの画像→LLM handoff、owned process解放／VRAM観測、Agent directモデル解決を確認。外部Intelligence alias不一致と残る実推論／会話／UIを4.15へ記録 |
+| 2026-10-07 | 外部Intelligence aliasを既存上限・固定imageのまま補正し、単発local実推論と予約解放を確認。Agent会話継続／異モデル切替／OpenAI API／UIの未確認範囲を4.16へ記録 |
