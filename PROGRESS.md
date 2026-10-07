@@ -8,7 +8,7 @@
 
 このファイルは、ChatGPTの別スレッドや次の作業担当が、目的・現在地・残りの作業をまとめて確認する入口です。設計の基準は [ARCHITECTURE.md](docs/ARCHITECTURE.md)、担当Issueと従来の順序は [ROADMAP.md](docs/ROADMAP.md)。本書はその進捗と次の具体的な工程を記録します。
 
-**現在地：cleanupとController・対応caller、bounded ComfyWorkFlow／参照画像と会話内LLM切替のソースはmain受け入れ済み（4.8／4.9）。2026-10-07 22:15 JSTまでにDB migration、人格import・承認済みlocal権限、GPU Node Managerと5アプリの切替、Studio gatewayのTLS／認証API経路を確認しました（4.12）。基本Imageの実推論とPNG取得も確認しました（4.13）。ログイン後UI、GPU handoff／telemetry、LLM推論・会話継続、異なるモデルへの切替、schema7参照画像実行の実機受け入れは残っています。**
+**現在地：cleanupとController・対応caller、bounded ComfyWorkFlow／参照画像と会話内LLM切替のソースはmain受け入れ済み（4.8／4.9）。2026-10-07 22:15 JSTまでにDB migration、人格import・承認済みlocal権限、GPU Node Managerと5アプリの切替、Studio gatewayのTLS／認証API経路を確認しました（4.12）。基本Imageとbounded schema7参照画像の実推論・PNG取得も確認しました（4.13／4.14）。ログイン後UI、GPU handoff／telemetry、LLM推論・会話継続、異なるモデルへの切替の実機受け入れは残っています。**
 
 以下の新しいGeneration経路はmain受け入れ済みのソースです。稼働済み設定や実機切替の保証ではありません。限定checkpoint profileの参照画像ソースは4.9で受け入れ済みです。実機導入は2026-10-06の明示されたリリース作業として開始しました（4.11）。任意custom node・追加model familyなどの拡張や未承認のremote／有料APIは別scopeです。2026-10-05は実機作業を翌日に延期し、文書整合を行いました（4.10）。
 
@@ -301,6 +301,14 @@ GPU Node Managerの正規MCP経路で、画像runtimeのREADY、遷移なし・�
 
 この結果は外部Hub／facade／Controller／ComfyUIの基本画像実行を確認するものです。GPU telemetry・runtime handoff、Studioログイン後UI、LLM推論・会話継続、異なるモデルへの切替、schema7の参照画像実行は未確認のままです。次は既存生成画像を管理参照入力として、bounded checkpoint img2img登録とHTTP経路のschema7実行を検証します。新しいStudio Image UIの機能追加を確認したとは記録しません。
 
+### 4.14. 2026-10-07のschema7参照画像実行
+
+22:37 JSTのoperator結果により、bounded checkpoint img2img ComfyWorkFlowの登録・digest／graph照合、管理参照入力、schema7 build、1回submit、completed、512×512 PNGの取得・decodeを確認しました。HTTPの認証済み接続から外部Hubで作成済みの画像を読めることを確認し、そのimmutable snapshotの内容を元画像と照合して参照に使っています。後続の外部Hub asset取得も成功しました。
+
+参照画像出力は219208 bytes、SHA256 `1e39d0aa6c19c116470de21c8298003dffc7d146c1bf8d95214969420a261499`。完了後に今回の参照snapshotだけ削除し、生成物と登録定義・既存データを保持。Controllerの空き状態と周辺アプリの同一コンテナを確認しました。登録時のstatic validated／live_provider_verified=falseは維持し、個別の実行成功と区別しています。
+
+これは512×512・4 stepsのbounded img2img実行確認です。IPAdapter／ControlNet／任意custom node、画質、Studio Imageの参照画像UI・ギャラリー登録は確認範囲に含みません。GPU handoff／telemetry、local LLM推論・会話継続、異なるモデルへのhandoff、ログイン後UIは残っています。
+
 ## 5. 詳細ロードマップ
 
 これは工程と依存関係の計画です。将来の工程を列挙したこと自体で、保留中の実装や実機作業が再開するわけではありません。予定日・port・service方式など未決定の事項は固定しません。
@@ -374,7 +382,7 @@ Controller／外部facade／Studio gatewayのソースを4.6で実装し、4.7�
 | 優先 | 次の候補 | 開始条件 | 現在 |
 | --- | --- | --- | --- |
 | 1 | E1の実機棚卸し・matched cutover計画 | 実機調査／移行の指示と対象範囲 | 2026-10-06に開始。固定artifact・backup・Agent DB適用を確認（4.11）。停止／切替直前のbusy・request状態は再確認 |
-| 2 | E2/E3の実機受け入れ | debt・backup/rollback・versionを確認し、変更範囲が明示される | DB・persona/grant・Manager／アプリ切替とgateway確認済み。ログイン後UI／実推論／会話継続／schema7実行が残る（4.12） |
+| 2 | E2/E3の実機受け入れ | debt・backup/rollback・versionを確認し、変更範囲が明示される | DB・persona/grant・Manager／アプリ切替とgateway確認済み。基本Imageとschema7実行済み。ログイン後UI／GPU handoff／LLM推論・会話継続が残る（4.14） |
 | 3 | Hの追加制作機能 | 個別の利用要件とscope | 任意custom node・追加provider・複数段生成は別scope |
 
 4.2の実装と4.4の追加レビュー修正・README整理は受け入れ済みです。全体文書の採用commitはAI #23を参照します。親/子Issueは、受け入れた範囲と今後の境界を記録しており、openであることだけを根拠に完了済み実装をやり直しません。旧feature Issueの履歴・実機証拠も保持します。
@@ -433,3 +441,4 @@ ChatGPTの会話記憶だけで自動同期するものではありません。�
 | 2026-10-06 | 明示された実機リリースを再開。固定5候補・rollback／内部API準備、Agent DB復元・004/005試適用と本番適用、保護対象の保持・retention timer復帰を確認。アプリ／Manager切替前で中断し、残工程を4.11へ記録 |
 | 2026-10-07 | DB・人格／権限・GPU Node Managerと5アプリ切替を確認。Studio起動時のソース読込権限を補正し、既存データ・設定・権限を保持。gateway TLS／API確認と未実施のUI／推論／会話／schema7受け入れを4.12へ記録 |
 | 2026-10-07 | 外部Hubからbuiltin Imageを1回実行し、completed・PNG取得とController空き状態を確認。基本実行と未確認のschema7／LLM／UI／GPU handoffを4.13で区別 |
+| 2026-10-07 | bounded checkpoint img2imgの登録・管理参照・schema7実行・PNG取得を確認。参照snapshotだけ完了後に削除し既存データを保持。残るGPU／LLM／UI受け入れを4.14へ記録 |
