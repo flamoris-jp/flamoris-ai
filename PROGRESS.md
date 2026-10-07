@@ -8,7 +8,7 @@
 
 このファイルは、ChatGPTの別スレッドや次の作業担当が、目的・現在地・残りの作業をまとめて確認する入口です。設計の基準は [ARCHITECTURE.md](docs/ARCHITECTURE.md)、担当Issueと従来の順序は [ROADMAP.md](docs/ROADMAP.md)。本書はその進捗と次の具体的な工程を記録します。
 
-**現在地：cleanupとController・対応caller、bounded ComfyWorkFlow／参照画像と会話内LLM切替のソースはmain受け入れ済み（4.8／4.9）。2026-10-07 22:15 JSTまでにDB migration、人格import・承認済みlocal権限、GPU Node Managerと5アプリの切替、Studio gatewayのTLS／認証API経路を確認しました（4.12）。ログイン後UI、実GPU推論、会話継続、異なるモデルへの切替、schema7参照画像実行の実機受け入れは残っています。**
+**現在地：cleanupとController・対応caller、bounded ComfyWorkFlow／参照画像と会話内LLM切替のソースはmain受け入れ済み（4.8／4.9）。2026-10-07 22:15 JSTまでにDB migration、人格import・承認済みlocal権限、GPU Node Managerと5アプリの切替、Studio gatewayのTLS／認証API経路を確認しました（4.12）。基本Imageの実推論とPNG取得も確認しました（4.13）。ログイン後UI、GPU handoff／telemetry、LLM推論・会話継続、異なるモデルへの切替、schema7参照画像実行の実機受け入れは残っています。**
 
 以下の新しいGeneration経路はmain受け入れ済みのソースです。稼働済み設定や実機切替の保証ではありません。限定checkpoint profileの参照画像ソースは4.9で受け入れ済みです。実機導入は2026-10-06の明示されたリリース作業として開始しました（4.11）。任意custom node・追加model familyなどの拡張や未承認のremote／有料APIは別scopeです。2026-10-05は実機作業を翌日に延期し、文書整合を行いました（4.10）。
 
@@ -291,9 +291,15 @@ Studioの元候補は非root runtimeからソースを読めず起動に失敗�
 
 Studio切替では既存envのinode／owner／mode／ACL、tokenとbindings、保護対象DB内容・権限、既存thumbnail、周辺サービスを保持。gatewayから実TLS経路でreadinessと権限を確認しました。Hub catalogは件数だけでなく25toolのschema／annotationも一致しています。
 
-この工程ではsession／conversationを作成せず、実推論は行っていません。ログイン後UI、最小local GPU推論、会話継続、異なるモデルへのhandoff、bounded schema7の参照画像実行を次に個別確認します。承認済みlocalモデルは1つのため異モデルhandoffは現構成で検証できるかを確認し、未承認モデル追加で埋めません。raw Intelligenceの接続は未設定。remote／有料API、任意custom node、追加providerの受け入れは含みません。
+この切替工程ではsession／conversationを作成せず、実推論は行っていません。後続の基本Image検証は4.13を参照します。ログイン後UI、最小local GPU推論、会話継続、異なるモデルへのhandoff、bounded schema7の参照画像実行を次に個別確認します。承認済みlocalモデルは1つのため異モデルhandoffは現構成で検証できるかを確認し、未承認モデル追加で埋めません。raw Intelligenceの接続は未設定。remote／有料API、任意custom node、追加providerの受け入れは含みません。
 
 本記録の更新は[AI #28](https://github.com/flamoris-jp/flamoris-ai/pull/28)で進行中で、main反映とは区別します。
+
+### 4.13. 2026-10-07の基本Image実行
+
+GPU Node Managerの正規MCP経路で、画像runtimeのREADY、遷移なし・異常なしをoperator結果から確認。外部Hub経由でbuiltin text-to-imageをbuildし、1回submit、status/result completed、asset一覧・PNG取得まで確認しました。512×512・4 stepsの最小動作確認で、画質の受け入れではありません。完了後のControllerは空き状態で、生成物は保持しています。
+
+この結果は外部Hub／facade／Controller／ComfyUIの基本画像実行を確認するものです。GPU telemetry・runtime handoff、Studioログイン後UI、LLM推論・会話継続、異なるモデルへの切替、schema7の参照画像実行は未確認のままです。次は既存生成画像を管理参照入力として、bounded checkpoint img2img登録とHTTP経路のschema7実行を検証します。新しいStudio Image UIの機能追加を確認したとは記録しません。
 
 ## 5. 詳細ロードマップ
 
@@ -426,3 +432,4 @@ ChatGPTの会話記憶だけで自動同期するものではありません。�
 | 2026-10-05 | 実機を翌日へ延期。10repoの現行文書を照合し、9repoの37文書をソース受け入れ／25tool／会話内LLM切替／migration順序に整合。文書PRと検証・受け入れcommitを4.10／AI #27へ記録 |
 | 2026-10-06 | 明示された実機リリースを再開。固定5候補・rollback／内部API準備、Agent DB復元・004/005試適用と本番適用、保護対象の保持・retention timer復帰を確認。アプリ／Manager切替前で中断し、残工程を4.11へ記録 |
 | 2026-10-07 | DB・人格／権限・GPU Node Managerと5アプリ切替を確認。Studio起動時のソース読込権限を補正し、既存データ・設定・権限を保持。gateway TLS／API確認と未実施のUI／推論／会話／schema7受け入れを4.12へ記録 |
+| 2026-10-07 | 外部Hubからbuiltin Imageを1回実行し、completed・PNG取得とController空き状態を確認。基本実行と未確認のschema7／LLM／UI／GPU handoffを4.13で区別 |
