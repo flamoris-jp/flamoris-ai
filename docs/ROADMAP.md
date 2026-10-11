@@ -14,15 +14,25 @@ The [README source matrix](../README.md#implemented-source-boundaries) links acc
 
 Controller #5 / Generation #71 / Studio #65 implement one generation authority, the external facade and Studio direct HTTP. Those PRs are merged; PROGRESS §4.8 records acceptance, §4.7 review/CI and §4.6 initial implementation evidence. The subsequent two-feature request implements bounded ComfyWorkFlow registration/init-image generation and Studio Agent model switching. Controller #7 / Generation #72 / Hub #39 / Agent #43 / Studio #66 are also merged after explicit user authorization; PROGRESS §4.9 records their final CI and merge-tree equality. Production deployment, restarts, DB/data/credential changes and paid inference remain outside this source scope.
 
+## Current operational checkpoint — 2026-10-11
+
+PROGRESS §4.21 supersedes earlier blanket live-pending statements below for the
+fresh installation. Agent/Intelligence prerequisites and both principals' grants,
+Studio HTTPS settings, and an Updater-managed Studio 1.0.2 → 1.0.3 update are accepted.
+The operator confirmed Assistant conversation, model switching and continuation.
+Studio-to-Controller model discovery/real generation, an independent second-account
+UI receipt and remaining external clients/providers stay open. The historical
+reset-era receipts do not certify this installation; completed setup is not replayed.
+
 ## Remaining phases
 
 | Phase | Remaining work | Current status / start condition |
 | --- | --- | --- |
 | Live inventory and migration plan | Confirm installed versions, configuration, retained jobs/data, backup and rollback | Pending; resume only for an explicitly selected deployment scope (PROGRESS E1) |
-| Intelligence/Agent live acceptance | Configure the accepted provider-library and Agent HTTP contracts; verify grants, complete-context consent, model identity and request fences | Pending operational work (PROGRESS E2) |
+| Intelligence/Agent live acceptance | Preserve configured adapters, both principal/model/personality grants and accepted Assistant conversation/switching; qualify remaining account/consent/fence cases individually | Fresh Assistant slice accepted; raw Intelligence, independent second-account UI and comprehensive fence tests remain (PROGRESS §4.21) |
 | Generation live acceptance | Verify retained Image/Speech/Music providers, inputs/assets and unresolved-job protections through the matched Controller/internal HTTP and external MCP paths | Pending operational work (PROGRESS E3) |
 | Operational Generation cutover | Drain/reconcile old owner, deploy matched artifacts and explicitly configure Studio HTTP/service credential/empty namespace | Pending separately scoped live work (PROGRESS E/F/G) |
-| Pre-deployment features | Accept bounded ComfyWorkFlow registration/init-image and conversation-preserving Agent model switching on the selected live versions | Source accepted in main; live acceptance pending (PROGRESS §4.9/H) |
+| Pre-deployment features | Qualify bounded ComfyWorkFlow/init-image separately from accepted conversation-preserving Agent model switching | Source accepted in main; fresh Assistant switching accepted, new Image qualification pending (PROGRESS §4.9/4.21/H) |
 | Further product extensions | Define custom nodes, additional provider or multi-step generation requirements individually | Separate scopes (PROGRESS H) |
 
 Controller source acceptance is complete (PROGRESS F/G and §4.8). Actual activation still requires state reconciliation and operational scope. Keep authorization, provenance, retained state and unknown/no-replay guarantees in each phase.
