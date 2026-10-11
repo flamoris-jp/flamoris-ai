@@ -10,7 +10,7 @@ pending live acceptance and accepted Controller implementation; architecture rem
 
 [Issue #18](https://github.com/flamoris-jp/flamoris-ai/issues/18) coordinates the architecture and accepted source boundaries. Deployment and live acceptance are recorded separately in PROGRESS.md.
 
-**Studio Intelligence, Agent Support and generation use non-MCP internal contracts in the matched source. Controller and matched caller PRs are merged; live acceptance remains pending.** Bounded builtin/native generation, generic provider recipes, jobs/assets/inputs and uncertain-request protections remain supported by their existing owners.
+**Studio Intelligence, Agent Support and generation use non-MCP internal contracts in the matched source. Controller and matched caller PRs are merged. The fresh-install Assistant conversation/model-switching acceptance and Studio 1.0.3 update are recorded in PROGRESS §4.21; Studio Controller generation acceptance remains pending.** Bounded builtin/native generation, generic provider recipes, jobs/assets/inputs and uncertain-request protections remain supported by their existing owners.
 
 Read the [architecture](docs/ARCHITECTURE.md), [ecosystem map](docs/ai-ecosystem.md), [roadmap](docs/ROADMAP.md) and [Studio boundaries](docs/MULTIMODAL_STUDIO_ARCHITECTURE.md). Earlier designs are preserved in [pinned history](docs/LEGACY_DESIGN.md), not as current implementation instructions.
 
@@ -82,7 +82,7 @@ MCPはChatGPT側の外部入口です。Studioのraw IntelligenceとAgent内部�
 
 Runtimeの推論フローは `ExecuteFlow`、コンパイル済み内部表現は `ExecutionPlan`、ComfyUIのグラフ・JSONは `ComfyWorkFlow` と区別します。保持された生成機能と保存データの保護は既存ownerが担当します。ソース受け入れ・追加レビューPR・実機受け入れは [PROGRESS.md](PROGRESS.md) で個別に記録します。
 
-実機投入前の参照画像／ComfyWorkFlow登録（標準checkpoint img2img）とStudio Agentの会話内LLM切替もmain受け入れ済みです。対応migration・25tool catalog・設定の実機反映は未着手で、PROGRESS §4.9に検証と受け入れcommitを記録しています。
+実機投入前の参照画像／ComfyWorkFlow登録（標準checkpoint img2img）とStudio Agentの会話内LLM切替もmain受け入れ済みです。ソースの検証・受け入れcommitはPROGRESS §4.9、リセット後の現行設定・Assistant会話／モデル切替受け入れは§4.21に記録しています。Studioからの実生成や全client／2accountの検証は別の未完了範囲です。
 
 ## FLAMORIS and license
 
