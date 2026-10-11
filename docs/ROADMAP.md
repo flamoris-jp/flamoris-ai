@@ -28,14 +28,14 @@ reset-era receipts do not certify this installation; completed setup is not repl
 
 | Phase | Remaining work | Current status / start condition |
 | --- | --- | --- |
-| Live inventory and migration plan | Confirm installed versions, configuration, retained jobs/data, backup and rollback | Pending; resume only for an explicitly selected deployment scope (PROGRESS E1) |
+| Remaining live inventory | Read current runtime/model roots and unresolved work for the selected next operation | Fresh installation/setup accepted; do not restore pre-reset backup/migration work as prerequisites (PROGRESS §4.21) |
 | Intelligence/Agent live acceptance | Preserve configured adapters, both principal/model/personality grants and accepted Assistant conversation/switching; qualify remaining account/consent/fence cases individually | Fresh Assistant slice accepted; raw Intelligence, independent second-account UI and comprehensive fence tests remain (PROGRESS §4.21) |
 | Generation live acceptance | Verify retained Image/Speech/Music providers, inputs/assets and unresolved-job protections through the matched Controller/internal HTTP and external MCP paths | Pending operational work (PROGRESS E3) |
-| Operational Generation cutover | Drain/reconcile old owner, deploy matched artifacts and explicitly configure Studio HTTP/service credential/empty namespace | Pending separately scoped live work (PROGRESS E/F/G) |
+| Operational Generation acceptance | Preserve the configured single Controller and Studio HTTPS/service credential; qualify model discovery and generated results | Fresh connection settings accepted; Studio model discovery/real generation remain (PROGRESS §4.21/E3) |
 | Pre-deployment features | Qualify bounded ComfyWorkFlow/init-image separately from accepted conversation-preserving Agent model switching | Source accepted in main; fresh Assistant switching accepted, new Image qualification pending (PROGRESS §4.9/4.21/H) |
 | Further product extensions | Define custom nodes, additional provider or multi-step generation requirements individually | Separate scopes (PROGRESS H) |
 
-Controller source acceptance is complete (PROGRESS F/G and §4.8). Actual activation still requires state reconciliation and operational scope. Keep authorization, provenance, retained state and unknown/no-replay guarantees in each phase.
+Controller source acceptance is complete (PROGRESS F/G and §4.8). Fresh installation and connection settings are recorded in §4.21; provider execution acceptance is still scoped separately. Preserve authorization, provenance, retained state and unknown/no-replay guarantees.
 
 ## Owning coordination Issues
 
