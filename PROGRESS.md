@@ -1,6 +1,6 @@
 # FLAMORIS AI アーキテクチャ組み換え：進捗と引継ぎ
 
-更新日：2026-10-08（JST）
+更新日：2026-10-11（JST）
 
 対象：外部MCP・内部Intelligence・任意Agent・Generation・Runtimeの責務と接続の整理
 
@@ -8,7 +8,7 @@
 
 このファイルは、ChatGPTの別スレッドや次の作業担当が、目的・現在地・残りの作業をまとめて確認する入口です。設計の基準は [ARCHITECTURE.md](docs/ARCHITECTURE.md)、担当Issueと従来の順序は [ROADMAP.md](docs/ROADMAP.md)。本書はその進捗と次の具体的な工程を記録します。
 
-**現在地：cleanupとController・対応caller、bounded ComfyWorkFlow／参照画像と会話内LLM切替のソースはmain受け入れ済み（4.8／4.9）。2026-10-07 22:15 JSTまでにDB migration、人格import・承認済みlocal権限、GPU Node Managerと5アプリの切替、Studio gatewayのTLS／認証API経路を確認しました（4.12）。基本Imageとbounded schema7参照画像の実推論・PNG取得も確認しました（4.13／4.14）。GPU handoff／VRAM観測とAgent directモデル解決も確認しました（4.15）。外部Intelligence alias補正と単発local LLM実推論も確認しました（4.16）。同モデルのAgent会話継続・履歴参照も確認しました（4.17）。2026-10-08に選択済みSolの設定／認証／モデル権限とStudio gateway経由のOpenAI実推論、local→Solの会話継続・履歴参照・旧session失効を確認しました（4.18）。ログイン後Assistant UIの切替・履歴参照もoperatorが成功として受け入れました（4.19）。今回対象のサーバー更新と受け入れは完了。同意入力の表示改善は次版へ持ち越します。**
+**現在地：2026-10-09〜10の明示されたリセット後、Updater管理で各アプリを新規導入しました。2026-10-11までにUpdater 1.0.8、5つのDockerアプリ1.0.2と統合Manager 1.2.2の導入・初回設定、Studio HTTPS／CSRF確認と2アカウントの対応付け、ローカルLLM単体の応答をoperatorが確認しました（4.20）。Agent／モデル／人格編集権限の反映コマンドは提示済みですが実行結果未確認です。StudioからAgent／Controllerへの接続と会話・生成の実動作は今回の新規環境では未受け入れです。4.11–4.19はリセット前の受け入れ履歴で、現在の導入完了を証明しません。**
 
 以下の新しいGeneration経路はmain受け入れ済みのソースです。稼働済み設定や実機切替の保証ではありません。限定checkpoint profileの参照画像ソースは4.9で受け入れ済みです。実機導入は2026-10-06の明示されたリリース作業として開始しました（4.11）。任意custom node・追加model familyなどの拡張や未承認のremote／有料APIは別scopeです。2026-10-05は実機作業を翌日に延期し、文書整合を行いました（4.10）。
 
@@ -353,7 +353,39 @@ operatorがログイン後Assistant UIのテストを「成功でOK」と受け�
 
 ChatGPT側のFLAMORIS Hub接続では、通信は成功する一方、この会話のtool一覧に旧登録／検証toolが残り、現行の `generation.comfy.register/get` が未反映です。サーバーのfresh matched catalog受け入れとChatGPT側discoveryを区別し、利用前に接続のtool一覧を再同期して確認します。Studio AgentのOpenAI経路は内部非MCPのため、ChatGPT側へのOpenAI credential追加は不要です。
 
+### 4.20 Updaterによる新規導入とアカウント対応 — 2026-10-11
+
+2026-10-09〜10のユーザー指示は、対象FLAMORISアプリをリセットして
+Updaterから新規導入する範囲です。既存アプリ更新互換性の検証や
+旧環境の完全再現とは分けます。外部GPUランタイム・モデルと監視基盤は保持対象です。
+
+| 対象 | 今回確認した状態 | まだ保証しない範囲 |
+| --- | --- | --- |
+| Updater 1.0.8 | operatorが更新完了を確認 | 外部MCPクライアント接続 |
+| 統合Manager 1.2.2 / GPU Node Manager core 1.2.2 | 導入・Web表示・ローカルLLM READYを確認 | 全GPUランタイム／モデルの実動作 |
+| AI Agent / Intelligence MCP / Generation MCP / MCP Hub / Studio 各1.0.2 | operatorが初回設定確認完了を報告。新しいServer Manager観測で5コンテナ稼働を確認 | アプリ間通信・推論／生成・外部クライアント受け入れ |
+| Studio Web | HTTPS入口、proxy／CSRF、2アカウントの正確なUUID対応とStudio-only再起動・healthをoperatorが確認 | Agent設定UI・会話・Controller生成 |
+| ローカルLLM | 直接のchat APIで短い応答を確認 | AgentやStudioを経由した会話 |
+| Agent初期接続／権限／人格 | 名前・project登録まで確認。名前だけの編集可能な人格revisionとモデル権限を整える反映コマンドを提示 | コマンドの実行・DB反映・Agent/Intelligence再起動と準備確認は結果未確認 |
+
+- 公開PROGRESSにはアカウントのメール／UUID、ホスト構成、実パスや秘密値を載せません。
+  実機配置・復旧履歴・正確な対応はprivate Internalの
+  `maintenance/updater-app-install-20261011/README.md`に記録します。
+- GenerationのDocker load後image inspect失敗は、実イメージのConfig/CPU/OSを確認した
+  限定的なstage復旧後、operatorが初回設定完了を受け入れました。
+  失敗／復旧記録を消したりinstallを再実行したりしません。
+- 実機観測は2026-10-11 19:07 JSTのServer Manager取得です。保護された環境設定・DB権限・
+  全Jobまでは読んでいません。operator報告、観測、未実行／結果未確認の準備を区別します。
+- 今回は新規導入を優先し、レシピの `compatible_from=[]` を旧版更新の保証と扱いません。
+  アプリDB移行は各アプリの責務です。Updater認証・バックアップ機能は追加しません。
+- 次の最初の一手は、提示済みAgent側コマンドの実行有無と結果確認です。
+  未実行なら現況確認後に進め、失敗／中断なら副作用とadmissionを調査してから再開します。
+  その後、Agent JSON HTTPとController HTTPのStudio接続、2アカウント会話、
+  対象profileの生成を順に受け入れます。有料providerや全profileをまとめて完了扱いにしません。
+
 ## 5. 詳細ロードマップ
+
+**4.11–4.19と以下E工程の完了記録はリセット前のreleaseです。現在の新規導入は4.20と§6を優先し、旧データ復元・バックアップ／移行工程を今回の必須作業へ戻しません。**
 
 これは工程と依存関係の計画です。将来の工程を列挙したこと自体で、保留中の実装や実機作業が再開するわけではありません。予定日・port・service方式など未決定の事項は固定しません。
 
@@ -423,15 +455,20 @@ Controller／外部facade／Studio gatewayのソースを4.6で実装し、4.7�
 
 ## 6. 次に着手する作業と未決定事項
 
-今回対象のrelease作業は4.19で完了。次版のStudio #68と追加profile等の別scopeを分け、下記の完了済み工程を再開しません。ChatGPT側のtool一覧更新は4.19の接続discovery確認として扱います。
+現在は4.20の新規導入後の接続・利用確認です。4.19で完了した旧releaseの
+実装作業はやり直しません。実機の最新状態を確認して今回の設定から続けます。
 
-| 優先 | 次の候補 | 開始条件 | 現在 |
-| --- | --- | --- | --- |
-| 1 | E1の実機棚卸し・matched cutover計画 | 実機調査／移行の指示と対象範囲 | 2026-10-06に開始。固定artifact・backup・Agent DB適用を確認（4.11）。停止／切替直前のbusy・request状態は再確認 |
-| 2 | E2/E3の実機受け入れ | debt・backup/rollback・versionを確認し、変更範囲が明示される | DB・persona/grant・Manager／アプリ切替とgateway確認済み。基本Imageとschema7実行済み。GPU handoffと外部Intelligenceのlocal実推論も確認。同モデルAgent会話継続も確認。OpenAI設定とlocal→Solの異モデル継続／実推論を確認。ログイン後Assistant UIも受け入れ、今回対象は完了。Studio #68は次版（4.19） |
-| 3 | Hの追加制作機能 | 個別の利用要件とscope | 任意custom node・追加provider・複数段生成は別scope |
+| 優先 | 次の作業 | 開始条件 / 現在 |
+| --- | --- | --- |
+| 1 | 提示済みAgent／Intelligence初期設定の結果確認 | 実行有無を確認し、未実行なら最新観測と空き状態を確認。失敗／中断時は状態・記録を調査し自動再送しない |
+| 2 | StudioからAgentへの接続・設定UI・2アカウント会話 | upstreamのモデル／principal／人格権限とavailability確認後。既存backend credentialを保護して接続し、実際の会話を確認 |
+| 3 | StudioからControllerへの接続と対象生成profile | model／ComfyUI／GPU状態・既存Controller token・単一authorityを確認。モデル発見と1回のbounded生成を区別 |
+| 4 | 他のruntime／provider、raw Intelligence、外部MCP、追加制作機能 | 個別に設定と利用範囲を確認。旧releaseの成功やCIだけで現在の利用可能を保証しない |
 
-4.2の実装と4.4の追加レビュー修正・README整理は受け入れ済みです。全体文書の採用commitはAI #23を参照します。親/子Issueは、受け入れた範囲と今後の境界を記録しており、openであることだけを根拠に完了済み実装をやり直しません。旧feature Issueの履歴・実機証拠も保持します。
+Studio #68の同意入力表示改善など既存の後続Issueは保持します。
+現行source受け入れ（4.2、4.4、4.8、4.9）を再実装する理由にはしません。
+対象外の有料provider、任意custom node、追加model family、NAS/model整理を
+現在の接続確認へ自動追加しません。
 
 ## 7. 担当Issueと読む文書
 
@@ -493,3 +530,4 @@ ChatGPTの会話記憶だけで自動同期するものではありません。�
 | 2026-10-07 | Studio gatewayのlocal会話継続・合言葉の履歴参照・旧session失効を確認。Docker Mountsの順序差による検査停止を読み取りだけで確定し、推論を再送せず4.17へ記録 |
 | 2026-10-08 | 選択済みOpenAI Solの設定／認証／2組の権限とlocal保持を確認。Studio gatewayでlocal→Solの異モデル継続・合言葉履歴参照・旧session失効を実測、2推論のうちOpenAI1回。ログイン後UIは未確認（4.18）。進捗文書はAI #28で追跡 |
 | 2026-10-08 | operatorがログイン後Assistant UIのlocal→Sol切替・履歴参照を成功として受け入れ、今回対象のrelease完了。Studio #68の同意入力表示は次版へ持ち越し。ChatGPT側Hubの旧tool一覧と現行catalogの相違を記録（4.19） |
+| 2026-10-11 | リセット後のUpdater新規導入・初回設定、Studio HTTPS／アカウント対応とローカルLLM単体応答を4.20へ記録。提示済みAgent初期設定の実行結果とStudio接続／会話／生成を未受け入れとして引継ぎ。旧release履歴と現在地を分離 |
